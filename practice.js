@@ -66,7 +66,7 @@
     resetQuestion();$("practiceQuestion").textContent="تمرین به پایان رسید! 🌟";
     const p=document.createElement("p");p.textContent="تعداد پاسخ‌های درست: "+toPersianNumber(correctCount)+" از "+toPersianNumber(questionNumber);
     const p2=document.createElement("p");p2.textContent="امتیاز این نوبت: "+toPersianNumber(sessionPoints);
-    const note=document.createElement("p");note.className="practice-muted";note.textContent="نسخه آزمایشی فعلاً از سه واژه تأییدشده درس اول استفاده می‌کند.";
+    const note=document.createElement("p");note.className="practice-muted";note.textContent="فهرست هر ۱۷ درس در برنامه بارگذاری شده است؛ تمرین خودکار فقط با واژه‌های تأییدشده فعال می‌شود.";
     body.append(p,p2,note);
     if(correctCount>0&&!progress.completed.includes(selectedLesson.id)){progress.completed.push(selectedLesson.id);saveProgress();renderLessons();}
     $("practiceCounter").textContent="پایان تمرین";nextButton(closePractice);$("practiceContinue").textContent="بازگشت به درس";
@@ -74,7 +74,7 @@
   function closePractice(){if("speechSynthesis" in window)speechSynthesis.cancel();overlay.hidden=true;$("practiceContinue").textContent="ادامه";}
   window.startPractice=function(mode){
     if(!selectedLesson||!approvedWords[selectedLesson.id]){
-      const n=document.getElementById("modeNotice");n.className="notice";n.textContent="تمرین تعاملی فعلاً برای درس اول فعال است؛ محتوای تأییدشده درس‌های دیگر هنوز به نسخه اجرایی متصل نشده است.";return;
+      const n=document.getElementById("modeNotice");n.className="notice";n.textContent="برای این درس هنوز واژه تأییدشده‌ای به موتور تمرین متصل نیست. پس از تأیید واژه‌ها، پنج روش تمرین فعال می‌شوند.";return;
     }
     currentMode=mode;questionNumber=0;correctCount=0;sessionPoints=0;
     $("practiceTitle").textContent=modeNames[mode]||"تمرین";$("practiceContinue").textContent="ادامه";overlay.hidden=false;renderQuestion();
