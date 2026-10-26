@@ -11,13 +11,24 @@
   overlay.innerHTML='<div class="practice-card"><div class="practice-top"><button type="button" class="back-button" id="practiceExit">← خروج از تمرین</button><span class="practice-muted" id="practiceCounter"></span></div><h2 id="practiceTitle">تمرین</h2><div class="practice-question" id="practiceQuestion"></div><div id="practiceBody"></div><div id="practiceFeedback" class="practice-feedback" hidden aria-live="polite"></div><button type="button" class="practice-action" id="practiceContinue" hidden>ادامه</button></div>';
   document.body.appendChild(overlay);
   const $=id=>document.getElementById(id), body=$("practiceBody");
+  function normalizeText(value){
+    return String(value||"").normalize("NFC")
+      .replace(/[يى]/g,"ی").replace(/ك/g,"ک")
+      .replace(/[\u200c\u200f\u202a-\u202e\sـ]/g,"")
+      .replace(/[.,،؛:!?؟"'«»()\[\]{}]/g,"");
+  }
+  function shuffle(items){
+    const a=[...items];
+    for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}
+    return a;
+  }
   function showFeedback(message,good){const box=$("practiceFeedback");box.hidden=false;box.className="practice-feedback "+(good?"good":"bad");box.textContent=message;}
   function nextButton(fn){const b=$("practiceContinue");b.hidden=false;b.onclick=fn;}
   function resetQuestion(){$("practiceFeedback").hidden=true;$("practiceContinue").hidden=true;body.innerHTML="";}
   function finishQuestion(ok){
     questionNumber++;
     if(ok){correctCount++;sessionPoints+=10;progress.points=(progress.points||0)+10;saveProgress();showFeedback("آفرین! پاسخ درست بود. ۱۰ امتیاز گرفتی.",true);}
-    else showFeedback("این بار درست نبود. پاسخ را ببین و دوباره تمرین کن.",false);
+    else showFeedback("پاسخ درست «"+target+"» بود. آن را یک بار با دقت بخوان و دوباره تمرین کن.",false);
     $("practiceCounter").textContent="پاسخ درست: "+toPersianNumber(correctCount);
     nextButton(()=>{if(questionNumber<5)renderQuestion();else finishSession();});
   }
@@ -42,14 +53,14 @@
     const chars=Array.from(target), index=Math.floor(Math.random()*chars.length), answer=chars[index];
     $("practiceQuestion").textContent="حرف جاافتاده را کامل کن: "+chars.map((c,i)=>i===index?"ـ":c).join("");
     const input=document.createElement("input");input.className="practice-input";input.maxLength=2;input.placeholder="حرف درست را بنویس";
-    const b=document.createElement("button");b.className="practice-action";b.textContent="بررسی پاسخ";b.onclick=()=>{input.disabled=true;b.disabled=true;finishQuestion(input.value.trim()===answer);};
+    const b=document.createElement("button");b.className="practice-action";b.textContent="بررسی پاسخ";b.onclick=()=>{input.disabled=true;b.disabled=true;finishQuestion(normalizeText(input.value)===normalizeText(answer));};
     body.append(input,b);input.focus();
   }
   function renderListening(){
     $("practiceQuestion").textContent="به واژه گوش کن و آن را بنویس.";
     const play=document.createElement("button");play.className="practice-option";play.textContent="🔊 پخش دوباره واژه";play.onclick=speakTarget;
     const input=document.createElement("input");input.className="practice-input";input.placeholder="واژه را بنویس";
-    const b=document.createElement("button");b.className="practice-action";b.textContent="بررسی پاسخ";b.onclick=()=>{input.disabled=true;b.disabled=true;finishQuestion(input.value.trim().replace(/\\u200c/g,"")===target.replace(/\\u200c/g,""));};
+    const b=document.createElement("button");b.className="practice-action";b.textContent="بررسی پاسخ";b.onclick=()=>{input.disabled=true;b.disabled=true;finishQuestion(normalizeText(input.value)===normalizeText(target));};
     body.append(play,input,b);speakTarget();input.focus();
   }
   function speakTarget(){
@@ -59,14 +70,20 @@
   function renderSentence(){
     $("practiceQuestion").textContent="با واژه «"+target+"» یک جمله بنویس.";
     const input=document.createElement("textarea");input.className="practice-input";input.rows=3;input.style.textAlign="right";input.placeholder="جمله‌ات را اینجا بنویس...";
-    const b=document.createElement("button");b.className="practice-action";b.textContent="بررسی جمله";b.onclick=()=>{input.disabled=true;b.disabled=true;const v=input.value.trim().replace(/\\u200c/g,"");finishQuestion(v.includes(target.replace(/\\u200c/g,""))&&v.length>target.length);};
+    const b=document.createElement("button");b.className="practice-action";b.textContent="بررسی جمله";b.onclick=()=>{input.disabled=true;b.disabled=true;const v=normalizeText(input.value);const t=normalizeText(target);finishQuestion(v.includes(t)&&v.length>t.length);};
     body.append(input,b);input.focus();
   }
   function finishSession(){
     resetQuestion();$("practiceQuestion").textContent="تمرین به پایان رسید! 🌟";
-    const p=document.createElement("p");p.textContent="تعداد پاسخ‌های درست: "+toPersianNumber(correctCount)+" از "+toPersianNumber(questionNumber);
+    const p=document.createElement("p");p.textContent="تعداد پاسخ‌های درست: "+toPersianNumber(correctCount)+" از "+toPersianNumber(questionNumber)+" ("+toPersianNumber(Math.round(correctCount/Math.max(1,questionNumber)*100))+"٪)";
     const p2=document.createElement("p");p2.textContent="امتیاز این نوبت: "+toPersianNumber(sessionPoints);
-    const note=document.createElement("p");note.className="practice-muted";note.textContent="بانک واژگان این درس از فایل مرجع وارد شده است؛ برخی مدخل‌ها هنوز نیازمند مقابله نهایی با چاپ کتاب هستند.";
+    const note=document.createElement("p");note.className="practice-muted";
+    note.textContent=correctCount===5?"فوق‌العاده! هر پنج سؤال را درست پاسخ دادی.":"پاسخ‌های نادرست را دوباره بخوان و فردا یک دور دیگر تمرین کن.";
+    progress.lessonStats=progress.lessonStats||{};
+    const stat=progress.lessonStats[selectedLesson.id]||{sessions:0,attempts:0,correct:0,best:0};
+    stat.sessions++;stat.attempts+=questionNumber;stat.correct+=correctCount;
+    stat.best=Math.max(stat.best,Math.round(correctCount/Math.max(1,questionNumber)*100));
+    stat.lastPlayed=new Date().toISOString();progress.lessonStats[selectedLesson.id]=stat;
     body.append(p,p2,note);
     if(correctCount>0&&!progress.completed.includes(selectedLesson.id)){progress.completed.push(selectedLesson.id);saveProgress();renderLessons();}
     $("practiceCounter").textContent="پایان تمرین";nextButton(closePractice);$("practiceContinue").textContent="بازگشت به درس";
@@ -77,7 +94,7 @@
       const n=document.getElementById("modeNotice");n.className="notice";n.textContent="برای این درس هنوز واژه تأییدشده‌ای به موتور تمرین متصل نیست. پس از تأیید واژه‌ها، پنج روش تمرین فعال می‌شوند.";return;
     }
     currentMode=mode;questionNumber=0;correctCount=0;sessionPoints=0;
-    sessionWords=[...(approvedWords[selectedLesson.id]||[])].sort(()=>Math.random()-.5).slice(0,5);
+    sessionWords=shuffle(approvedWords[selectedLesson.id]||[]).slice(0,5);
     $("practiceTitle").textContent=modeNames[mode]||"تمرین";$("practiceContinue").textContent="ادامه";overlay.hidden=false;renderQuestion();
   };
   $("practiceExit").addEventListener("click",closePractice);
