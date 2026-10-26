@@ -614,17 +614,17 @@
       content.className = "notice";
       content.textContent = "صفحات نگارش: " + lessonData.pages + " | فعالیت‌های شناسایی‌شده: " + lessonData.activity +
         (lessonData.teacherInput ? " این درس آزاد است؛ آموزگار باید واژه‌های متن بومی کلاس را وارد کند." : "");
-      const hasApproved = lessonData.approved > 0;
+      const wordPool = (window.EMLAY_WORD_BANK && window.EMLAY_WORD_BANK[id]) || [];
+      const wordCount = wordPool.length;
       document.querySelectorAll("[data-mode]").forEach(button => {
-        button.disabled = !hasApproved;
-        button.style.opacity = hasApproved ? "1" : ".48";
+        button.disabled = wordCount === 0;
+        button.style.opacity = wordCount ? "1" : ".48";
       });
       const notice = document.getElementById("modeNotice");
-      notice.className = hasApproved ? "notice success" : "notice";
-      notice.textContent = hasApproved
-        ? "این درس " + toPersianNumber(lessonData.approved) + " واژه تأییدشده برای تمرین فعال دارد."
-        : "ساختار و فعالیت‌های این درس بارگذاری شده است؛ " + toPersianNumber(lessonData.pending) +
-          " مدخل واژگانی هنوز نیازمند مقابله و تأیید آموزگار است. برای جلوگیری از آموزش واژه نادرست، تمرین خودکار تا تأیید واژه‌ها غیرفعال است.";
+      notice.className = wordCount ? "notice success" : "notice";
+      notice.textContent = wordCount
+        ? toPersianNumber(wordCount) + " واژه/عبارت در بانک تمرین این درس وارد شده است. بعضی مدخل‌ها تکمیلی یا نیازمند مقابله با چاپ کتاب‌اند."
+        : "برای این درس هنوز واژه‌ای در بانک تمرین ثبت نشده است.";
 
       document.getElementById("lessonPanel").classList.add("show");
 
