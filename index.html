@@ -444,6 +444,7 @@
         <button class="back-button" id="backButton">← بازگشت به درس‌ها</button>
         <h2 id="selectedTitle"></h2>
         <div id="selectedChapter" class="panel-description"></div>
+        <div id="lessonContent" class="notice" aria-live="polite"></div>
         <p class="panel-description">
           یکی از روش‌های تمرین را انتخاب کن.
         </p>
@@ -503,35 +504,15 @@
 
   </div>
 
-    <script src="practice.js"></script>
+    <script src="lesson-data.js"></script>
+  <script src="practice.js"></script>
   <script>
     "use strict";
 
-    // فهرست درس‌ها؛ محتوای تمرین‌ها جداگانه و پس از تطبیق کتاب افزوده می‌شود.
-    const lessons = [
-      { id: 1, title: "تماشاخانه", chapter: "آفرینش", icon: "🎭" },
-      { id: 2, title: "فضل خدا", chapter: "آفرینش", icon: "🌱" },
-
-      { id: 3, title: "رازی و ساخت بیمارستان", chapter: "دانایی و هوشیاری", icon: "🔬" },
-      { id: 4, title: "بازرگان و پسران", chapter: "دانایی و هوشیاری", icon: "🧭" },
-      { id: 5, title: "چنار و کدوبن", chapter: "دانایی و هوشیاری", icon: "🌳" },
-
-      { id: 6, title: "سرود ملی", chapter: "ایران من", icon: "🇮🇷" },
-      { id: 7, title: "درس آزاد: فرهنگ بومی ۱", chapter: "ایران من", icon: "🏡" },
-      { id: 8, title: "دفاع از میهن", chapter: "ایران من", icon: "🛡️" },
-
-      { id: 9, title: "نام‌آوران دیروز، امروز، فردا", chapter: "نام‌آوران", icon: "⭐" },
-      { id: 10, title: "نام نیکو", chapter: "نام‌آوران", icon: "🏅" },
-      { id: 11, title: "نقش خردمندان", chapter: "نام‌آوران", icon: "💡" },
-      { id: 12, title: "درس آزاد: فرهنگ بومی ۲", chapter: "نام‌آوران", icon: "🏞️" },
-
-      { id: 13, title: "روزی که باران می‌بارید", chapter: "راه زندگی", icon: "🌧️" },
-      { id: 14, title: "شجاعت", chapter: "راه زندگی", icon: "🦁" },
-      { id: 15, title: "کاجستان", chapter: "راه زندگی", icon: "🌲" },
-
-      { id: 16, title: "وقتی بوعلی، کودک بود", chapter: "علم و عمل", icon: "📖" },
-      { id: 17, title: "کار و تلاش", chapter: "علم و عمل", icon: "⚙️" }
-    ];
+    // فهرست درس‌ها از بانک ساختاریافته همه ۱۷ درس بارگذاری می‌شود.
+    const lessons = (window.EMLAY_LESSON_DATA || []).map(item => ({
+      id: item.id, title: item.title, chapter: item.chapter, icon: item.icon
+    }));
 
     const storageKey = "emlay-hoshmand-progress-v1";
 
@@ -628,8 +609,22 @@
       document.getElementById("selectedChapter").textContent =
         "فصل: " + selectedLesson.chapter;
 
-      document.getElementById("modeNotice").textContent =
-        "تمرین‌های مستند این درس هنوز به برنامه اضافه نشده‌اند. پس از تکمیل بانک محتوایی، این بخش فعال می‌شود.";
+      const lessonData = window.EMLAY_LESSON_DATA.find(item => item.id === id);
+      const content = document.getElementById("lessonContent");
+      content.className = "notice";
+      content.textContent = "صفحات نگارش: " + lessonData.pages + " | فعالیت‌های شناسایی‌شده: " + lessonData.activity +
+        (lessonData.teacherInput ? " این درس آزاد است؛ آموزگار باید واژه‌های متن بومی کلاس را وارد کند." : "");
+      const hasApproved = lessonData.approved > 0;
+      document.querySelectorAll("[data-mode]").forEach(button => {
+        button.disabled = !hasApproved;
+        button.style.opacity = hasApproved ? "1" : ".48";
+      });
+      const notice = document.getElementById("modeNotice");
+      notice.className = hasApproved ? "notice success" : "notice";
+      notice.textContent = hasApproved
+        ? "این درس " + toPersianNumber(lessonData.approved) + " واژه تأییدشده برای تمرین فعال دارد."
+        : "ساختار و فعالیت‌های این درس بارگذاری شده است؛ " + toPersianNumber(lessonData.pending) +
+          " مدخل واژگانی هنوز نیازمند مقابله و تأیید آموزگار است. برای جلوگیری از آموزش واژه نادرست، تمرین خودکار تا تأیید واژه‌ها غیرفعال است.";
 
       document.getElementById("lessonPanel").classList.add("show");
 
