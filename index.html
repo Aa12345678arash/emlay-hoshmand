@@ -653,8 +653,10 @@
       });
       const notice = document.getElementById("modeNotice");
       notice.className = wordCount ? "notice success" : "notice";
+      const lessonStat = (progress.lessonStats || {})[id];
       notice.textContent = wordCount
-        ? toPersianNumber(wordCount) + " واژه/عبارت در بانک تمرین این درس وارد شده است. بعضی مدخل‌ها تکمیلی یا نیازمند مقابله با چاپ کتاب‌اند."
+        ? toPersianNumber(wordCount) + " واژه/عبارت در بانک تمرین این درس وجود دارد. بعضی مدخل‌ها هنوز نیازمند مقابله با چاپ کتاب‌اند."
+          + (lessonStat ? " بهترین عملکرد شما در این درس: " + toPersianNumber(lessonStat.best || 0) + "٪ از پنج سؤال." : " پس از نخستین تمرین، پیشرفت شما ثبت می‌شود.")
         : "برای این درس هنوز واژه‌ای در بانک تمرین ثبت نشده است.";
 
       document.getElementById("lessonPanel").classList.add("show");
