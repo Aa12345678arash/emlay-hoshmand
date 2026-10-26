@@ -64,8 +64,39 @@
     body.append(play,input,b);speakTarget();input.focus();
   }
   function speakTarget(){
-    if(!("speechSynthesis" in window)){showFeedback("پخش صوت در این مرورگر در دسترس نیست.",false);return;}
-    speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(target);u.lang="fa-IR";u.rate=.78;speechSynthesis.speak(u);
+    const synth=window.speechSynthesis;
+    if(!synth || typeof window.SpeechSynthesisUtterance!=="function"){
+      showFeedback("قابلیت پخش گفتار در این مرورگر فعال نیست. لطفاً صفحه را با Chrome باز کنید.",false);
+      return;
+    }
+    showFeedback("در حال آماده‌سازی پخش واژه…",false);
+    try{
+      synth.cancel();
+      synth.resume();
+      const u=new SpeechSynthesisUtterance(target);
+      u.lang="fa-IR";
+      u.rate=.82;
+      u.pitch=1;
+      const voices=synth.getVoices();
+      const faVoice=voices.find(v=>/^fa(-|_)/i.test(v.lang)) ||
+        voices.find(v=>/persian|فارسی/i.test(v.name));
+      if(faVoice)u.voice=faVoice;
+      u.onstart=()=>showFeedback("در حال پخش واژه؛ با دقت گوش کن.",true);
+      u.onend=()=>showFeedback("پخش واژه تمام شد. برای شنیدن دوباره دکمه پخش را بزن.",true);
+      u.onerror=(event)=>{
+        const reason=event && event.error ? event.error : "نامشخص";
+        showFeedback("پخش صدا انجام نشد ("+reason+"). بررسی کنید موتور تبدیل متن به گفتار و صدای فارسی در گوشی فعال باشد.",false);
+      };
+      synth.speak(u);
+      if(!voices.length){
+        setTimeout(()=>{
+          if(synth.speaking || synth.pending)return;
+          showFeedback("مرورگر صدایی برای پخش پیدا نکرد. تنظیمات تبدیل متن به گفتار و نصب صدای فارسی گوشی را بررسی کنید.",false);
+        },1800);
+      }
+    }catch(error){
+      showFeedback("هنگام پخش صدا خطایی رخ داد. یک بار صفحه را تازه‌سازی کنید.",false);
+    }
   }
   function renderSentence(){
     $("practiceQuestion").textContent="با واژه «"+target+"» یک جمله بنویس.";
