@@ -2,7 +2,7 @@
 (function () {
   const approvedWords = window.EMLAY_WORD_BANK || {};
   const modeNames = {words:"شکار واژه‌ها",letters:"کامل کردن واژه",listening:"گوش کن و بنویس",sentence:"املا در جمله",challenge:"چالش پایانی"};
-  let currentMode="words", target="", questionNumber=0, correctCount=0, sessionPoints=0;
+  let currentMode="words", target="", questionNumber=0, correctCount=0, sessionPoints=0, sessionWords=[];
   const style=document.createElement("style");
   style.textContent=".practice-overlay{position:fixed;inset:0;z-index:1000;background:#f5f7fc;overflow:auto;padding:16px}.practice-card{max-width:620px;margin:20px auto;background:white;border-radius:22px;padding:20px;box-shadow:0 8px 30px #142b5218}.practice-top{display:flex;justify-content:space-between;align-items:center;gap:10px}.practice-question{font-size:19px;font-weight:bold;margin:22px 0 14px}.practice-options{display:grid;gap:10px;margin:16px 0}.practice-option,.practice-action{border:1px solid #dfe7f3;border-radius:13px;background:#f8faff;padding:13px;font:inherit;text-align:center;width:100%;color:#192b45}.practice-option{font-size:20px}.practice-input{width:100%;padding:13px;border:1px solid #ccd7e7;border-radius:12px;font:inherit;font-size:18px;text-align:center;margin:8px 0}.practice-action{background:#2864c5;color:white;border:0;font-weight:bold;margin-top:12px}.practice-feedback{padding:12px;border-radius:12px;margin-top:14px;background:#edf3ff}.practice-feedback.good{background:#e8f7ef;color:#176c4e}.practice-feedback.bad{background:#fff0ed;color:#9b392d}.practice-muted{color:#718096;font-size:13px}";
   document.head.appendChild(style);
@@ -19,12 +19,12 @@
     if(ok){correctCount++;sessionPoints+=10;progress.points=(progress.points||0)+10;saveProgress();showFeedback("آفرین! پاسخ درست بود. ۱۰ امتیاز گرفتی.",true);}
     else showFeedback("این بار درست نبود. پاسخ را ببین و دوباره تمرین کن.",false);
     $("practiceCounter").textContent="پاسخ درست: "+toPersianNumber(correctCount);
-    nextButton(()=>{if(currentMode==="challenge"&&questionNumber<5)renderQuestion();else finishSession();});
+    nextButton(()=>{if(questionNumber<5)renderQuestion();else finishSession();});
   }
   function renderQuestion(){
     resetQuestion();
     const pool=approvedWords[selectedLesson.id] || [];
-    target=pool[Math.floor(Math.random()*pool.length)];
+    target=sessionWords[questionNumber] || pool[Math.floor(Math.random()*pool.length)];
     $("practiceCounter").textContent="سؤال "+toPersianNumber(questionNumber+1);
     let mode=currentMode==="challenge"?["words","letters","listening","sentence","words"][questionNumber]:currentMode;
     if(mode==="words")renderWordHunt(pool);
@@ -77,6 +77,7 @@
       const n=document.getElementById("modeNotice");n.className="notice";n.textContent="برای این درس هنوز واژه تأییدشده‌ای به موتور تمرین متصل نیست. پس از تأیید واژه‌ها، پنج روش تمرین فعال می‌شوند.";return;
     }
     currentMode=mode;questionNumber=0;correctCount=0;sessionPoints=0;
+    sessionWords=[...(approvedWords[selectedLesson.id]||[])].sort(()=>Math.random()-.5).slice(0,5);
     $("practiceTitle").textContent=modeNames[mode]||"تمرین";$("practiceContinue").textContent="ادامه";overlay.hidden=false;renderQuestion();
   };
   $("practiceExit").addEventListener("click",closePractice);
