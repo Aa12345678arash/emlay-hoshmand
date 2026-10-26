@@ -503,6 +503,7 @@
 
   </div>
 
+    <script src="practice.js"></script>
   <script>
     "use strict";
 
@@ -665,15 +666,11 @@
     document.querySelectorAll("[data-mode]").forEach(button => {
       button.addEventListener("click", () => {
         if (!selectedLesson) return;
-
-        const notice = document.getElementById("modeNotice");
-
-        notice.className = "notice";
-        notice.textContent =
-          "این نوع تمرین برای «" + selectedLesson.title +
-          "» انتخاب شد؛ موتور تمرین و محتوای تأییدشده در مرحله بعد به آن متصل می‌شود.";
+        startPractice(button.dataset.mode);
       });
     });
+
+    
 
     renderLessons();
     updateStats();
