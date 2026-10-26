@@ -341,6 +341,11 @@
       font-size: 12px;
     }
 
+    .lesson-note { margin:14px 0; padding:15px; border:1px solid #dce7f8; border-radius:16px; background:#f7faff; }
+    .lesson-note h3 { margin:0 0 8px; color:var(--navy); font-size:16px; }
+    .lesson-note p { margin:7px 0; font-size:13px; }
+    .lesson-note ul { margin:6px 0; padding-right:20px; font-size:13px; }
+    .lesson-note .note-task { margin-top:10px; padding:10px; border-radius:11px; background:#fff7e6; color:#805b16; }
     .notice.success {
       background: #e9f8f1;
       color: #176c4e;
@@ -444,6 +449,7 @@
         <button class="back-button" id="backButton">← بازگشت به درس‌ها</button>
         <h2 id="selectedTitle"></h2>
         <div id="selectedChapter" class="panel-description"></div>
+        <section id="lessonNote" class="lesson-note" aria-label="درسنامه آموزشی"></section>
         <div id="lessonContent" class="notice" aria-live="polite"></div>
         <p class="panel-description">
           یکی از روش‌های تمرین را انتخاب کن.
@@ -505,6 +511,7 @@
   </div>
 
     <script src="lesson-data.js"></script>
+  <script src="lesson-notes.js"></script>
   <script src="practice.js"></script>
   <script>
     "use strict";
@@ -608,6 +615,30 @@
 
       document.getElementById("selectedChapter").textContent =
         "فصل: " + selectedLesson.chapter;
+
+      const note = (window.EMLAY_LESSON_NOTES || {})[id];
+      const noteBox = document.getElementById("lessonNote");
+      if (note) {
+        noteBox.innerHTML = "";
+        const heading = document.createElement("h3");
+        heading.textContent = "📘 درسنامه آموزشی: " + note.title;
+        const goal = document.createElement("p");
+        goal.textContent = "هدف یادگیری: " + note.goal;
+        const teaching = document.createElement("p");
+        teaching.textContent = note.teach;
+        const tipsTitle = document.createElement("strong");
+        tipsTitle.textContent = "نکته‌های کلیدی";
+        const tips = document.createElement("ul");
+        (note.tips || []).forEach(item => { const li = document.createElement("li"); li.textContent = item; tips.appendChild(li); });
+        const example = document.createElement("p");
+        example.textContent = "نمونه و پیوند با کتاب: " + note.example;
+        const task = document.createElement("p");
+        task.className = "note-task";
+        task.textContent = "🎯 تمرین پیشنهادی: " + note.task;
+        noteBox.append(heading, goal, teaching, tipsTitle, tips, example, task);
+      } else {
+        noteBox.textContent = "درسنامه این درس در حال آماده‌سازی است.";
+      }
 
       const lessonData = window.EMLAY_LESSON_DATA.find(item => item.id === id);
       const content = document.getElementById("lessonContent");
