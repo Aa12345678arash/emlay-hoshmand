@@ -83,7 +83,7 @@
     const stat=progress.lessonStats[selectedLesson.id]||{sessions:0,attempts:0,correct:0,best:0};
     stat.sessions++;stat.attempts+=questionNumber;stat.correct+=correctCount;
     stat.best=Math.max(stat.best,Math.round(correctCount/Math.max(1,questionNumber)*100));
-    stat.lastPlayed=new Date().toISOString();progress.lessonStats[selectedLesson.id]=stat;
+    stat.lastPlayed=new Date().toISOString();progress.lessonStats[selectedLesson.id]=stat;saveProgress();
     body.append(p,p2,note);
     if(correctCount>0&&!progress.completed.includes(selectedLesson.id)){progress.completed.push(selectedLesson.id);saveProgress();renderLessons();}
     $("practiceCounter").textContent="پایان تمرین";nextButton(closePractice);$("practiceContinue").textContent="بازگشت به درس";
