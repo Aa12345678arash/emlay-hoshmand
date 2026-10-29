@@ -51,7 +51,7 @@
     if(ok){correctCount++;sessionPoints+=10;progress.points=(progress.points||0)+10;saveProgress();showFeedback("آفرین! پاسخ درست بود. ۱۰ امتیاز گرفتی.",true);}
     else showFeedback("پاسخ درست «"+target+"» بود. آن را یک بار با دقت بخوان و دوباره تمرین کن.",false);
     $("practiceCounter").textContent="پاسخ درست: "+toPersianNumber(correctCount);
-    nextButton(()=>{if(questionNumber<5)renderQuestion();else finishSession();});
+    nextButton(()=>{if(questionNumber<sessionWords.length)renderQuestion();else finishSession();});
   }
   function renderQuestion(){
     resetQuestion();
