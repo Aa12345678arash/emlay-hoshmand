@@ -66,11 +66,32 @@
     if(mode==="sentence")renderSentence();
   }
   function renderWordHunt(){
-    $("practiceQuestion").textContent="تمرین معنی‌محور این درس هنوز آماده نیست.";
-    const note=document.createElement("p");
-    note.className="practice-muted";
-    note.textContent="برای فعال‌شدن این بخش، هر واژه باید تعریف ساده و دقیق و چهار گزینهٔ املاییِ بازبینی‌شده داشته باشد. گزینه‌های ساختگی یا واژه‌های دارای معنی متفاوت به‌عنوان غلط املایی استفاده نمی‌شوند.";
-    body.appendChild(note);
+    const item=((window.EMLAY_SPELLING_QUIZ || {})[selectedLesson.id] || []).find(entry=>normalizeText(entry.word)===normalizeText(target));
+    if(!item){
+      $("practiceQuestion").textContent="برای این واژه پرسش معنی‌محورِ بازبینی‌شده وجود ندارد.";
+      return;
+    }
+    $("practiceQuestion").textContent="معنی را بخوان و املای درست واژه را انتخاب کن:";
+    const meaning=document.createElement("p");
+    meaning.className="practice-muted";
+    meaning.style.fontSize="17px";
+    meaning.style.lineHeight="2";
+    meaning.textContent=item.meaning;
+    const focus=document.createElement("p");
+    focus.className="practice-muted";
+    focus.textContent="به شکل نوشتاری واژه دقت کن.";
+    const list=document.createElement("div");list.className="practice-options";
+    body.append(meaning,focus,list);
+    shuffle(item.options).forEach(option=>{
+      const b=document.createElement("button");b.className="practice-option";b.type="button";b.textContent=option;
+      b.onclick=()=>{
+        [...list.children].forEach(x=>x.disabled=true);
+        const ok=normalizeText(option)===normalizeText(item.word);
+        finishQuestion(ok,option);
+        showFeedback((ok?"آفرین! ":"این بار درست نبود. ")+"املای درست: «"+item.word+"». "+item.explanation,true===ok);
+      };
+      list.appendChild(b);
+    });
   }
   function renderMissingLetter(){
     const chars=Array.from(target);
@@ -207,14 +228,22 @@
       return;
     }
     if(!Object.prototype.hasOwnProperty.call(modeNames,mode)){return;}
-    if(mode==="words" || mode==="challenge"){
+    if(mode==="challenge"){
       const n=document.getElementById("modeNotice");
       n.className="notice";
-      n.textContent="این بخش تا آماده‌شدن معنی‌های دقیق و گزینه‌های املاییِ بازبینی‌شده غیرفعال است؛ برای جلوگیری از آموزش پاسخ‌های ساختگی.";
+      n.textContent="چالش پایانی پس از آماده‌شدن پنج پرسش معنی‌محورِ بازبینی‌شده فعال می‌شود.";
+      return;
+    }
+    if(mode==="words" && !((window.EMLAY_SPELLING_QUIZ || {})[selectedLesson.id] || []).length){
+      const n=document.getElementById("modeNotice");
+      n.className="notice";
+      n.textContent="برای این درس هنوز پرسش معنی‌محورِ بازبینی‌شده آماده نشده است.";
       return;
     }
     currentMode=mode;questionNumber=0;correctCount=0;sessionPoints=0;
-    sessionWords=shuffle(wordBank[selectedLesson.id]||[]).slice(0,5);
+    sessionWords=currentMode==="words"
+      ? shuffle(((window.EMLAY_SPELLING_QUIZ || {})[selectedLesson.id] || []).map(item=>item.word)).slice(0,5)
+      : shuffle(wordBank[selectedLesson.id]||[]).slice(0,5);
     $("practiceTitle").textContent=modeNames[mode]||"تمرین";$("practiceContinue").textContent="ادامه";overlay.hidden=false;renderQuestion();
   };
   $("practiceExit").addEventListener("click",closePractice);
