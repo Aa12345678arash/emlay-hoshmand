@@ -655,12 +655,12 @@
       const canPractice = wordCount > 0 && !lessonData.teacherInput;
       document.querySelectorAll("[data-mode]").forEach(button => {
         const mode = button.dataset.mode;
-        const needsMeaningQuiz = mode === "words" || mode === "challenge";
-        const modeReady = canPractice && !needsMeaningQuiz;
+        const quizCount = ((window.EMLAY_SPELLING_QUIZ || {})[id] || []).length;
+        const modeReady = canPractice && (mode === "words" ? quizCount > 0 : mode !== "challenge");
         button.disabled = !modeReady;
         button.style.opacity = modeReady ? "1" : ".48";
         button.setAttribute("aria-disabled", String(!modeReady));
-        if (needsMeaningQuiz) {
+        if (mode === "challenge" || (mode === "words" && quizCount === 0)) {
           button.title = "این تمرین پس از آماده‌شدن معنی‌ها و گزینه‌های املاییِ بازبینی‌شده فعال می‌شود.";
         }
       });
@@ -670,7 +670,7 @@
       if (lessonData.teacherInput) {
         notice.textContent = "این درس آزاد است. برای فعال‌شدن تمرین‌ها باید آموزگار ابتدا واژه‌های متن بومی کلاس را در بخش «املای معلم» ثبت کند.";
       } else if (wordCount) {
-        notice.textContent = toPersianNumber(wordCount) + " واژه/عبارت در بانک آموزشی این درس وجود دارد. تمرین‌های کامل‌کردن واژه، گوش‌دادن و جمله‌سازی فعال‌اند؛ شکار واژه و چالش پایانی تا آماده‌شدن معنی‌ها و گزینه‌های مطمئن غیرفعال‌اند. " +
+        notice.textContent = toPersianNumber(wordCount) + " واژه/عبارت در بانک آموزشی این درس وجود دارد؛ " + toPersianNumber(((window.EMLAY_SPELLING_QUIZ || {})[id] || []).length) + " پرسش معنی‌محور بازبینی‌شده برای شکار واژه آماده است. چالش پایانی تا تکمیل پنج پرسش امن غیرفعال است. " +
           toPersianNumber(lessonData.approved || 0) + " مدخل دارای شاهد مستقیم ثبت‌شده و " +
           toPersianNumber(lessonData.pending || 0) + " مدخل نیازمند بررسی یا مقابله با چاپ کتاب است. " +
           (lessonStat ? "بهترین عملکرد شما: " + toPersianNumber(lessonStat.best || 0) + "٪." : "وضعیت منبع واژه‌ها در بانک مادر نگهداری می‌شود.");
