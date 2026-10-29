@@ -518,7 +518,7 @@
 
     // فهرست درس‌ها از بانک ساختاریافته همه ۱۷ درس بارگذاری می‌شود.
     const lessons = (window.EMLAY_LESSON_DATA || []).map(item => ({
-      id: item.id, title: item.title, chapter: item.chapter, icon: item.icon
+      id: item.id, title: item.title, chapter: item.chapter, icon: item.icon, teacherInput: Boolean(item.teacherInput)
     }));
 
     const storageKey = "emlay-hoshmand-progress-v1";
@@ -647,17 +647,25 @@
         (lessonData.teacherInput ? " این درس آزاد است؛ آموزگار باید واژه‌های متن بومی کلاس را وارد کند." : "");
       const wordPool = (window.EMLAY_WORD_BANK && window.EMLAY_WORD_BANK[id]) || [];
       const wordCount = wordPool.length;
+      const canPractice = wordCount > 0 && !lessonData.teacherInput;
       document.querySelectorAll("[data-mode]").forEach(button => {
-        button.disabled = wordCount === 0;
-        button.style.opacity = wordCount ? "1" : ".48";
+        button.disabled = !canPractice;
+        button.style.opacity = canPractice ? "1" : ".48";
+        button.setAttribute("aria-disabled", String(!canPractice));
       });
       const notice = document.getElementById("modeNotice");
-      notice.className = wordCount ? "notice success" : "notice";
+      notice.className = canPractice ? "notice success" : "notice";
       const lessonStat = (progress.lessonStats || {})[id];
-      notice.textContent = wordCount
-        ? toPersianNumber(wordCount) + " واژه/عبارت در بانک تمرین این درس وجود دارد. بعضی مدخل‌ها هنوز نیازمند مقابله با چاپ کتاب‌اند."
-          + (lessonStat ? " بهترین عملکرد شما در این درس: " + toPersianNumber(lessonStat.best || 0) + "٪ از پنج سؤال." : " پس از نخستین تمرین، پیشرفت شما ثبت می‌شود.")
-        : "برای این درس هنوز واژه‌ای در بانک تمرین ثبت نشده است.";
+      if (lessonData.teacherInput) {
+        notice.textContent = "این درس آزاد است. برای فعال‌شدن تمرین‌ها باید آموزگار ابتدا واژه‌های متن بومی کلاس را در بخش «املای معلم» ثبت کند.";
+      } else if (wordCount) {
+        notice.textContent = toPersianNumber(wordCount) + " واژه/عبارت در بانک آموزشی این درس وجود دارد؛ " +
+          toPersianNumber(lessonData.approved || 0) + " مدخل دارای شاهد مستقیم ثبت‌شده و " +
+          toPersianNumber(lessonData.pending || 0) + " مدخل نیازمند بررسی یا مقابله با چاپ کتاب است. " +
+          (lessonStat ? "بهترین عملکرد شما: " + toPersianNumber(lessonStat.best || 0) + "٪." : "وضعیت منبع واژه‌ها در بانک مادر نگهداری می‌شود.");
+      } else {
+        notice.textContent = "برای این درس هنوز واژه‌ای در بانک آموزشی ثبت نشده است.";
+      }
 
       document.getElementById("lessonPanel").classList.add("show");
 
