@@ -65,10 +65,58 @@
     if(mode==="listening")renderListening();
     if(mode==="sentence")renderSentence();
   }
+  function spellingDistractors(word,pool){
+    const confusions={
+      "س":["ص","ث"],"ص":["س","ث"],"ث":["س","ص"],
+      "ز":["ذ","ض","ظ"],"ذ":["ز","ض","ظ"],"ض":["ز","ذ","ظ"],"ظ":["ز","ذ","ض"],
+      "ت":["ط"],"ط":["ت"],"ح":["ه"],"ه":["ح"],"ق":["غ"],"غ":["ق"],
+      "ا":["آ"],"آ":["ا"]
+    };
+    const known=new Set(Object.values(wordBank).flat().map(normalizeText));
+    const candidates=new Set();
+    const chars=Array.from(word);
+    chars.forEach((ch,i)=>{
+      (confusions[ch]||[]).forEach(alt=>{
+        const copy=[...chars];copy[i]=alt;candidates.add(copy.join(""));
+      });
+    });
+    // خطاهای آشکارِ حذف، جابه‌جایی یا تکرار حرف؛ برای واژه‌هایی که
+    // از حروف هم‌آوا گزینه کافی ندارند.
+    if(chars.length>3){
+      chars.forEach((ch,i)=>{
+        const copy=[...chars];copy.splice(i,1);candidates.add(copy.join(""));
+      });
+    }
+    for(let i=0;i<chars.length-1;i++){
+      if(chars[i]===chars[i+1])continue;
+      const copy=[...chars];[copy[i],copy[i+1]]=[copy[i+1],copy[i]];candidates.add(copy.join(""));
+    }
+    chars.forEach((ch,i)=>{
+      if(i>0 && ch===chars[i-1])return;
+      const copy=[...chars];copy.splice(i,0,ch);candidates.add(copy.join(""));
+    });
+    const valid=[...candidates].filter(x=>{
+      const n=normalizeText(x);
+      return n && n!==normalizeText(word) && !known.has(n);
+    });
+    return shuffle(valid).slice(0,3);
+  }
   function renderWordHunt(pool){
-    $("practiceQuestion").textContent="واژه «"+target+"» را پیدا کن.";
+    $("practiceQuestion").textContent="کدام گزینه املای درست واژه است؟ با دقت به شکل حروف نگاه کن.";
+    const options=spellingDistractors(target,pool);
+    if(options.length<3){
+      $("practiceQuestion").textContent="برای این واژه هنوز سه گزینهٔ غلطِ مطمئن آماده نشده است. واژهٔ دیگری را تمرین کن.";
+      const retry=document.createElement("button");retry.className="practice-action";retry.textContent="واژهٔ بعدی";
+      retry.onclick=()=>{sessionWords[questionNumber]=pool.filter(w=>w!==target)[Math.floor(Math.random()*Math.max(1,pool.length-1))]||target;renderQuestion();};
+      body.appendChild(retry);
+      return;
+    }
     const list=document.createElement("div");list.className="practice-options";
-    [...new Set([target,...pool.filter(w=>w!==target).sort(()=>Math.random()-.5).slice(0,3)])].sort(()=>Math.random()-.5).forEach(word=>{const b=document.createElement("button");b.className="practice-option";b.textContent=word;b.onclick=()=>{[...list.children].forEach(x=>x.disabled=true);finishQuestion(word===target, word);};list.appendChild(b);});
+    shuffle([target,...options]).forEach(word=>{
+      const b=document.createElement("button");b.className="practice-option";b.textContent=word;
+      b.onclick=()=>{[...list.children].forEach(x=>x.disabled=true);finishQuestion(normalizeText(word)===normalizeText(target),word);};
+      list.appendChild(b);
+    });
     body.appendChild(list);
   }
   function renderMissingLetter(){
