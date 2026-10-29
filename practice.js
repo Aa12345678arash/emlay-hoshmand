@@ -1,6 +1,6 @@
 "use strict";
 (function () {
-  const approvedWords = window.EMLAY_WORD_BANK || {};
+  const wordBank = window.EMLAY_WORD_BANK || {};
   const modeNames = {words:"شکار واژه‌ها",letters:"کامل کردن واژه",listening:"گوش کن و بنویس",sentence:"املا در جمله",challenge:"چالش پایانی"};
   let currentMode="words", target="", questionNumber=0, correctCount=0, sessionPoints=0, sessionWords=[];
   const style=document.createElement("style");
@@ -14,7 +14,8 @@
   function normalizeText(value){
     return String(value||"").normalize("NFC")
       .replace(/[يى]/g,"ی").replace(/ك/g,"ک")
-      .replace(/[\u200c\u200f\u202a-\u202e\sـ]/g,"")
+      // نیم‌فاصله (U+200C) عمداً حفظ می‌شود تا خطای املایی نادیده گرفته نشود.
+      .replace(/[\u200f\u202a-\u202e\sـ]/g,"")
       .replace(/[.,،؛:!?؟"'«»()\[\]{}]/g,"");
   }
   function shuffle(items){
@@ -34,7 +35,7 @@
   }
   function renderQuestion(){
     resetQuestion();
-    const pool=approvedWords[selectedLesson.id] || [];
+    const pool=wordBank[selectedLesson.id] || [];
     target=sessionWords[questionNumber] || pool[Math.floor(Math.random()*pool.length)];
     $("practiceCounter").textContent="سؤال "+toPersianNumber(questionNumber+1);
     let mode=currentMode==="challenge"?["words","letters","listening","sentence","words"][questionNumber]:currentMode;
@@ -50,7 +51,10 @@
     body.appendChild(list);
   }
   function renderMissingLetter(){
-    const chars=Array.from(target), index=Math.floor(Math.random()*chars.length), answer=chars[index];
+    const chars=Array.from(target);
+    const letterPositions=chars.map((c,i)=>({c,i})).filter(x=>x.c!=="‌" && !/\s/.test(x.c));
+    const chosen=letterPositions[Math.floor(Math.random()*letterPositions.length)];
+    const index=chosen.i, answer=chosen.c;
     $("practiceQuestion").textContent="حرف جاافتاده را کامل کن: "+chars.map((c,i)=>i===index?"ـ":c).join("");
     const input=document.createElement("input");input.className="practice-input";input.maxLength=2;input.placeholder="حرف درست را بنویس";
     const b=document.createElement("button");b.className="practice-action";b.textContent="بررسی پاسخ";b.onclick=()=>{input.disabled=true;b.disabled=true;finishQuestion(normalizeText(input.value)===normalizeText(answer));};
@@ -121,11 +125,21 @@
   }
   function closePractice(){if("speechSynthesis" in window)speechSynthesis.cancel();overlay.hidden=true;$("practiceContinue").textContent="ادامه";}
   window.startPractice=function(mode){
-    if(!selectedLesson||!(approvedWords[selectedLesson.id]||[]).length){
-      const n=document.getElementById("modeNotice");n.className="notice";n.textContent="برای این درس هنوز واژه تأییدشده‌ای به موتور تمرین متصل نیست. پس از تأیید واژه‌ها، پنج روش تمرین فعال می‌شوند.";return;
+    if(!selectedLesson) return;
+    if(selectedLesson.teacherInput){
+      const n=document.getElementById("modeNotice");
+      n.className="notice";
+      n.textContent="این درس آزاد است؛ ابتدا باید واژه‌های متن بومی کلاس در بخش «املای معلم» ثبت شوند.";
+      return;
+    }
+    if(!(wordBank[selectedLesson.id]||[]).length){
+      const n=document.getElementById("modeNotice");
+      n.className="notice";
+      n.textContent="برای این درس هنوز واژه‌ای به بانک آموزشی متصل نشده است.";
+      return;
     }
     currentMode=mode;questionNumber=0;correctCount=0;sessionPoints=0;
-    sessionWords=shuffle(approvedWords[selectedLesson.id]||[]).slice(0,5);
+    sessionWords=shuffle(wordBank[selectedLesson.id]||[]).slice(0,5);
     $("practiceTitle").textContent=modeNames[mode]||"تمرین";$("practiceContinue").textContent="ادامه";overlay.hidden=false;renderQuestion();
   };
   $("practiceExit").addEventListener("click",closePractice);
