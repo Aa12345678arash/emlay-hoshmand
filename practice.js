@@ -154,17 +154,25 @@
     }
   }
   function renderSentence(){
-    $("practiceQuestion").textContent="با واژه «"+target+"» یک جمله بنویس.";
+    $("practiceQuestion").textContent="با واژه «"+target+"» یک جملهٔ کامل و معنادار بنویس.";
     const input=document.createElement("textarea");input.className="practice-input";input.rows=3;input.style.textAlign="right";input.placeholder="جمله‌ات را اینجا بنویس...";
-    const b=document.createElement("button");b.className="practice-action";b.textContent="بررسی جمله";b.onclick=()=>{
+    const checklist=document.createElement("p");checklist.className="practice-muted";
+    checklist.textContent="پیش از بررسی، خودت کنترل کن: واژهٔ خواسته‌شده را درست نوشته‌ام؛ جمله دست‌کم سه واژه دارد؛ جمله با نشانهٔ پایان مناسب تمام شده؛ معنی جمله روشن و روان است.";
+    const b=document.createElement("button");b.className="practice-action";b.textContent="بررسی ساختار جمله";b.onclick=()=>{
       const raw=input.value.trim();
       const words=raw.split(/[\\s،؛,.!?؟]+/).map(normalizeText).filter(Boolean);
       const t=normalizeText(target);
-      const valid=words.includes(t) && words.length>=3;
+      const hasTarget=words.includes(t);
+      const enoughWords=words.length>=3;
+      const hasEnding=/[.!؟?]$/.test(raw);
+      const valid=hasTarget && enoughWords && hasEnding;
       input.disabled=true;b.disabled=true;
       finishQuestion(valid,raw);
+      const detail=document.createElement("p");detail.className="practice-muted";
+      detail.textContent="این بررسی فقط وجود واژهٔ هدف، تعداد واژه‌ها و نشانهٔ پایان را کنترل می‌کند؛ درستی معنایی و روانی جمله را خودت بازبینی کن.";
+      body.appendChild(detail);
     };
-    body.append(input,b);input.focus();
+    body.append(input,checklist,b);input.focus();
   }
   function finishSession(){
     resetQuestion();$("practiceQuestion").textContent="تمرین به پایان رسید! 🌟";
@@ -199,6 +207,12 @@
       return;
     }
     if(!Object.prototype.hasOwnProperty.call(modeNames,mode)){return;}
+    if(mode==="words" || mode==="challenge"){
+      const n=document.getElementById("modeNotice");
+      n.className="notice";
+      n.textContent="این بخش تا آماده‌شدن معنی‌های دقیق و گزینه‌های املاییِ بازبینی‌شده غیرفعال است؛ برای جلوگیری از آموزش پاسخ‌های ساختگی.";
+      return;
+    }
     currentMode=mode;questionNumber=0;correctCount=0;sessionPoints=0;
     sessionWords=shuffle(wordBank[selectedLesson.id]||[]).slice(0,5);
     $("practiceTitle").textContent=modeNames[mode]||"تمرین";$("practiceContinue").textContent="ادامه";overlay.hidden=false;renderQuestion();
