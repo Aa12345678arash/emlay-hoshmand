@@ -530,12 +530,16 @@
     function loadProgress() {
       try {
         const saved = localStorage.getItem(storageKey);
-        return saved ? JSON.parse(saved) : {
-          points: 0,
-          completed: []
+        const parsed = saved ? JSON.parse(saved) : {};
+        return {
+          points: Number.isFinite(parsed.points) ? Math.max(0, parsed.points) : 0,
+          completed: Array.isArray(parsed.completed) ? parsed.completed.filter(id => Number.isInteger(id)) : [],
+          lessonStats: parsed.lessonStats && typeof parsed.lessonStats === "object" ? parsed.lessonStats : {},
+          errorLog: Array.isArray(parsed.errorLog) ? parsed.errorLog.slice(0, 200) : [],
+          answerHistory: Array.isArray(parsed.answerHistory) ? parsed.answerHistory.slice(0, 300) : []
         };
       } catch (error) {
-        return { points: 0, completed: [] };
+        return { points: 0, completed: [], lessonStats: {}, errorLog: [], answerHistory: [] };
       }
     }
 
