@@ -4,7 +4,7 @@
   const modeNames = {words:"شکار واژه‌ها",letters:"کامل کردن واژه",listening:"گوش کن و بنویس",sentence:"املا در جمله",challenge:"چالش پایانی"};
   let currentMode="words", target="", questionNumber=0, correctCount=0, sessionPoints=0, sessionWords=[], currentQuestionMode="words";
   const style=document.createElement("style");
-  style.textContent=".practice-overlay{position:fixed;inset:0;z-index:1000;background:#f5f7fc;overflow:auto;padding:16px}.practice-card{max-width:620px;margin:20px auto;background:white;border-radius:22px;padding:20px;box-shadow:0 8px 30px #142b5218}.practice-top{display:flex;justify-content:space-between;align-items:center;gap:10px}.practice-question{font-size:19px;font-weight:bold;margin:22px 0 14px}.practice-options{display:grid;gap:10px;margin:16px 0}.practice-option,.practice-action{border:1px solid #dfe7f3;border-radius:13px;background:#f8faff;padding:13px;font:inherit;text-align:center;width:100%;color:#192b45}.practice-option{font-size:20px}.practice-input{width:100%;padding:13px;border:1px solid #ccd7e7;border-radius:12px;font:inherit;font-size:18px;text-align:center;margin:8px 0}.practice-action{background:#2864c5;color:white;border:0;font-weight:bold;margin-top:12px}.practice-feedback{padding:12px;border-radius:12px;margin-top:14px;background:#edf3ff}.practice-feedback.good{background:#e8f7ef;color:#176c4e}.practice-feedback.bad{background:#fff0ed;color:#9b392d}.practice-muted{color:#718096;font-size:13px}";
+  style.textContent=".practice-overlay{position:fixed;inset:0;z-index:1000;background:#f5f7fc;overflow:auto;padding:16px}.practice-card{max-width:620px;margin:20px auto;background:white;border-radius:22px;padding:20px;box-shadow:0 8px 30px #142b5218}.practice-top{display:flex;justify-content:space-between;align-items:center;gap:10px}.practice-question{font-size:19px;font-weight:bold;margin:22px 0 14px}.practice-options{display:grid;gap:10px;margin:16px 0}.practice-option,.practice-action{border:1px solid #dfe7f3;border-radius:13px;background:#f8faff;padding:13px;font:inherit;text-align:center;width:100%;color:#192b45}.practice-option{font-size:20px}.practice-input{width:100%;padding:13px;border:1px solid #ccd7e7;border-radius:12px;font:inherit;font-size:18px;text-align:center;margin:8px 0}.practice-action{background:#2864c5;color:white;border:0;font-weight:bold;margin-top:12px}.practice-feedback{padding:12px;border-radius:12px;margin-top:14px;background:#edf3ff}.practice-feedback.good{background:#e8f7ef;color:#176c4e}.practice-feedback.bad{background:#fff0ed;color:#9b392d}.practice-muted{color:#718096;font-size:13px}.missing-word-view{display:flex;flex-direction:row-reverse;justify-content:center;align-items:center;gap:6px;flex-wrap:wrap;margin:18px 0 8px;direction:rtl}.missing-word-view span{display:inline-flex;align-items:center;justify-content:center;min-width:38px;height:46px;padding:4px;border:1px solid #d5deeb;border-radius:9px;background:#f8faff;font-size:23px;font-weight:bold}.missing-word-view .missing-letter-cell{border:2px dashed #2864c5;background:#eaf1ff;color:#2864c5}.missing-word-view .missing-letter-separator{min-width:5px;width:5px;padding:0;border:0;background:transparent}.missing-letter-hint{text-align:center;font-weight:bold;margin:4px 0 12px}";
   document.head.appendChild(style);
   const overlay=document.createElement("section");
   overlay.className="practice-overlay"; overlay.hidden=true; overlay.dir="rtl";
@@ -74,10 +74,39 @@
   function renderMissingLetter(){
     const chars=Array.from(target);
     const letterPositions=chars.map((c,i)=>({c,i})).filter(x=>x.c!=="‌" && !/\s/.test(x.c));
+    if(!letterPositions.length){
+      $("practiceQuestion").textContent="برای این واژه امکان ساخت سؤال وجود ندارد.";
+      return;
+    }
     const chosen=letterPositions[Math.floor(Math.random()*letterPositions.length)];
     const index=chosen.i, answer=chosen.c;
-    $("practiceQuestion").textContent="حرف جاافتاده را کامل کن: "+chars.map((c,i)=>i===index?"ـ":c).join("");
-    const input=document.createElement("input");input.className="practice-input";input.maxLength=2;input.placeholder="حرف درست را بنویس";
+    const position=letterPositions.findIndex(x=>x.i===index)+1;
+    $("practiceQuestion").textContent="حرف جاافتاده را در جای درست قرار بده:";
+    const wordView=document.createElement("div");
+    wordView.className="missing-word-view";
+    wordView.setAttribute("aria-label","واژه با یک حرف حذف‌شده");
+    chars.forEach((c,i)=>{
+      const cell=document.createElement("span");
+      if(i===index){
+        cell.className="missing-letter-cell";
+        cell.textContent="؟";
+        cell.setAttribute("aria-label","جای حرف جاافتاده");
+      }else if(c==="‌"){
+        cell.className="missing-letter-separator";
+        cell.textContent="‌";
+        cell.setAttribute("aria-hidden","true");
+      }else{
+        cell.className="letter-cell";
+        cell.textContent=c;
+      }
+      wordView.appendChild(cell);
+    });
+    body.appendChild(wordView);
+    const hint=document.createElement("p");
+    hint.className="practice-muted missing-letter-hint";
+    hint.textContent="جای حرف حذف‌شده: حرف "+toPersianNumber(position)+" از سمت راست";
+    body.appendChild(hint);
+    const input=document.createElement("input");input.className="practice-input";input.maxLength=2;input.placeholder="فقط حرف جاافتاده را بنویس";input.setAttribute("aria-label","حرف جاافتاده");
     const b=document.createElement("button");b.className="practice-action";b.textContent="بررسی پاسخ";b.onclick=()=>{input.disabled=true;b.disabled=true;finishQuestion(normalizeText(input.value)===normalizeText(answer), input.value);};
     body.append(input,b);input.focus();
   }
