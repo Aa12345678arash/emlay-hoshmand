@@ -160,7 +160,7 @@
     checklist.textContent="پیش از بررسی، خودت کنترل کن: واژهٔ خواسته‌شده را درست نوشته‌ام؛ جمله دست‌کم سه واژه دارد؛ جمله با نشانهٔ پایان مناسب تمام شده؛ معنی جمله روشن و روان است.";
     const b=document.createElement("button");b.className="practice-action";b.textContent="بررسی ساختار جمله";b.onclick=()=>{
       const raw=input.value.trim();
-      const words=raw.split(/[\\s،؛,.!?؟]+/).map(normalizeText).filter(Boolean);
+      const words=raw.split(/[\s،؛,.!?؟]+/).map(normalizeText).filter(Boolean);
       const t=normalizeText(target);
       const hasTarget=words.includes(t);
       const enoughWords=words.length>=3;
