@@ -2,7 +2,7 @@
 (function () {
   const wordBank = window.EMLAY_WORD_BANK || {};
   const modeNames = {words:"شکار واژه‌ها",letters:"کامل کردن واژه",listening:"گوش کن و بنویس",sentence:"املا در جمله",challenge:"چالش پایانی"};
-  let currentMode="words", target="", questionNumber=0, correctCount=0, sessionPoints=0, sessionWords=[];
+  let currentMode="words", target="", questionNumber=0, correctCount=0, sessionPoints=0, sessionWords=[], currentQuestionMode="words";
   const style=document.createElement("style");
   style.textContent=".practice-overlay{position:fixed;inset:0;z-index:1000;background:#f5f7fc;overflow:auto;padding:16px}.practice-card{max-width:620px;margin:20px auto;background:white;border-radius:22px;padding:20px;box-shadow:0 8px 30px #142b5218}.practice-top{display:flex;justify-content:space-between;align-items:center;gap:10px}.practice-question{font-size:19px;font-weight:bold;margin:22px 0 14px}.practice-options{display:grid;gap:10px;margin:16px 0}.practice-option,.practice-action{border:1px solid #dfe7f3;border-radius:13px;background:#f8faff;padding:13px;font:inherit;text-align:center;width:100%;color:#192b45}.practice-option{font-size:20px}.practice-input{width:100%;padding:13px;border:1px solid #ccd7e7;border-radius:12px;font:inherit;font-size:18px;text-align:center;margin:8px 0}.practice-action{background:#2864c5;color:white;border:0;font-weight:bold;margin-top:12px}.practice-feedback{padding:12px;border-radius:12px;margin-top:14px;background:#edf3ff}.practice-feedback.good{background:#e8f7ef;color:#176c4e}.practice-feedback.bad{background:#fff0ed;color:#9b392d}.practice-muted{color:#718096;font-size:13px}";
   document.head.appendChild(style);
@@ -26,8 +26,28 @@
   function showFeedback(message,good){const box=$("practiceFeedback");box.hidden=false;box.className="practice-feedback "+(good?"good":"bad");box.textContent=message;}
   function nextButton(fn){const b=$("practiceContinue");b.hidden=false;b.onclick=fn;}
   function resetQuestion(){$("practiceFeedback").hidden=true;$("practiceContinue").hidden=true;body.innerHTML="";}
-  function finishQuestion(ok){
+  function recordAnswer(ok, answer) {
+    progress.errorLog = Array.isArray(progress.errorLog) ? progress.errorLog : [];
+    const entry = {
+      lessonId: selectedLesson.id,
+      mode: currentQuestionMode,
+      target,
+      answer: String(answer || "").slice(0, 240),
+      correct: Boolean(ok),
+      at: new Date().toISOString()
+    };
+    if (!ok) {
+      progress.errorLog.unshift(entry);
+      progress.errorLog = progress.errorLog.slice(0, 200);
+    }
+    progress.answerHistory = Array.isArray(progress.answerHistory) ? progress.answerHistory : [];
+    progress.answerHistory.unshift(entry);
+    progress.answerHistory = progress.answerHistory.slice(0, 300);
+    saveProgress();
+  }
+  function finishQuestion(ok, answer){
     questionNumber++;
+    recordAnswer(ok, answer);
     if(ok){correctCount++;sessionPoints+=10;progress.points=(progress.points||0)+10;saveProgress();showFeedback("آفرین! پاسخ درست بود. ۱۰ امتیاز گرفتی.",true);}
     else showFeedback("پاسخ درست «"+target+"» بود. آن را یک بار با دقت بخوان و دوباره تمرین کن.",false);
     $("practiceCounter").textContent="پاسخ درست: "+toPersianNumber(correctCount);
@@ -39,6 +59,7 @@
     target=sessionWords[questionNumber] || pool[Math.floor(Math.random()*pool.length)];
     $("practiceCounter").textContent="سؤال "+toPersianNumber(questionNumber+1);
     let mode=currentMode==="challenge"?["words","letters","listening","sentence","words"][questionNumber]:currentMode;
+    currentQuestionMode=mode;
     if(mode==="words")renderWordHunt(pool);
     if(mode==="letters")renderMissingLetter();
     if(mode==="listening")renderListening();
@@ -47,7 +68,7 @@
   function renderWordHunt(pool){
     $("practiceQuestion").textContent="واژه «"+target+"» را پیدا کن.";
     const list=document.createElement("div");list.className="practice-options";
-    [...new Set([target,...pool.filter(w=>w!==target).sort(()=>Math.random()-.5).slice(0,3)])].sort(()=>Math.random()-.5).forEach(word=>{const b=document.createElement("button");b.className="practice-option";b.textContent=word;b.onclick=()=>{[...list.children].forEach(x=>x.disabled=true);finishQuestion(word===target);};list.appendChild(b);});
+    [...new Set([target,...pool.filter(w=>w!==target).sort(()=>Math.random()-.5).slice(0,3)])].sort(()=>Math.random()-.5).forEach(word=>{const b=document.createElement("button");b.className="practice-option";b.textContent=word;b.onclick=()=>{[...list.children].forEach(x=>x.disabled=true);finishQuestion(word===target, word);};list.appendChild(b);});
     body.appendChild(list);
   }
   function renderMissingLetter(){
@@ -57,14 +78,14 @@
     const index=chosen.i, answer=chosen.c;
     $("practiceQuestion").textContent="حرف جاافتاده را کامل کن: "+chars.map((c,i)=>i===index?"ـ":c).join("");
     const input=document.createElement("input");input.className="practice-input";input.maxLength=2;input.placeholder="حرف درست را بنویس";
-    const b=document.createElement("button");b.className="practice-action";b.textContent="بررسی پاسخ";b.onclick=()=>{input.disabled=true;b.disabled=true;finishQuestion(normalizeText(input.value)===normalizeText(answer));};
+    const b=document.createElement("button");b.className="practice-action";b.textContent="بررسی پاسخ";b.onclick=()=>{input.disabled=true;b.disabled=true;finishQuestion(normalizeText(input.value)===normalizeText(answer), input.value);};
     body.append(input,b);input.focus();
   }
   function renderListening(){
     $("practiceQuestion").textContent="به واژه گوش کن و آن را بنویس.";
     const play=document.createElement("button");play.className="practice-option";play.textContent="🔊 پخش دوباره واژه";play.onclick=speakTarget;
     const input=document.createElement("input");input.className="practice-input";input.placeholder="واژه را بنویس";
-    const b=document.createElement("button");b.className="practice-action";b.textContent="بررسی پاسخ";b.onclick=()=>{input.disabled=true;b.disabled=true;finishQuestion(normalizeText(input.value)===normalizeText(target));};
+    const b=document.createElement("button");b.className="practice-action";b.textContent="بررسی پاسخ";b.onclick=()=>{input.disabled=true;b.disabled=true;finishQuestion(normalizeText(input.value)===normalizeText(target), input.value);};
     body.append(play,input,b);speakTarget();input.focus();
   }
   function speakTarget(){
@@ -105,7 +126,14 @@
   function renderSentence(){
     $("practiceQuestion").textContent="با واژه «"+target+"» یک جمله بنویس.";
     const input=document.createElement("textarea");input.className="practice-input";input.rows=3;input.style.textAlign="right";input.placeholder="جمله‌ات را اینجا بنویس...";
-    const b=document.createElement("button");b.className="practice-action";b.textContent="بررسی جمله";b.onclick=()=>{input.disabled=true;b.disabled=true;const v=normalizeText(input.value);const t=normalizeText(target);finishQuestion(v.includes(t)&&v.length>t.length);};
+    const b=document.createElement("button");b.className="practice-action";b.textContent="بررسی جمله";b.onclick=()=>{
+      const raw=input.value.trim();
+      const words=raw.split(/[\\s،؛,.!?؟]+/).map(normalizeText).filter(Boolean);
+      const t=normalizeText(target);
+      const valid=words.includes(t) && words.length>=3;
+      input.disabled=true;b.disabled=true;
+      finishQuestion(valid,raw);
+    };
     body.append(input,b);input.focus();
   }
   function finishSession(){
@@ -120,7 +148,9 @@
     stat.best=Math.max(stat.best,Math.round(correctCount/Math.max(1,questionNumber)*100));
     stat.lastPlayed=new Date().toISOString();progress.lessonStats[selectedLesson.id]=stat;saveProgress();
     body.append(p,p2,note);
-    if(correctCount>0&&!progress.completed.includes(selectedLesson.id)){progress.completed.push(selectedLesson.id);saveProgress();renderLessons();}
+    if(correctCount>=4 && questionNumber===5 && !progress.completed.includes(selectedLesson.id)){
+      progress.completed.push(selectedLesson.id);saveProgress();renderLessons();
+    }
     $("practiceCounter").textContent="پایان تمرین";nextButton(closePractice);$("practiceContinue").textContent="بازگشت به درس";
   }
   function closePractice(){if("speechSynthesis" in window)speechSynthesis.cancel();overlay.hidden=true;$("practiceContinue").textContent="ادامه";}
@@ -138,6 +168,7 @@
       n.textContent="برای این درس هنوز واژه‌ای به بانک آموزشی متصل نشده است.";
       return;
     }
+    if(!Object.prototype.hasOwnProperty.call(modeNames,mode)){return;}
     currentMode=mode;questionNumber=0;correctCount=0;sessionPoints=0;
     sessionWords=shuffle(wordBank[selectedLesson.id]||[]).slice(0,5);
     $("practiceTitle").textContent=modeNames[mode]||"تمرین";$("practiceContinue").textContent="ادامه";overlay.hidden=false;renderQuestion();
