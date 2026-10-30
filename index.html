@@ -780,10 +780,37 @@
         saved.words.every(item => item.word && item.meaning && normalizeTeacherText(saved.text).includes(normalizeTeacherText(item.word))));
       if (!ready) return false;
       window.EMLAY_WORD_BANK[id] = saved.words.map(item => item.word);
-      window.EMLAY_SPELLING_QUIZ[id] = saved.words.map(item => ({
-        word:item.word, meaning:item.meaning, options:[item.word], errors:[],
-        explanation:"این واژه از متن بومی ثبت‌شده توسط آموزگار انتخاب شده است."
-      }));
+      const makeTeacherQuestion = item => {
+        const chars = Array.from(item.word);
+        const candidates = [];
+        const swaps = {"ا":"آ","آ":"ا","ت":"ط","ط":"ت","ث":"س","س":"ث","ص":"س","ذ":"ز","ز":"ذ","ض":"ظ","ظ":"ض","ح":"ه","ه":"ح","ق":"غ","غ":"ق"};
+        chars.forEach((letter,index) => {
+          if (swaps[letter]) candidates.push(chars.map((ch,i)=>i===index?swaps[letter]:ch).join(""));
+          if (letter !== "‌" && !/\\s/.test(letter)) {
+            candidates.push(chars.map((ch,i)=>i===index?"":ch).join(""));
+            candidates.push(chars.map((ch,i)=>i===index?ch+ch:ch).join(""));
+          }
+          if (index < chars.length-1 && letter !== "‌" && chars[index+1] !== "‌") {
+            const copy=chars.slice(); [copy[index],copy[index+1]]=[copy[index+1],copy[index]]; candidates.push(copy.join(""));
+          }
+        });
+        ["ا","ی","و","ه","ن","ر","م","ت","س"].forEach(letter => {
+          for(let i=0;i<=chars.length;i++) {
+            if(chars[i-1]==="‌" || chars[i]==="‌") continue;
+            candidates.push([...chars.slice(0,i),letter,...chars.slice(i)].join(""));
+          }
+        });
+        const norm = value => String(value||"").normalize("NFC").replace(/[يى]/g,"ی").replace(/ك/g,"ک").replace(/[\\u200c\\sـًٌٍَُِّْٰ]/g,"");
+        const distractors = [...new Set(candidates)].filter(value => value && norm(value)!==norm(item.word));
+        const chosen = distractors.slice(0,3);
+        const errors = chosen.map(form=>({form,type:"صورت نادرست آموزشی",why:"به ترتیب و شکل حروف واژه توجه کن."}));
+        return {
+          word:item.word, meaning:item.meaning,
+          options:[item.word,...chosen], errors,
+          explanation:"این واژه از متن بومی ثبت‌شده توسط آموزگار انتخاب شده است."
+        };
+      };
+      window.EMLAY_SPELLING_QUIZ[id] = saved.words.map(makeTeacherQuestion);
       const segments = saved.text.trim().split(/(?<=[.!؟?])\s+/).filter(Boolean);
       window.EMLAY_DICTATION_TEXTS[id] = [{
         id:"teacher-"+id, title:"متن بومی کلاس", segments:segments.length ? segments : [saved.text.trim()],
