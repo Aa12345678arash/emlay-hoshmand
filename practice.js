@@ -245,7 +245,7 @@
     const items=(window.EMLAY_DICTATION_TEXTS||{})[String(selectedLesson.id)]||[];
     resetQuestion();
     $("practiceTitle").textContent="متن‌های املا | "+selectedLesson.title;
-    $("practiceQuestion").textContent="یک متن را انتخاب کن؛ متن در سه بخش کوتاه نمایش داده می‌شود.";
+    $("practiceQuestion").textContent="متن‌های املا تألیفی‌اند و با موضوع درس هماهنگ شده‌اند؛ یکی را انتخاب کن. متن در بخش‌های کوتاه نمایش داده می‌شود.";
     if(!items.length){showFeedback("متن این درس هنوز آماده نشده است.",false);overlay.hidden=false;return;}
     const list=document.createElement("div");list.className="practice-options";
     items.forEach((item,index)=>{
