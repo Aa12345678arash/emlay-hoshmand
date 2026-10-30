@@ -62,20 +62,21 @@ jobs:
         with:
           packages: 'platform-tools platforms;android-35 build-tools;35.0.0'
 
-      - name: دریافت موسیقی واقعی با مجوز CC BY 4.0
+      - name: دریافت موسیقی واقعی با مجوز CC0 1.0
         shell: bash
         run: |
           mkdir -p android/app/src/main/assets/www/music
           curl --fail --location --retry 3 --retry-delay 2 --max-time 180 \
             -A "Mozilla/5.0" \
-            "https://www.scottbuckley.com.au/library/wp-content/uploads/2022/12/FirstSnow.mp3" \
-            -o android/app/src/main/assets/www/music/first-snow.mp3
+            "https://raw.githubusercontent.com/uncle-sheepsky/duru-ai-cc0-bgm/main/mp3/duru-roomscene-lofi.mp3" \
+            -o android/app/src/main/assets/www/music/study-room-lofi.mp3
           test "$(stat -c%s android/app/src/main/assets/www/music/first-snow.mp3)" -gt 10000
           cat > android/app/src/main/assets/www/MUSIC-CREDITS.txt <<'EOF'
-          Music: "First Snow" by Scott Buckley
-          Licensed under Creative Commons Attribution 4.0 International (CC BY 4.0).
-          Source: https://www.scottbuckley.com.au/library/first-snow/
-          Attribution: 'First Snow' by Scott Buckley - released under CC-BY 4.0. www.scottbuckley.com.au
+          Music: "DURU Room Scene Lo-Fi" by DURU-AI.
+          Released under Creative Commons Zero 1.0 Universal (CC0 1.0).
+          Source repository: https://github.com/uncle-sheepsky/duru-ai-cc0-bgm
+          Track file: mp3/duru-roomscene-lofi.mp3
+          Attribution is not required; creator credit is retained as a courtesy.
           EOF
 
       - name: کپی فایل‌های برنامه داخل بسته اندروید
