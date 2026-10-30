@@ -869,11 +869,11 @@
     updateStats();
 
 
-    // موسیقی پس‌زمینه تألیفی: امبینت مدرن، آکوردهای گرم و ملودی آرام؛ بدون ضرب تند.
+    // موسیقی فعلی فقط گزینه‌ای و خاموش در شروع است؛ هنگام آموزش گفتاری به‌صورت خودکار کاهش می‌یابد.
     (() => {
       const button = document.getElementById("musicToggle");
       if (!button) return;
-      let context = null, timer = null, step = 0, enabled = false;
+      let context = null, timer = null, step = 0, enabled = false, masterGain = null;
       const chords = [
         [261.63, 329.63, 392.00, 493.88],
         [220.00, 261.63, 329.63, 392.00],
@@ -899,7 +899,7 @@
         gain.gain.exponentialRampToValueAtTime(volume, when + Math.min(0.75, duration * 0.35));
         gain.gain.setValueAtTime(volume, when + duration * 0.65);
         gain.gain.exponentialRampToValueAtTime(0.0001, when + duration);
-        osc.connect(filter).connect(gain).connect(context.destination);
+        osc.connect(filter).connect(gain).connect(masterGain || context.destination);
         osc.start(when);
         osc.stop(when + duration + 0.04);
       }
@@ -927,6 +927,7 @@
         }
         try {
           context = context || new AudioCtor();
+          if (!masterGain) { masterGain = context.createGain(); masterGain.gain.value = 0.22; masterGain.connect(context.destination); }
           if (context.state !== "running") await context.resume();
           enabled = true;
           localStorage.setItem("emlay-background-music", "on");
@@ -939,6 +940,12 @@
           button.textContent = "برای پخش دوباره لمس کن";
         }
       }
+      window.EMLAY_DUCK_MUSIC = function(ducked) {
+        if (!context || !masterGain) return;
+        const now = context.currentTime;
+        masterGain.gain.cancelScheduledValues(now);
+        masterGain.gain.setTargetAtTime(ducked ? 0.025 : 0.22, now, 0.22);
+      };
       function stop() {
         enabled = false;
         if (timer) window.clearTimeout(timer);
