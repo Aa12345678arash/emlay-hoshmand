@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800">
+<defs>
+ <linearGradient id="sky" x2="0" y2="1"><stop stop-color="#8dd8ff"/><stop offset=".62" stop-color="#d9f4ff"/><stop offset="1" stop-color="#fff1d0"/></linearGradient>
+ <linearGradient id="hill" x2="0" y2="1"><stop stop-color="#71d7a0"/><stop offset="1" stop-color="#249b78"/></linearGradient>
+ <linearGradient id="book" x2="1" y2="1"><stop stop-color="#ffdc76"/><stop offset="1" stop-color="#ff9f43"/></linearGradient>
+ <linearGradient id="page" x2="0" y2="1"><stop stop-color="#fff"/><stop offset="1" stop-color="#dcecff"/></linearGradient>
+ <filter id="shadow" x="-30%" y="-30%" width="160%" height="170%"><feGaussianBlur stdDeviation="12"/></filter>
+ <radialGradient id="glow"><stop stop-color="#fff" stop-opacity=".9"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
+</defs>
+<rect width="1200" height="800" fill="url(#sky)"/>
+<circle cx="1000" cy="135" r="130" fill="url(#glow)"/><circle cx="1000" cy="135" r="48" fill="#ffe58a"/>
+<g fill="#fff" opacity=".9"><ellipse cx="190" cy="145" rx="92" ry="28"/><ellipse cx="245" cy="130" rx="56" ry="42"/><ellipse cx="295" cy="148" rx="65" ry="25"/><ellipse cx="735" cy="210" rx="92" ry="25"/><ellipse cx="790" cy="195" rx="50" ry="37"/><ellipse cx="840" cy="213" rx="62" ry="22"/></g>
+<path d="M0 500Q190 380 390 500T790 470T1200 490V800H0Z" fill="#a7e7b5"/>
+<path d="M0 570Q210 440 430 575T850 550T1200 560V800H0Z" fill="url(#hill)"/>
+<path d="M0 660Q230 550 470 675T920 640T1200 655V800H0Z" fill="#20886e"/>
+<g opacity=".95"><path d="M105 550v-150" stroke="#87562f" stroke-width="22" stroke-linecap="round"/><circle cx="105" cy="370" r="76" fill="#4ebd7e"/><circle cx="63" cy="410" r="49" fill="#72d58f"/><circle cx="145" cy="417" r="48" fill="#2eaa75"/>
+<path d="M1080 565V390" stroke="#87562f" stroke-width="22" stroke-linecap="round"/><circle cx="1080" cy="360" r="82" fill="#48b77c"/><circle cx="1030" cy="400" r="50" fill="#79d79a"/><circle cx="1130" cy="410" r="48" fill="#2eaa75"/></g>
+<g transform="translate(430 430) rotate(-7)">
+ <ellipse cx="170" cy="210" rx="250" ry="38" fill="#143e5c" opacity=".22" filter="url(#shadow)"/>
+ <path d="M0 65Q150 10 300 65V245Q150 195 0 245Z" fill="url(#book)" stroke="#d27b32" stroke-width="8"/>
+ <path d="M18 76Q150 32 282 76V220Q150 180 18 220Z" fill="url(#page)" stroke="#c8d9ee" stroke-width="4"/>
+ <path d="M150 52V222" stroke="#6b8cb5" stroke-width="6"/>
+ <g fill="#2878c9"><path d="M45 104h80v8H45zM45 132h90v8H45zM45 160h72v8H45zM180 104h78v8h-78zM180 132h82v8h-82zM180 160h72v8h-72z"/></g>
+ <path d="M55 190l23-22 21 18 31-34" fill="none" stroke="#28b77c" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+</g>
+<g transform="translate(270 315)">
+ <ellipse cx="80" cy="140" rx="76" ry="16" fill="#143e5c" opacity=".18"/>
+ <path d="M25 35L8 0 54 20 105 20 150 0 135 38" fill="#87502d" stroke="#63371f" stroke-width="5"/>
+ <ellipse cx="80" cy="88" rx="68" ry="78" fill="#9c6039" stroke="#704026" stroke-width="5"/>
+ <ellipse cx="51" cy="75" rx="29" ry="34" fill="#fff7e4"/><ellipse cx="108" cy="75" rx="29" ry="34" fill="#fff7e4"/>
+ <circle cx="57" cy="77" r="12" fill="#182d49"/><circle cx="102" cy="77" r="12" fill="#182d49"/>
+ <path d="M80 91l-15 18h30z" fill="#ffbd43"/>
+ <path d="M26 115q54-35 108 0v31H26z" fill="#f4d9a8"/>
+ <path d="M34 127q46-18 92 0v28H34z" fill="#2878df"/>
+ <path d="M80 128v27" stroke="#fff" stroke-width="3"/>
+</g>
+<g fill="#fff" stroke="#e5b84b" stroke-width="3" font-family="sans-serif" font-weight="bold">
+ <g transform="translate(180 250) rotate(-10)"><rect width="72" height="72" rx="18" fill="#ffcf69"/><text x="36" y="50" font-size="42" text-anchor="middle" fill="#31517a" stroke="none">ا</text></g>
+ <g transform="translate(900 300) rotate(12)"><rect width="74" height="74" rx="18" fill="#fff"/><text x="37" y="51" font-size="42" text-anchor="middle" fill="#2878df" stroke="none">ب</text></g>
+ <g transform="translate(1000 550) rotate(-9)"><rect width="76" height="76" rx="18" fill="#ffd46d"/><text x="38" y="53" font-size="42" text-anchor="middle" fill="#2878df" stroke="none">پ</text></g>
+</g>
+<g fill="#fff" opacity=".85"><path d="M360 175l9 25 25 9-25 9-9 25-9-25-25-9 25-9z"/><path d="M860 90l7 18 18 7-18 7-7 18-7-18-18-7 18-7z"/><path d="M1130 270l7 18 18 7-18 7-7 18-7-18-18-7 18-7z"/></g>
+</svg>
