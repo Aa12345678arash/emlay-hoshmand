@@ -41,7 +41,7 @@ public class MainActivity extends Activity {
         }
     }
 
-    private class PrintBridge {
+    public class PrintBridge {
         @JavascriptInterface
         public void print() {
             runOnUiThread(() -> {
