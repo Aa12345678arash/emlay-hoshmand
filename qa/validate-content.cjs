@@ -53,7 +53,7 @@ assert(indexSource.includes('id="teacherEditor"') &&
 assert(indexSource.includes("function makeTeacherQuestion") &&
   indexSource.includes("options:[item.word,...chosen]") &&
   indexSource.includes("const chosen = distractors.slice(0,3)") &&
-  indexSource.includes("const errors = chosen.map"),
+  indexSource.includes("const errors = chosen.map("),
   "ساخت سه گزینه انحرافی و بازخورد برای آزمون درس‌های آزاد کامل نیست.");
 
 for (let id = 1; id <= 17; id++) {
