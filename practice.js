@@ -1,25 +1,3 @@
-"use strict";
-/* واژه‌خوان مشترک فارسی؛ اولویت با موتور بومی اندروید */
-(function(){
- let callback=null;
- window.EMLAY_NATIVE_SPEECH_EVENT=function(type,message){if(callback)callback(type,message||"");};
- window.EMLAY_SPEAKER={
-  available:function(){try{return !!(window.AndroidTTS&&AndroidTTS.isReady());}catch(e){return false;}},
-  status:function(){try{return window.AndroidTTS?AndroidTTS.status():"";}catch(e){return "";}},
-  speak:function(text,rate,onEvent){
-   callback=typeof onEvent==="function"?onEvent:null;
-   try{if(window.AndroidTTS&&AndroidTTS.isReady())return AndroidTTS.speak(String(text),Number(rate)||.82);}catch(e){}
-   if(!("speechSynthesis"in window)||typeof SpeechSynthesisUtterance!=="function")return false;
-   try{const synth=window.speechSynthesis;synth.cancel();const u=new SpeechSynthesisUtterance(String(text));u.lang="fa-IR";u.rate=Number(rate)||.82;u.pitch=1;
-    const voices=synth.getVoices();const fa=voices.find(v=>/^fa(-|_)/i.test(v.lang))||voices.find(v=>/persian|فارسی/i.test(v.name));if(fa)u.voice=fa;
-    u.onstart=()=>{if(callback)callback("start","");};u.onend=()=>{if(callback)callback("done","");};u.onerror=()=>{if(callback)callback("error","پخش گفتار انجام نشد؛ صدای فارسی گوشی را بررسی کن.");};synth.speak(u);return true;
-   }catch(e){return false;}
-  },
-  stop:function(){try{if(window.AndroidTTS)AndroidTTS.stop();}catch(e){}try{if(window.speechSynthesis)window.speechSynthesis.cancel();}catch(e){}},
-  pause:function(){try{if(window.speechSynthesis)window.speechSynthesis.pause();else this.stop();}catch(e){this.stop();}}
- };
-})();
-
 (function () {
   const wordBank = window.EMLAY_WORD_BANK || {};
   const modeNames = {words:"شکار واژه‌ها",letters:"کامل کردن واژه",listening:"گوش کن و بنویس",sentence:"املا در جمله",challenge:"چالش پایانی"};
