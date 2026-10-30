@@ -9,6 +9,8 @@ for (const file of ["lesson-data.js", "word-bank.js", "spelling-quiz.js", "dicta
   vm.runInNewContext(fs.readFileSync(file, "utf8"), sandbox, { filename: file });
 }
 const data = sandbox.window;
+const practiceSource = fs.readFileSync("practice.js", "utf8");
+const suiteSource = fs.readFileSync("lesson1-suite.js", "utf8");
 const fail = [];
 const assert = (condition, message) => { if (!condition) fail.push(message); };
 
@@ -28,6 +30,12 @@ assert(Array.isArray(data.EMLAY_LESSON_DATA) && data.EMLAY_LESSON_DATA.length ==
 assert(Object.keys(data.EMLAY_LESSON_NOTES || {}).length === 17, "درسنامه همه ۱۷ درس موجود نیست.");
 assert(Object.keys(data.EMLAY_DICTATION_TEXTS || {}).length === 17, "متن املا برای همه ۱۷ درس موجود نیست.");
 assert(Object.keys(data.EMLAY_SPELLING_QUIZ || {}).length === 17, "بانک شکار واژه‌ها برای همه ۱۷ درس موجود نیست.");
+assert(practiceSource.includes("let selectedLesson=null;") &&
+  (practiceSource.match(/selectedLesson=window\\.EMLAY_SELECTED_LESSON\\|\\|null;/g) || []).length >= 2,
+  "اتصال تمرین‌ها به درس انتخاب‌شده کامل نیست.");
+assert(suiteSource.includes("activeLessonId=Number(id)") &&
+  suiteSource.includes("lessonId:activeLessonId"),
+  "آزمون والدین به شناسه درس انتخاب‌شده متصل نیست.");
 
 for (let id = 1; id <= 17; id++) {
   const passages = data.EMLAY_DICTATION_TEXTS[id] || [];
