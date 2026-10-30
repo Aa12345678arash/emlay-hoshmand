@@ -241,6 +241,56 @@
     $("practiceCounter").textContent="پایان تمرین";nextButton(closePractice);$("practiceContinue").textContent="بازگشت به درس";
   }
   function closePractice(){if("speechSynthesis" in window)speechSynthesis.cancel();overlay.hidden=true;$("practiceContinue").textContent="ادامه";}
+  window.openDictationTexts=function(){
+    if(!selectedLesson)return;
+    const items=(window.EMLAY_DICTATION_TEXTS||{})[String(selectedLesson.id)]||[];
+    resetQuestion();
+    $("practiceTitle").textContent="متن‌های املا | "+selectedLesson.title;
+    $("practiceQuestion").textContent="یک متن را انتخاب کن؛ متن در سه بخش کوتاه نمایش داده می‌شود.";
+    if(!items.length){showFeedback("متن این درس هنوز آماده نشده است.",false);overlay.hidden=false;return;}
+    const list=document.createElement("div");list.className="practice-options";
+    items.forEach((item,index)=>{
+      const b=document.createElement("button");b.type="button";b.className="practice-option";
+      b.textContent=(index+1)+". "+item.title;
+      b.onclick=()=>{
+        resetQuestion();
+        $("practiceQuestion").textContent=item.title;
+        let part=0;
+        const reader=document.createElement("div");
+        reader.style.cssText="padding:18px;border-radius:18px;background:linear-gradient(145deg,#fff,#eef6ff);font-size:19px;line-height:2.4;min-height:130px;box-shadow:0 7px 18px rgba(31,75,135,.12)";
+        const progressBar=document.createElement("div");
+        progressBar.style.cssText="height:8px;background:#e5edf8;border-radius:20px;margin:12px 0;overflow:hidden";
+        const fill=document.createElement("div");fill.style.cssText="height:100%;background:linear-gradient(90deg,#26b77b,#2878df);width:0%;transition:width .2s";progressBar.appendChild(fill);
+        const focus=document.createElement("p");focus.className="practice-muted";
+        const status=document.createElement("p");status.className="practice-muted";
+        const controls=document.createElement("div");controls.className="practice-options";
+        const play=document.createElement("button");play.className="practice-action";play.textContent="🔊 خواندن بخش";
+        const next=document.createElement("button");next.className="practice-option";next.textContent="بخش بعدی";
+        body.append(reader,progressBar,focus,status,controls);controls.append(play,next);
+        function showPart(){
+          const text=item.segments[part];reader.textContent="";status.textContent="متن در حال ظاهر شدن است…";
+          focus.textContent="واژه‌های هدف: "+item.focusWords.join("، ");
+          fill.style.width=((part+1)/item.segments.length*100)+"%";
+          next.disabled=part===item.segments.length-1;
+          let pos=0;
+          const timer=window.setInterval(()=>{
+            reader.textContent=text.slice(0,pos);pos+=2;
+            if(pos>=text.length){window.clearInterval(timer);reader.textContent=text;status.textContent="این بخش آماده است؛ می‌توانی آن را گوش کنی یا بخوانی."}
+          },24);
+        }
+        function speak(){
+          if(!("speechSynthesis"in window)||typeof SpeechSynthesisUtterance!=="function"){status.textContent="گفتار فارسی در این دستگاه در دسترس نیست.";return}
+          speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(item.segments[part]);u.lang="fa-IR";u.rate=.82;
+          const voices=speechSynthesis.getVoices();const v=voices.find(x=>/^fa(-|_)/i.test(x.lang))||voices.find(x=>/persian|فارسی/i.test(x.name));if(v)u.voice=v;
+          status.textContent="در حال خواندن متن…";u.onend=()=>status.textContent="خواندن این بخش تمام شد.";u.onerror=()=>status.textContent="پخش صدا انجام نشد؛ صدای فارسی گوشی را بررسی کن.";speechSynthesis.speak(u);
+        }
+        play.onclick=speak;next.onclick=()=>{if(part<item.segments.length-1){part++;showPart()}};
+        showPart();
+      };
+      list.appendChild(b);
+    });
+    body.appendChild(list);overlay.hidden=false;
+  };
   window.startPractice=function(mode){
     if(!selectedLesson) return;
     if(selectedLesson.teacherInput){
