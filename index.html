@@ -449,6 +449,13 @@
     @media (prefers-reduced-motion:reduce) {.splash-loader::after{animation:none;width:100%}.splash-screen{transition:none}}
     @media (max-width:360px) {.mascot{width:70px;height:70px}.hero h1{font-size:20px}.welcome-art{width:64px;height:64px;flex-basis:64px}}
 
+  
+    .sound-control {display:flex;align-items:center;justify-content:space-between;gap:10px;margin:12px 0 2px;padding:10px 13px;border:1px solid rgba(255,255,255,.22);border-radius:15px;background:rgba(255,255,255,.12);color:#fff;}
+    .sound-control span {font-size:12px;color:#eaf3ff;}
+    .sound-toggle {border:1px solid rgba(255,255,255,.35);border-radius:12px;padding:7px 12px;background:rgba(255,255,255,.16);color:#fff;font-size:12px;white-space:nowrap;}
+    .sound-toggle[aria-pressed="true"] {background:#ffe08a;color:#17356b;border-color:#ffe08a;font-weight:bold;}
+    .sound-note {font-size:10px!important;color:#d8e8ff!important;margin:4px 2px 0!important;}
+
   </style>
 </head>
 
@@ -494,6 +501,8 @@
         </div>
       </div>
 
+      <div class="sound-control"><span>🎵 موسیقی ملایم پس‌زمینه</span><button id="musicToggle" class="sound-toggle" type="button" aria-pressed="false">▶ پخش موسیقی</button></div>
+      <p class="sound-note">موسیقی اختیاری است؛ هر زمان بخواهی می‌توانی آن را خاموش کنی.</p>
       <div class="hero-bottom">
         <div class="stat">
           <strong id="points">۰</strong>
@@ -835,6 +844,86 @@
 
     renderLessons();
     updateStats();
+
+
+    // موسیقی کوتاه و تألیفی با Web Audio؛ بدون فایل یا اینترنت و فقط با درخواست کاربر.
+    (() => {
+      const button = document.getElementById("musicToggle");
+      if (!button) return;
+      const notes = [523.25, 659.25, 783.99, 659.25, 587.33, 698.46, 783.99, 659.25,
+                     493.88, 587.33, 659.25, 587.33, 440.00, 523.25, 659.25, 587.33];
+      let context = null, timer = null, index = 0, enabled = false;
+      const saved = localStorage.getItem("emlay-background-music");
+      function playNote() {
+        if (!enabled || !context || document.hidden) return;
+        const now = context.currentTime;
+        const osc = context.createOscillator();
+        const gain = context.createGain();
+        const tone = context.createOscillator();
+        const toneGain = context.createGain();
+        osc.type = "sine";
+        osc.frequency.value = notes[index % notes.length];
+        tone.type = "sine";
+        tone.frequency.value = notes[index % notes.length] / 2;
+        gain.gain.setValueAtTime(0.0001, now);
+        gain.gain.exponentialRampToValueAtTime(0.026, now + 0.16);
+        gain.gain.exponentialRampToValueAtTime(0.0001, now + 1.05);
+        toneGain.gain.setValueAtTime(0.0001, now);
+        toneGain.gain.exponentialRampToValueAtTime(0.009, now + 0.2);
+        toneGain.gain.exponentialRampToValueAtTime(0.0001, now + 1.1);
+        osc.connect(gain).connect(context.destination);
+        tone.connect(toneGain).connect(context.destination);
+        osc.start(now); tone.start(now);
+        osc.stop(now + 1.12); tone.stop(now + 1.12);
+        index++;
+        timer = window.setTimeout(playNote, 650);
+      }
+      async function start() {
+        const AudioCtor = window.AudioContext || window.webkitAudioContext;
+        if (!AudioCtor) {
+          button.textContent = "صدا پشتیبانی نمی‌شود";
+          button.disabled = true;
+          return;
+        }
+        try {
+          context = context || new AudioCtor();
+          if (context.state === "suspended") await context.resume();
+          enabled = true;
+          localStorage.setItem("emlay-background-music", "on");
+          button.textContent = "■ خاموش کردن موسیقی";
+          button.setAttribute("aria-pressed", "true");
+          playNote();
+        } catch (error) {
+          enabled = false;
+          button.textContent = "برای پخش دوباره لمس کن";
+        }
+      }
+      function stop() {
+        enabled = false;
+        if (timer) window.clearTimeout(timer);
+        timer = null;
+        if (context && context.state === "running") context.suspend();
+        localStorage.setItem("emlay-background-music", "off");
+        button.textContent = "▶ پخش موسیقی";
+        button.setAttribute("aria-pressed", "false");
+      }
+      button.addEventListener("click", () => enabled ? stop() : start());
+      document.addEventListener("visibilitychange", () => {
+        if (document.hidden) {
+          if (timer) window.clearTimeout(timer);
+          timer = null;
+          if (context && context.state === "running") context.suspend();
+        } else if (enabled) {
+          start();
+        }
+      });
+      if (saved === "on") {
+        button.textContent = "▶ برای شروع موسیقی لمس کن";
+        button.setAttribute("aria-pressed", "false");
+      }
+    })();
+
+
 
     // نمایش کوتاه صفحه آغازین؛ سپس ورود به محیط اصلی برنامه.
     window.addEventListener("load", () => {
