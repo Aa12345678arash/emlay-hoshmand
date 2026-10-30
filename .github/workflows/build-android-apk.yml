@@ -1,0 +1,113 @@
+name: Build Android test APK
+
+on:
+  push:
+    branches:
+      - prototype/first-working-practice
+    paths:
+      - 'index.html'
+      - 'lesson-data.js'
+      - 'lesson-notes.js'
+      - 'practice.js'
+      - 'word-bank.js'
+      - 'spelling-quiz.js'
+      - 'dictation-texts.js'
+      - 'lesson1-suite.js'
+      - 'lesson-dictation.js'
+      - 'audio-helper.js'
+      - 'learning-report.js'
+      - 'android/**'
+      - 'qa/**'
+      - '.github/workflows/build-android-apk.yml'
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'index.html'
+      - 'lesson-data.js'
+      - 'lesson-notes.js'
+      - 'practice.js'
+      - 'word-bank.js'
+      - 'spelling-quiz.js'
+      - 'dictation-texts.js'
+      - 'lesson1-suite.js'
+      - 'lesson-dictation.js'
+      - 'learning-report.js'
+      - 'android/**'
+      - '.github/workflows/build-android-apk.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: دریافت کد
+        uses: actions/checkout@v4
+
+      - name: نصب Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: آماده‌سازی Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+
+      - name: آماده‌سازی Android SDK
+        uses: android-actions/setup-android@v3
+        with:
+          packages: 'platform-tools platforms;android-35 build-tools;35.0.0'
+
+      - name: دریافت موسیقی واقعی با مجوز CC0 1.0
+        shell: bash
+        run: |
+          mkdir -p android/app/src/main/assets/www/music
+          curl --fail --location --retry 3 --retry-delay 2 --max-time 180 \
+            -A "Mozilla/5.0" \
+            "https://raw.githubusercontent.com/uncle-sheepsky/duru-ai-cc0-bgm/main/mp3/duru-roomscene-lofi.mp3" \
+            -o android/app/src/main/assets/www/music/study-room-lofi.mp3
+          test "$(stat -c%s android/app/src/main/assets/www/music/study-room-lofi.mp3)" -gt 10000
+          cat > android/app/src/main/assets/www/MUSIC-CREDITS.txt <<'EOF'
+          Music: "DURU Room Scene Lo-Fi" by DURU-AI.
+          Released under Creative Commons Zero 1.0 Universal (CC0 1.0).
+          Source repository: https://github.com/uncle-sheepsky/duru-ai-cc0-bgm
+          Track file: mp3/duru-roomscene-lofi.mp3
+          Attribution is not required; creator credit is retained as a courtesy.
+          EOF
+
+      - name: کپی فایل‌های برنامه داخل بسته اندروید
+        shell: bash
+        run: |
+          mkdir -p android/app/src/main/assets/www
+          cp index.html audio-helper.js lesson-data.js lesson-notes.js practice.js word-bank.js spelling-quiz.js dictation-texts.js lesson1-suite.js lesson-dictation.js learning-report.js practice-world.svg android/app/src/main/assets/www/
+
+      - name: بررسی نحو فایل‌های جاوااسکریپت
+        run: |
+          node --check audio-helper.js
+          node --check lesson-data.js
+          node --check word-bank.js
+          node --check spelling-quiz.js
+          node --check dictation-texts.js
+          node --check lesson-notes.js
+          node --check practice.js
+          node --check lesson1-suite.js
+          node --check lesson-dictation.js
+          node --check learning-report.js
+          node qa/validate-content.cjs
+
+      - name: ساخت APK آزمایشی
+        working-directory: android
+        run: gradle --no-daemon assembleDebug
+
+      - name: بارگذاری APK برای دریافت
+        uses: actions/upload-artifact@v4
+        with:
+          name: emlay-hoshmand-debug-apk
+          path: android/app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
+          retention-days: 14

@@ -341,6 +341,12 @@
       font-size: 12px;
     }
 
+    .lesson-note { margin:14px 0; padding:15px; border:1px solid #dce7f8; border-radius:16px; background:#f7faff; }
+    .lesson-note h3 { margin:0 0 8px; color:var(--navy); font-size:16px; }
+    .lesson-note .note-summary { padding:10px 12px; border-right:4px solid #e5a62b; border-radius:10px; background:#fff8e8; color:#34445e; line-height:2; }
+    .lesson-note p { margin:7px 0; font-size:13px; }
+    .lesson-note ul { margin:6px 0; padding-right:20px; font-size:13px; }
+    .lesson-note .note-task { margin-top:10px; padding:10px; border-radius:11px; background:#fff7e6; color:#805b16; }
     .notice.success {
       background: #e9f8f1;
       color: #176c4e;
@@ -378,21 +384,141 @@
       .lesson-grid { gap: 8px; }
       .lesson-card { padding: 11px; }
     }
+  
+    /* هویت بصری تازه: سرزمین واژه‌ها و جغد راهنما */
+    :root {
+      --navy:#17356b; --blue:#2878df; --gold:#ffd45a; --cream:#f4f8ff;
+      --text:#20324f; --green:#1eaa72; --shadow:0 12px 30px rgba(28,65,120,.12);
+    }
+    body { background:radial-gradient(circle at 8% 4%,#fff4d7 0,transparent 25%),linear-gradient(180deg,#f2f8ff,#fff 58%,#f4f8ff); }
+    .app { max-width:720px; padding-top:18px; }
+    .hero { background:linear-gradient(135deg,#12316b 0%,#1678d5 58%,#24a8c4 100%); border:1px solid rgba(255,255,255,.35); border-radius:28px; }
+    .hero::before { content:""; position:absolute; width:190px;height:190px;left:-55px;bottom:-105px;border-radius:50%;background:rgba(255,255,255,.10); }
+    .mascot { width:82px;height:82px;border-radius:24px;background:linear-gradient(145deg,#fff4cf,#ffcf58);box-shadow:0 7px 18px rgba(0,0,0,.18);padding:5px; }
+    .mascot svg { width:100%;height:100%;display:block; }
+    .hero h1 {font-size:25px;text-shadow:0 2px 4px rgba(0,0,0,.16);}
+    .hero-bottom {gap:8px;}
+    .stat {backdrop-filter:blur(5px);border-radius:16px;}
+    .welcome {display:flex;align-items:center;gap:14px;margin-top:15px;padding:13px 16px;border:1px solid #e4edff;border-radius:22px;background:linear-gradient(110deg,#fff 0%,#f2f8ff 100%);box-shadow:var(--shadow);}
+    .welcome-art {width:76px;height:76px;flex:0 0 76px;border-radius:22px;background:linear-gradient(145deg,#dff4ff,#fff0bd);padding:4px;}
+    .welcome-art svg {width:100%;height:100%;}
+    .welcome-copy {min-width:0;}
+    .welcome strong {color:#1764bd;font-size:15px;}
+    .welcome p {font-size:12px;line-height:1.9;}
+    .section-title {margin-top:24px;}
+    .section-title h2 {color:#17356b;}
+    .search {border:1px solid #dce8fa;border-radius:16px;box-shadow:0 4px 14px rgba(28,65,120,.05);}
+    .chapters button {border-color:#dce8fa;background:#fff;}
+    .chapters button.active {background:linear-gradient(135deg,#2878df,#24a8c4);border-color:transparent;box-shadow:0 5px 12px rgba(40,120,223,.22);}
+    .lesson-grid {gap:12px;}
+    .lesson-card {min-height:138px;border:1px solid #e4edfa;border-radius:21px;background:linear-gradient(145deg,#fff,#f7fbff);box-shadow:0 7px 18px rgba(29,65,120,.07);padding:14px;overflow:hidden;}
+    .lesson-card:nth-child(4n+1){background:linear-gradient(145deg,#fff,#effaf5);}
+    .lesson-card:nth-child(4n+2){background:linear-gradient(145deg,#fff,#fff8e8);}
+    .lesson-card:nth-child(4n+3){background:linear-gradient(145deg,#fff,#f1f5ff);}
+    .lesson-card:nth-child(4n){background:linear-gradient(145deg,#fff,#fff1f5);}
+    .lesson-card:active {transform:translateY(2px) scale(.985);}
+    .lesson-number {border-radius:12px;background:#e3efff;color:#1764bd;}
+    .lesson-icon {font-size:28px;filter:drop-shadow(0 2px 2px rgba(0,0,0,.12));}
+    .lesson-card h3 {font-size:14px;color:#1b345b;}
+    .lesson-card small {font-size:11px;}
+    .progress-track {height:6px;background:#e8eef7;}
+    .progress-fill {background:linear-gradient(90deg,#28bd83,#8bdc78);}
+    .panel {border-radius:23px;border-color:#e1eafa;box-shadow:var(--shadow);}
+    .back-button {border-radius:12px;background:#eaf3ff;}
+    .mode-list {gap:11px;}
+    .mode-button {border-radius:18px;background:linear-gradient(110deg,#fff,#f7faff);border-color:#e4edfa;box-shadow:0 4px 12px rgba(29,65,120,.045);transition:transform .15s,box-shadow .15s;}
+    .mode-button:active {transform:scale(.99);}
+    .mode-button .mode-icon {width:48px;height:48px;border-radius:16px;background:linear-gradient(145deg,#e5f1ff,#fff0c8);font-size:25px;}
+    .mode-button:nth-child(2) .mode-icon{background:linear-gradient(145deg,#fff0c8,#ffe2a0);}
+    .mode-button:nth-child(3) .mode-icon{background:linear-gradient(145deg,#e9e4ff,#d8e9ff);}
+    .mode-button:nth-child(4) .mode-icon{background:linear-gradient(145deg,#ffe7ef,#fff0c8);}
+    .mode-button:nth-child(5) .mode-icon{background:linear-gradient(145deg,#fff0bd,#ffe0a1);}
+    .mode-button strong {color:#193967;font-size:14px;}
+    .mode-button small {font-size:12px;}
+    .footer {border-radius:20px;background:linear-gradient(135deg,#17356b,#246fc2);}
+    .footer strong {color:#ffdc72;}
+    .splash-screen {position:fixed;inset:0;z-index:9999;display:grid;place-items:center;padding:24px;background:linear-gradient(155deg,#12316b,#1684d8 62%,#32b8bd);color:#fff;text-align:center;transition:opacity .45s ease,visibility .45s ease;}
+    .splash-screen.is-hidden {opacity:0;visibility:hidden;pointer-events:none;}
+    .splash-card {width:min(100%,340px);padding:26px 20px 22px;border:1px solid rgba(255,255,255,.35);border-radius:30px;background:rgba(255,255,255,.13);box-shadow:0 18px 50px rgba(0,0,0,.18);backdrop-filter:blur(8px);}
+    .splash-owl {width:150px;height:150px;margin:0 auto 10px;padding:7px;border-radius:38px;background:linear-gradient(145deg,#fff1bd,#ffc94f);box-shadow:0 10px 25px rgba(0,0,0,.2);}
+    .splash-owl svg {width:100%;height:100%;}
+    .splash-card h1 {margin:6px 0;color:#fff;font-size:25px;}
+    .splash-card p {margin:0;color:#e7f4ff;font-size:13px;}
+    .splash-loader {width:125px;height:6px;margin:20px auto 0;border-radius:20px;background:rgba(255,255,255,.25);overflow:hidden;}
+    .splash-loader::after {content:"";display:block;width:45%;height:100%;border-radius:20px;background:#ffdb69;animation:splashLoad 1.2s ease-in-out infinite alternate;}
+    @keyframes splashLoad {from{transform:translateX(0)}to{transform:translateX(125px)}}
+    @media (prefers-reduced-motion:reduce) {.splash-loader::after{animation:none;width:100%}.splash-screen{transition:none}}
+    @media (max-width:360px) {.mascot{width:70px;height:70px}.hero h1{font-size:20px}.welcome-art{width:64px;height:64px;flex-basis:64px}}
+
+  
+    .sound-control {display:flex;align-items:center;justify-content:space-between;gap:10px;margin:12px 0 2px;padding:10px 13px;border:1px solid rgba(255,255,255,.22);border-radius:15px;background:rgba(255,255,255,.12);color:#fff;}
+    .sound-control span {font-size:12px;color:#eaf3ff;}
+    .sound-toggle {border:1px solid rgba(255,255,255,.35);border-radius:12px;padding:7px 12px;background:rgba(255,255,255,.16);color:#fff;font-size:12px;white-space:nowrap;}
+    .sound-toggle[aria-pressed="true"] {background:#ffe08a;color:#17356b;border-color:#ffe08a;font-weight:bold;}
+    .sound-note {font-size:10px!important;color:#d8e8ff!important;margin:4px 2px 0!important;}
+
+  
+/* Depth cards: bright, tactile and separated from the page background */
+.mode-list{gap:14px}
+.mode-button{min-height:82px;border-radius:21px;background:linear-gradient(145deg,#fff,#edf5ff);border:1px solid #e0eafa;box-shadow:0 6px 0 #dce8f8,0 12px 22px rgba(31,75,135,.12);transition:transform .16s,box-shadow .16s}
+.mode-button:nth-child(5n+1){background:linear-gradient(145deg,#fff,#e9f8f2);box-shadow:0 6px 0 #ccebdd,0 12px 22px rgba(31,75,135,.12)}
+.mode-button:nth-child(5n+2){background:linear-gradient(145deg,#fff,#fff4dc);box-shadow:0 6px 0 #f4e2b7,0 12px 22px rgba(31,75,135,.12)}
+.mode-button:nth-child(5n+3){background:linear-gradient(145deg,#fff,#edf2ff);box-shadow:0 6px 0 #d8e2fa,0 12px 22px rgba(31,75,135,.12)}
+.mode-button:nth-child(5n+4){background:linear-gradient(145deg,#fff,#fff0f2);box-shadow:0 6px 0 #f5d8df,0 12px 22px rgba(31,65,120,.12)}
+.mode-button:active{transform:translateY(4px);box-shadow:0 2px 0 #dce8f8}
+.mode-icon{width:48px;height:48px;border-radius:16px;background:linear-gradient(145deg,#fff,#e5efff);box-shadow:inset 0 2px 3px #fff,0 5px 9px rgba(31,75,135,.15)}
+.lesson-card{box-shadow:0 6px 0 #e3ebf7,0 12px 22px rgba(29,65,120,.10)}
+.practice-launch{display:flex;align-items:center;gap:12px;width:100%;margin-top:16px;padding:15px;border:1px solid #d6e5fb;border-radius:20px;background:linear-gradient(120deg,#17356b,#2878df 62%,#24a8c4);color:#fff;text-align:right;box-shadow:0 6px 0 #c8d9f1,0 13px 24px rgba(24,76,145,.18)}
+.practice-launch strong{display:block}.practice-launch small{display:block;color:#e7f3ff;font-size:11px}
+
   </style>
 </head>
 
 <body>
+  <div id="appSplash" class="splash-screen" role="status" aria-label="در حال آماده‌سازی برنامه">
+  <div class="splash-card">
+    <div class="splash-owl"><svg viewBox="0 0 120 120" role="img" aria-label="جغد دانا با کتاب و مداد" xmlns="http://www.w3.org/2000/svg">
+<defs><linearGradient id="owlBody" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#b86a2d"/><stop offset="1" stop-color="#713b25"/></linearGradient><linearGradient id="owlBook" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#246bd2"/><stop offset="1" stop-color="#123b86"/></linearGradient></defs>
+<path d="M22 43 13 15l31 14M98 43l9-28-31 14" fill="#9b542b" stroke="#63351f" stroke-width="4" stroke-linejoin="round"/>
+<ellipse cx="60" cy="58" rx="43" ry="45" fill="url(#owlBody)"/>
+<ellipse cx="43" cy="51" rx="22" ry="24" fill="#fff4d9"/><ellipse cx="77" cy="51" rx="22" ry="24" fill="#fff4d9"/>
+<circle cx="46" cy="51" r="10" fill="#fff"/><circle cx="74" cy="51" r="10" fill="#fff"/><circle cx="48" cy="52" r="5.5" fill="#172b49"/><circle cx="72" cy="52" r="5.5" fill="#172b49"/>
+<path d="m60 61-9 10h18z" fill="#ffb52e"/>
+<path d="M34 82q26-17 52 0v24H34z" fill="#f3d9a5"/>
+<path d="M25 87q35-15 70 0v25H25z" fill="url(#owlBook)" stroke="#102e68" stroke-width="3"/>
+<path d="M60 88v24" stroke="#fff" stroke-width="2"/><path d="M18 111 11 74l8-5 9 38z" fill="#ffd34f" stroke="#b77a18" stroke-width="2"/><path d="m11 74-2-10 10 5" fill="#e98d57"/>
+<path d="M35 16q25-18 50 0l-5 8H40z" fill="#17356b"/><path d="M31 23h58" stroke="#ffd45a" stroke-width="5" stroke-linecap="round"/>
+</svg></div>
+    <h1>املای هوشمند پنجم</h1>
+    <p>با املای درست، آینده روشن‌تر است</p>
+    <div class="splash-loader" aria-hidden="true"></div>
+  </div>
+</div>
   <div class="app">
 
     <header class="hero">
       <div class="brand">
-        <div class="mascot" aria-hidden="true">🦉</div>
+        <div class="mascot" aria-hidden="true"><svg viewBox="0 0 120 120" role="img" aria-label="جغد دانا با کتاب و مداد" xmlns="http://www.w3.org/2000/svg">
+<defs><linearGradient id="owlBody" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#b86a2d"/><stop offset="1" stop-color="#713b25"/></linearGradient><linearGradient id="owlBook" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#246bd2"/><stop offset="1" stop-color="#123b86"/></linearGradient></defs>
+<path d="M22 43 13 15l31 14M98 43l9-28-31 14" fill="#9b542b" stroke="#63351f" stroke-width="4" stroke-linejoin="round"/>
+<ellipse cx="60" cy="58" rx="43" ry="45" fill="url(#owlBody)"/>
+<ellipse cx="43" cy="51" rx="22" ry="24" fill="#fff4d9"/><ellipse cx="77" cy="51" rx="22" ry="24" fill="#fff4d9"/>
+<circle cx="46" cy="51" r="10" fill="#fff"/><circle cx="74" cy="51" r="10" fill="#fff"/><circle cx="48" cy="52" r="5.5" fill="#172b49"/><circle cx="72" cy="52" r="5.5" fill="#172b49"/>
+<path d="m60 61-9 10h18z" fill="#ffb52e"/>
+<path d="M34 82q26-17 52 0v24H34z" fill="#f3d9a5"/>
+<path d="M25 87q35-15 70 0v25H25z" fill="url(#owlBook)" stroke="#102e68" stroke-width="3"/>
+<path d="M60 88v24" stroke="#fff" stroke-width="2"/><path d="M18 111 11 74l8-5 9 38z" fill="#ffd34f" stroke="#b77a18" stroke-width="2"/><path d="m11 74-2-10 10 5" fill="#e98d57"/>
+<path d="M35 16q25-18 50 0l-5 8H40z" fill="#17356b"/><path d="M31 23h58" stroke="#ffd45a" stroke-width="5" stroke-linecap="round"/>
+</svg></div>
         <div>
           <h1>املای هوشمند پنجم</h1>
           <p>ماجراجویی در سرزمین واژه‌ها</p>
         </div>
       </div>
 
+      <div class="sound-control"><span>🎵 موسیقی ملایم پس‌زمینه</span><button id="musicToggle" class="sound-toggle" type="button" aria-pressed="false">▶ پخش موسیقی</button></div>
+      <p class="sound-note">موسیقی پس‌زمینهٔ آرام «DURU Room Scene Lo-Fi»؛ هنگام تمرین گفتاری کم‌صدا می‌شود.</p>
+      <audio id="backgroundMusic" preload="auto" loop src="music/study-room-lofi.mp3"></audio>
       <div class="hero-bottom">
         <div class="stat">
           <strong id="points">۰</strong>
@@ -410,8 +536,22 @@
     </header>
 
     <section class="welcome">
-      <strong>سلام قهرمان واژه‌ها! 🌟</strong>
-      <p>هر روز کمی تمرین کن، اشتباهاتت را بشناس و در املا قوی‌تر شو.</p>
+      <div class="welcome-art" aria-hidden="true"><svg viewBox="0 0 120 120" role="img" aria-label="جغد دانا با کتاب و مداد" xmlns="http://www.w3.org/2000/svg">
+<defs><linearGradient id="owlBody" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#b86a2d"/><stop offset="1" stop-color="#713b25"/></linearGradient><linearGradient id="owlBook" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#246bd2"/><stop offset="1" stop-color="#123b86"/></linearGradient></defs>
+<path d="M22 43 13 15l31 14M98 43l9-28-31 14" fill="#9b542b" stroke="#63351f" stroke-width="4" stroke-linejoin="round"/>
+<ellipse cx="60" cy="58" rx="43" ry="45" fill="url(#owlBody)"/>
+<ellipse cx="43" cy="51" rx="22" ry="24" fill="#fff4d9"/><ellipse cx="77" cy="51" rx="22" ry="24" fill="#fff4d9"/>
+<circle cx="46" cy="51" r="10" fill="#fff"/><circle cx="74" cy="51" r="10" fill="#fff"/><circle cx="48" cy="52" r="5.5" fill="#172b49"/><circle cx="72" cy="52" r="5.5" fill="#172b49"/>
+<path d="m60 61-9 10h18z" fill="#ffb52e"/>
+<path d="M34 82q26-17 52 0v24H34z" fill="#f3d9a5"/>
+<path d="M25 87q35-15 70 0v25H25z" fill="url(#owlBook)" stroke="#102e68" stroke-width="3"/>
+<path d="M60 88v24" stroke="#fff" stroke-width="2"/><path d="M18 111 11 74l8-5 9 38z" fill="#ffd34f" stroke="#b77a18" stroke-width="2"/><path d="m11 74-2-10 10 5" fill="#e98d57"/>
+<path d="M35 16q25-18 50 0l-5 8H40z" fill="#17356b"/><path d="M31 23h58" stroke="#ffd45a" stroke-width="5" stroke-linecap="round"/>
+</svg></div>
+      <div class="welcome-copy">
+        <strong>سلام قهرمان واژه‌ها! 🌟</strong>
+        <p>جغد دانا همراه توست؛ هر روز کمی تمرین کن و در املا قوی‌تر شو.</p>
+      </div>
     </section>
 
     <main>
@@ -444,6 +584,18 @@
         <button class="back-button" id="backButton">← بازگشت به درس‌ها</button>
         <h2 id="selectedTitle"></h2>
         <div id="selectedChapter" class="panel-description"></div>
+        <section id="lessonNote" class="lesson-note" aria-label="درسنامه آموزشی"></section>
+        <div id="lessonContent" class="notice" aria-live="polite"></div>
+        <section id="teacherEditor" class="lesson-note" hidden aria-label="ورود محتوای درس آزاد">
+          <h3>✏️ املای معلم؛ تنظیم محتوای بومی کلاس</h3>
+          <p>متن نهایی درس آزاد را وارد کن. هر واژه را در یک خط و به شکل «واژه | معنی ساده» بنویس. واژه‌ها باید در متن واردشده وجود داشته باشند.</p>
+          <label for="teacherPassage">متن درس یا بند منتخب کلاس</label>
+          <textarea id="teacherPassage" rows="5" style="width:100%;box-sizing:border-box;padding:12px;border:1px solid #cbd8ea;border-radius:12px;font:inherit;line-height:2" placeholder="متن بومی تأییدشده کلاس را اینجا وارد کن..."></textarea>
+          <label for="teacherWords">واژه‌های مهم املایی؛ هر خط یک واژه و معنی</label>
+          <textarea id="teacherWords" rows="7" style="width:100%;box-sizing:border-box;padding:12px;border:1px solid #cbd8ea;border-radius:12px;font:inherit;line-height:2" placeholder="گویش | شیوه سخن گفتن مردم یک منطقه&#10;میراث | یادگار ارزشمند گذشتگان"></textarea>
+          <button id="teacherSave" class="practice-action" type="button">ذخیره و فعال‌سازی تمرین‌های این درس</button>
+          <p id="teacherStatus" class="practice-muted" aria-live="polite"></p>
+        </section>
         <p class="panel-description">
           یکی از روش‌های تمرین را انتخاب کن.
         </p>
@@ -490,6 +642,10 @@
           </button>
         </div>
 
+        <button class="practice-launch" type="button" onclick="openGuidedLesson()"><span style="font-size:28px">🎬</span><span><strong>آموزش اصلی املا؛ ببین، بشنو و یاد بگیر</strong><small>نمایش آرام متن، خواندن فارسی و هایلایت واژه‌های املایی</small></span></button>
+        <button class="practice-launch" type="button" onclick="openDictationTexts()"><span style="font-size:28px">📖</span><span><strong>متن‌های املا</strong><small>دو متن آموزشی با نمایش مرحله‌ای برای هر درس</small></span></button>
+        <button class="practice-launch" type="button" onclick="openLearningReport()"><span style="font-size:28px">📊</span><span><strong>گزارش رنگی پیشرفت</strong><small>نمودار عملکرد، خطاها و چاپ یا ذخیره PDF</small></span></button>
+
         <div id="modeNotice" class="notice">
           بانک تمرین این درس در مرحله آماده‌سازی است.
         </div>
@@ -503,50 +659,44 @@
 
   </div>
 
+    <script src="lesson-data.js"></script>
+  <script src="word-bank.js"></script>
+  <script src="spelling-quiz.js"></script>
+  <script src="dictation-texts.js"></script>
+  <script src="lesson-notes.js"></script>
+  <script src="audio-helper.js"></script>
+  <script src="practice.js"></script>
+  <script src="lesson1-suite.js"></script>
+  <script src="lesson-dictation.js"></script>
+  <script src="learning-report.js"></script>
   <script>
     "use strict";
 
-    // فهرست درس‌ها؛ محتوای تمرین‌ها جداگانه و پس از تطبیق کتاب افزوده می‌شود.
-    const lessons = [
-      { id: 1, title: "تماشاخانه", chapter: "آفرینش", icon: "🎭" },
-      { id: 2, title: "فضل خدا", chapter: "آفرینش", icon: "🌱" },
-
-      { id: 3, title: "رازی و ساخت بیمارستان", chapter: "دانایی و هوشیاری", icon: "🔬" },
-      { id: 4, title: "بازرگان و پسران", chapter: "دانایی و هوشیاری", icon: "🧭" },
-      { id: 5, title: "چنار و کدوبن", chapter: "دانایی و هوشیاری", icon: "🌳" },
-
-      { id: 6, title: "سرود ملی", chapter: "ایران من", icon: "🇮🇷" },
-      { id: 7, title: "درس آزاد: فرهنگ بومی ۱", chapter: "ایران من", icon: "🏡" },
-      { id: 8, title: "دفاع از میهن", chapter: "ایران من", icon: "🛡️" },
-
-      { id: 9, title: "نام‌آوران دیروز، امروز، فردا", chapter: "نام‌آوران", icon: "⭐" },
-      { id: 10, title: "نام نیکو", chapter: "نام‌آوران", icon: "🏅" },
-      { id: 11, title: "نقش خردمندان", chapter: "نام‌آوران", icon: "💡" },
-      { id: 12, title: "درس آزاد: فرهنگ بومی ۲", chapter: "نام‌آوران", icon: "🏞️" },
-
-      { id: 13, title: "روزی که باران می‌بارید", chapter: "راه زندگی", icon: "🌧️" },
-      { id: 14, title: "شجاعت", chapter: "راه زندگی", icon: "🦁" },
-      { id: 15, title: "کاجستان", chapter: "راه زندگی", icon: "🌲" },
-
-      { id: 16, title: "وقتی بوعلی، کودک بود", chapter: "علم و عمل", icon: "📖" },
-      { id: 17, title: "کار و تلاش", chapter: "علم و عمل", icon: "⚙️" }
-    ];
+    // فهرست درس‌ها از بانک ساختاریافته همه ۱۷ درس بارگذاری می‌شود.
+    const lessons = (window.EMLAY_LESSON_DATA || []).map(item => ({
+      id: item.id, title: item.title, chapter: item.chapter, icon: item.icon, teacherInput: Boolean(item.teacherInput)
+    }));
 
     const storageKey = "emlay-hoshmand-progress-v1";
 
     let progress = loadProgress();
     let activeChapter = "همه";
     let selectedLesson = null;
+    window.EMLAY_GET_PROGRESS = () => progress;
 
     function loadProgress() {
       try {
         const saved = localStorage.getItem(storageKey);
-        return saved ? JSON.parse(saved) : {
-          points: 0,
-          completed: []
+        const parsed = saved ? JSON.parse(saved) : {};
+        return {
+          points: Number.isFinite(parsed.points) ? Math.max(0, parsed.points) : 0,
+          completed: Array.isArray(parsed.completed) ? parsed.completed.filter(id => Number.isInteger(id)) : [],
+          lessonStats: parsed.lessonStats && typeof parsed.lessonStats === "object" ? parsed.lessonStats : {},
+          errorLog: Array.isArray(parsed.errorLog) ? parsed.errorLog.slice(0, 200) : [],
+          answerHistory: Array.isArray(parsed.answerHistory) ? parsed.answerHistory.slice(0, 300) : []
         };
       } catch (error) {
-        return { points: 0, completed: [] };
+        return { points: 0, completed: [], lessonStats: {}, errorLog: [], answerHistory: [] };
       }
     }
 
@@ -615,9 +765,101 @@
       });
     }
 
+
+    const teacherStorageKey = "emlay-teacher-content-v1";
+    function readTeacherContent() {
+      try { return JSON.parse(localStorage.getItem(teacherStorageKey) || "{}"); }
+      catch (error) { return {}; }
+    }
+    function normalizeTeacherText(value) {
+      return String(value || "").normalize("NFC").replace(/[يى]/g,"ی").replace(/ك/g,"ک")
+        .replace(/[\u200c\u200f\u202a-\u202e\sـًٌٍَُِّْٰ]/g,"");
+    }
+    function applyTeacherContent(id, saved) {
+      const ready = Boolean(saved && saved.text && Array.isArray(saved.words) && saved.words.length >= 5 &&
+        saved.words.every(item => item.word && item.meaning && normalizeTeacherText(saved.text).includes(normalizeTeacherText(item.word))));
+      if (!ready) return false;
+      window.EMLAY_WORD_BANK[id] = saved.words.map(item => item.word);
+      const makeTeacherQuestion = item => {
+        const chars = Array.from(item.word);
+        const candidates = [];
+        const swaps = {"ا":"آ","آ":"ا","ت":"ط","ط":"ت","ث":"س","س":"ث","ص":"س","ذ":"ز","ز":"ذ","ض":"ظ","ظ":"ض","ح":"ه","ه":"ح","ق":"غ","غ":"ق"};
+        chars.forEach((letter,index) => {
+          if (swaps[letter]) candidates.push(chars.map((ch,i)=>i===index?swaps[letter]:ch).join(""));
+          if (letter !== "‌" && !/\s/.test(letter)) {
+            candidates.push(chars.map((ch,i)=>i===index?"":ch).join(""));
+            candidates.push(chars.map((ch,i)=>i===index?ch+ch:ch).join(""));
+          }
+          if (index < chars.length-1 && letter !== "‌" && chars[index+1] !== "‌") {
+            const copy=chars.slice(); [copy[index],copy[index+1]]=[copy[index+1],copy[index]]; candidates.push(copy.join(""));
+          }
+        });
+        ["ا","ی","و","ه","ن","ر","م","ت","س"].forEach(letter => {
+          for(let i=0;i<=chars.length;i++) {
+            if(chars[i-1]==="‌" || chars[i]==="‌") continue;
+            candidates.push([...chars.slice(0,i),letter,...chars.slice(i)].join(""));
+          }
+        });
+        const norm = value => String(value||"").normalize("NFC").replace(/[يى]/g,"ی").replace(/ك/g,"ک").replace(/[\u200c\sـًٌٍَُِّْٰ]/g,"");
+        const distractors = [...new Set(candidates)].filter(value => value && norm(value)!==norm(item.word));
+        const chosen = distractors.slice(0,3);
+        const errors = chosen.map(form=>({form,type:"صورت نادرست آموزشی",why:"به ترتیب و شکل حروف واژه توجه کن."}));
+        return {
+          word:item.word, meaning:item.meaning,
+          options:[item.word,...chosen], errors,
+          explanation:"این واژه از متن بومی ثبت‌شده توسط آموزگار انتخاب شده است."
+        };
+      };
+      window.EMLAY_SPELLING_QUIZ[id] = saved.words.map(makeTeacherQuestion);
+      const segments = saved.text.trim().split(/(?<=[.!؟?])\s+/).filter(Boolean);
+      window.EMLAY_DICTATION_TEXTS[id] = [{
+        id:"teacher-"+id, title:"متن بومی کلاس", segments:segments.length ? segments : [saved.text.trim()],
+        focusWords:saved.words.map(item => item.word)
+      }];
+      return true;
+    }
+    function renderTeacherEditor(id, lessonData) {
+      const panel = document.getElementById("teacherEditor");
+      panel.hidden = !lessonData.teacherInput;
+      if (!lessonData.teacherInput) return false;
+      const savedAll = readTeacherContent();
+      const saved = savedAll[id] || {};
+      const passage = document.getElementById("teacherPassage");
+      const words = document.getElementById("teacherWords");
+      const status = document.getElementById("teacherStatus");
+      passage.value = saved.text || "";
+      words.value = (saved.words || []).map(item => item.word + " | " + item.meaning).join("\n");
+      const ready = applyTeacherContent(id, saved);
+      status.textContent = ready
+        ? "محتوای این درس ذخیره شده است؛ پنج شیوه تمرین و متن شنیداری با همین واژه‌ها فعال می‌شوند."
+        : "برای فعال‌شدن تمرین‌ها، متن بومی و دست‌کم پنج واژه همراه با معنی وارد و ذخیره کن.";
+      document.getElementById("teacherSave").onclick = () => {
+        const text = passage.value.trim();
+        const parsed = words.value.split(/\r?\n/).map(line => {
+          const parts = line.split("|");
+          return {word:(parts[0] || "").trim(), meaning:parts.slice(1).join("|").trim()};
+        }).filter(item => item.word && item.meaning);
+        const normalizedText = normalizeTeacherText(text);
+        const missing = parsed.filter(item => !normalizedText.includes(normalizeTeacherText(item.word)));
+        if (!text || parsed.length < 5 || missing.length) {
+          status.textContent = !text ? "ابتدا متن بومی را وارد کن."
+            : parsed.length < 5 ? "برای فعال‌شدن چالش پایانی، دست‌کم پنج واژه همراه با معنی لازم است."
+            : "این واژه‌ها در متن پیدا نشدند: " + missing.map(item => item.word).join("، ");
+          return;
+        }
+        const all = readTeacherContent();
+        all[id] = {text, words:parsed, updatedAt:new Date().toISOString()};
+        try { localStorage.setItem(teacherStorageKey, JSON.stringify(all)); }
+        catch (error) { status.textContent = "ذخیره‌سازی در این دستگاه ممکن نشد؛ فضای مرورگر را بررسی کن."; return; }
+        openLesson(id);
+      };
+      return ready;
+    }
+
     function openLesson(id) {
       selectedLesson = lessons.find(item => item.id === id);
       if (!selectedLesson) return;
+      window.EMLAY_SELECTED_LESSON = selectedLesson;
 
       document.getElementById("selectedTitle").textContent =
         selectedLesson.icon + " درس " +
@@ -627,10 +869,72 @@
       document.getElementById("selectedChapter").textContent =
         "فصل: " + selectedLesson.chapter;
 
-      document.getElementById("modeNotice").textContent =
-        "تمرین‌های مستند این درس هنوز به برنامه اضافه نشده‌اند. پس از تکمیل بانک محتوایی، این بخش فعال می‌شود.";
+      const note = (window.EMLAY_LESSON_NOTES || {})[id];
+      const noteBox = document.getElementById("lessonNote");
+      if (note) {
+        noteBox.innerHTML = "";
+        const heading = document.createElement("h3");
+        heading.textContent = "📘 درسنامه آموزشی: " + note.title;
+        const summary = note.summary ? document.createElement("p") : null;
+        if (summary) {
+          summary.className = "note-summary";
+          summary.textContent = "خلاصه درس: " + note.summary;
+        }
+        const goal = document.createElement("p");
+        goal.textContent = "هدف یادگیری: " + note.goal;
+        const teaching = document.createElement("p");
+        teaching.textContent = note.teach;
+        const tipsTitle = document.createElement("strong");
+        tipsTitle.textContent = "نکته‌های کلیدی";
+        const tips = document.createElement("ul");
+        (note.tips || []).forEach(item => { const li = document.createElement("li"); li.textContent = item; tips.appendChild(li); });
+        const example = document.createElement("p");
+        example.textContent = "نمونه و پیوند با کتاب: " + note.example;
+        const task = document.createElement("p");
+        task.className = "note-task";
+        task.textContent = "🎯 تمرین پیشنهادی: " + note.task;
+        noteBox.append(heading, ...(summary ? [summary] : []), goal, teaching, tipsTitle, tips, example, task);
+      } else {
+        noteBox.textContent = "درسنامه این درس در حال آماده‌سازی است.";
+      }
+
+      const lessonData = window.EMLAY_LESSON_DATA.find(item => item.id === id);
+      const teacherReady = renderTeacherEditor(id, lessonData);
+
+      const content = document.getElementById("lessonContent");
+      content.className = "notice";
+      content.textContent = "صفحات نگارش: " + lessonData.pages + " | فعالیت‌های شناسایی‌شده: " + lessonData.activity +
+        (lessonData.teacherInput ? (teacherReady ? " محتوای بومی آموزگار ذخیره شده است." : " این درس آزاد است؛ آموزگار می‌تواند متن بومی کلاس را وارد کند.") : "");
+      const wordPool = (window.EMLAY_WORD_BANK && window.EMLAY_WORD_BANK[id]) || [];
+      const wordCount = wordPool.length;
+      const canPractice = wordCount > 0 && (!lessonData.teacherInput || teacherReady);
+      document.querySelectorAll("[data-mode]").forEach(button => {
+        const mode = button.dataset.mode;
+        const quizCount = ((window.EMLAY_SPELLING_QUIZ || {})[id] || []).length;
+        const modeReady = canPractice && (mode === "words" ? quizCount > 0 : mode === "challenge" ? quizCount >= 5 : true);
+        button.disabled = !modeReady;
+        button.style.opacity = modeReady ? "1" : ".48";
+        button.setAttribute("aria-disabled", String(!modeReady));
+        if ((mode === "words" && quizCount === 0)) {
+          button.title = "این تمرین پس از آماده‌شدن معنی‌ها و گزینه‌های املاییِ بازبینی‌شده فعال می‌شود.";
+        }
+      });
+      const notice = document.getElementById("modeNotice");
+      notice.className = canPractice ? "notice success" : "notice";
+      const lessonStat = (progress.lessonStats || {})[id];
+      if (lessonData.teacherInput) {
+        notice.textContent = "این درس آزاد است. برای فعال‌شدن تمرین‌ها باید آموزگار ابتدا واژه‌های متن بومی کلاس را در بخش «املای معلم» ثبت کند.";
+      } else if (wordCount) {
+        notice.textContent = toPersianNumber(wordCount) + " واژه/عبارت در بانک آموزشی این درس وجود دارد؛ " + toPersianNumber(((window.EMLAY_SPELLING_QUIZ || {})[id] || []).length) + " پرسش معنی‌محور بازبینی‌شده برای شکار واژه آماده است. چالش پایانی پنج‌مرحله‌ای برای درس‌های دارای بانک پرسش آماده فعال است. " +
+          toPersianNumber(lessonData.approved || 0) + " مدخل دارای شاهد مستقیم ثبت‌شده و " +
+          toPersianNumber(lessonData.pending || 0) + " مدخل نیازمند بررسی یا مقابله با چاپ کتاب است. " +
+          (lessonStat ? "بهترین عملکرد شما: " + toPersianNumber(lessonStat.best || 0) + "٪." : "وضعیت منبع واژه‌ها در بانک مادر نگهداری می‌شود.");
+      } else {
+        notice.textContent = "برای این درس هنوز واژه‌ای در بانک آموزشی ثبت نشده است.";
+      }
 
       document.getElementById("lessonPanel").classList.add("show");
+      if (window.EMLAY_LESSON1_SUITE) window.EMLAY_LESSON1_SUITE.mount(id);
 
       document.getElementById("lessonPanel").scrollIntoView({
         behavior: "smooth",
@@ -641,6 +945,7 @@
     function closeLesson() {
       document.getElementById("lessonPanel").classList.remove("show");
       selectedLesson = null;
+      window.EMLAY_SELECTED_LESSON = null;
     }
 
     document.getElementById("backButton")
@@ -665,18 +970,59 @@
     document.querySelectorAll("[data-mode]").forEach(button => {
       button.addEventListener("click", () => {
         if (!selectedLesson) return;
-
-        const notice = document.getElementById("modeNotice");
-
-        notice.className = "notice";
-        notice.textContent =
-          "این نوع تمرین برای «" + selectedLesson.title +
-          "» انتخاب شد؛ موتور تمرین و محتوای تأییدشده در مرحله بعد به آن متصل می‌شود.";
+        startPractice(button.dataset.mode);
       });
     });
 
+    
+
     renderLessons();
     updateStats();
+
+
+    // موسیقی واقعیِ آفلاین؛ فایل MP3 در زمان ساخت APK داخل assets قرار می‌گیرد.
+    (() => {
+      const button=document.getElementById("musicToggle");
+      const note=document.querySelector(".sound-note");
+      const audio=document.getElementById("backgroundMusic");
+      if(!button||!audio)return;
+      let enabled=false,ducked=false;
+      const normalVolume=0.22,duckVolume=0.035;
+      function setLevel(){audio.volume=ducked?duckVolume:normalVolume;}
+      async function start(){
+        try{
+          setLevel();
+          await audio.play();
+          enabled=true;
+          button.textContent="Ⅱ توقف موسیقی";
+          button.setAttribute("aria-pressed","true");
+          if(note)note.textContent="موسیقی آرام «First Snow» پخش می‌شود؛ هنگام دیکته و خواندن متن خودکار کم‌صدا می‌شود.";
+        }catch(e){
+          enabled=false;
+          if(note)note.textContent="فایل موسیقی در این نسخه در دسترس نیست یا پخش آن آغاز نشد.";
+        }
+      }
+      function stop(){
+        enabled=false;audio.pause();audio.currentTime=0;
+        button.textContent="▶ پخش موسیقی";
+        button.setAttribute("aria-pressed","false");
+        if(note)note.textContent="موسیقی خاموش است؛ هر زمان بخواهی می‌توانی دوباره پخشش کنی.";
+      }
+      button.addEventListener("click",()=>enabled?stop():start());
+      audio.addEventListener("ended",()=>{if(enabled){audio.currentTime=0;audio.play().catch(()=>stop());}});
+      audio.addEventListener("error",()=>{if(note)note.textContent="فایل موسیقی در این نسخه بارگذاری نشد؛ اتصال یا بستهٔ برنامه را بررسی کنید.";});
+      window.EMLAY_DUCK_MUSIC=function(value){ducked=!!value;setLevel();};
+      document.addEventListener("visibilitychange",()=>{
+        if(document.hidden&&enabled)audio.pause();
+        else if(!document.hidden&&enabled)audio.play().catch(()=>{});
+      });
+    })();
+
+    // نمایش کوتاه صفحه آغازین؛ سپس ورود به محیط اصلی برنامه.
+    window.addEventListener("load", () => {
+      const splashScreen = document.getElementById("appSplash");
+      window.setTimeout(() => splashScreen && splashScreen.classList.add("is-hidden"), 1500);
+    });
   </script>
 </body>
 </html>
