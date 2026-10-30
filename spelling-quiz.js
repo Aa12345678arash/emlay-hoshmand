@@ -1740,4 +1740,4 @@ window.EMLAY_SPELLING_QUIZ = {
        "explanation": "واژه با «ع» آغاز می‌شود و پایان آن «ت» است."
      }
    ]
-};;
+};
