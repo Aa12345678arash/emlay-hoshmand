@@ -630,7 +630,9 @@
           </button>
         </div>
 
+        <button class="practice-launch" type="button" onclick="openGuidedLesson()"><span style="font-size:28px">🎬</span><span><strong>آموزش اصلی املا؛ ببین، بشنو و یاد بگیر</strong><small>نمایش آرام متن، خواندن فارسی و هایلایت واژه‌های املایی</small></span></button>
         <button class="practice-launch" type="button" onclick="openDictationTexts()"><span style="font-size:28px">📖</span><span><strong>متن‌های املا</strong><small>دو متن آموزشی با نمایش مرحله‌ای برای هر درس</small></span></button>
+        <button class="practice-launch" type="button" onclick="openLearningReport()"><span style="font-size:28px">📊</span><span><strong>گزارش رنگی پیشرفت</strong><small>نمودار عملکرد، خطاها و چاپ یا ذخیره PDF</small></span></button>
 
         <div id="modeNotice" class="notice">
           بانک تمرین این درس در مرحله آماده‌سازی است.
@@ -652,6 +654,8 @@
   <script src="lesson-notes.js"></script>
   <script src="practice.js"></script>
   <script src="lesson1-suite.js"></script>
+  <script src="lesson-dictation.js"></script>
+  <script src="learning-report.js"></script>
   <script>
     "use strict";
 
@@ -665,6 +669,7 @@
     let progress = loadProgress();
     let activeChapter = "همه";
     let selectedLesson = null;
+    window.EMLAY_GET_PROGRESS = () => progress;
 
     function loadProgress() {
       try {
@@ -750,6 +755,7 @@
     function openLesson(id) {
       selectedLesson = lessons.find(item => item.id === id);
       if (!selectedLesson) return;
+      window.EMLAY_SELECTED_LESSON = selectedLesson;
 
       document.getElementById("selectedTitle").textContent =
         selectedLesson.icon + " درس " +
@@ -794,7 +800,7 @@
       document.querySelectorAll("[data-mode]").forEach(button => {
         const mode = button.dataset.mode;
         const quizCount = ((window.EMLAY_SPELLING_QUIZ || {})[id] || []).length;
-        const modeReady = canPractice && (mode === "words" ? quizCount > 0 : mode === "challenge" ? id === 1 : true);
+        const modeReady = canPractice && (mode === "words" ? quizCount > 0 : mode === "challenge" ? quizCount >= 5 : true);
         button.disabled = !modeReady;
         button.style.opacity = modeReady ? "1" : ".48";
         button.setAttribute("aria-disabled", String(!modeReady));
@@ -828,6 +834,7 @@
     function closeLesson() {
       document.getElementById("lessonPanel").classList.remove("show");
       selectedLesson = null;
+      window.EMLAY_SELECTED_LESSON = null;
     }
 
     document.getElementById("backButton")
