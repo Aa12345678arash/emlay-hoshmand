@@ -343,6 +343,7 @@
 
     .lesson-note { margin:14px 0; padding:15px; border:1px solid #dce7f8; border-radius:16px; background:#f7faff; }
     .lesson-note h3 { margin:0 0 8px; color:var(--navy); font-size:16px; }
+    .lesson-note .note-summary { padding:10px 12px; border-right:4px solid #e5a62b; border-radius:10px; background:#fff8e8; color:#34445e; line-height:2; }
     .lesson-note p { margin:7px 0; font-size:13px; }
     .lesson-note ul { margin:6px 0; padding-right:20px; font-size:13px; }
     .lesson-note .note-task { margin-top:10px; padding:10px; border-radius:11px; background:#fff7e6; color:#805b16; }
@@ -773,6 +774,14 @@
         noteBox.innerHTML = "";
         const heading = document.createElement("h3");
         heading.textContent = "📘 درسنامه آموزشی: " + note.title;
+        if (note.summary) {
+          const summary = document.createElement("p");
+          summary.className = "note-summary";
+          summary.textContent = "خلاصه درس: " + note.summary;
+          noteBox.append(heading, summary);
+        } else {
+          noteBox.appendChild(heading);
+        }
         const goal = document.createElement("p");
         goal.textContent = "هدف یادگیری: " + note.goal;
         const teaching = document.createElement("p");
