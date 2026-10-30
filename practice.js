@@ -262,10 +262,14 @@
           },85);
         }
         function speak(){
-          if(!("speechSynthesis"in window)||typeof SpeechSynthesisUtterance!=="function"){status.textContent="گفتار فارسی در این دستگاه در دسترس نیست.";return}
-          speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(item.segments[part]);u.lang="fa-IR";u.rate=.82;
-          const voices=speechSynthesis.getVoices();const v=voices.find(x=>/^fa(-|_)/i.test(x.lang))||voices.find(x=>/persian|فارسی/i.test(x.name));if(v)u.voice=v;
-          status.textContent="در حال خواندن متن…";u.onend=()=>status.textContent="خواندن این بخش تمام شد.";u.onerror=()=>status.textContent="پخش صدا انجام نشد؛ صدای فارسی گوشی را بررسی کن.";speechSynthesis.speak(u);
+          const speaker=window.EMLAY_SPEAKER;
+          if(!speaker){status.textContent="موتور خواندن در برنامه بارگذاری نشده است.";return;}
+          const accepted=speaker.speak(item.segments[part],.82,(event,message)=>{
+            if(event==="start")status.textContent="در حال خواندن متن…";
+            if(event==="done")status.textContent="خواندن این بخش تمام شد.";
+            if(event==="error")status.textContent=message||speaker.status()||"پخش صدا انجام نشد؛ تنظیمات گفتار فارسی گوشی را بررسی کن.";
+          });
+          if(!accepted)status.textContent=speaker.status()||"موتور گفتار فارسی در دسترس نیست.";
         }
         play.onclick=speak;next.onclick=()=>{if(part<item.segments.length-1){part++;showPart()}};
         showPart();
