@@ -108,10 +108,24 @@
     const fallback=(item.options||[]).filter(x=>!matchesSpelling(x,item.word));
     const generated=[];
     const confusables={"ا":"آ","آ":"ا","ت":"ط","ط":"ت","ث":"س","س":"ث","ص":"س","س":"ص","ذ":"ز","ز":"ذ","ض":"ظ","ظ":"ض","ح":"ه","ه":"ح","ق":"غ","غ":"ق"};
-    Array.from(item.word).forEach((letter,index)=>{
-      if(confusables[letter]) generated.push(Array.from(item.word).map((ch,i)=>i===index?confusables[letter]:ch).join(""));
+    const chars=Array.from(item.word);
+    chars.forEach((letter,index)=>{
+      if(confusables[letter]) generated.push(chars.map((ch,i)=>i===index?confusables[letter]:ch).join(""));
+      if(letter!=="‌" && !/\s/.test(letter)){
+        generated.push(chars.map((ch,i)=>i===index?"":ch).join(""));
+        generated.push(chars.map((ch,i)=>i===index?ch+ch:ch).join(""));
+      }
+      if(index<chars.length-1 && letter!=="‌" && chars[index+1]!=="‌" && !/\s/.test(letter+chars[index+1])){
+        const swapped=chars.slice();[swapped[index],swapped[index+1]]=[swapped[index+1],swapped[index]];generated.push(swapped.join(""));
+      }
     });
-    const uniqueDistractors=[...new Set([...distractors,...fallback,...generated])].filter(x=>!matchesSpelling(x,item.word));
+    const insertLetters=["ا","ی","و","ه","ن","ر","م","ت","س"];
+    for(let index=0;index<=chars.length;index++){
+      if(chars[index-1]==="‌" || chars[index]==="‌")continue;
+      insertLetters.forEach(letter=>generated.push([...chars.slice(0,index),letter,...chars.slice(index)].join("")));
+    }
+    const uniqueDistractors=[...new Set([...distractors,...fallback,...generated])]
+      .filter(x=>!matchesSpelling(x,item.word) && normalizeText(x)!==normalizeText(item.word));
     const options=shuffle([item.word,...uniqueDistractors]).slice(0,4);
     options.forEach(option=>{
       const b=document.createElement("button");b.className="practice-option";b.type="button";b.textContent=option;
