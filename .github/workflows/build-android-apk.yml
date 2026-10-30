@@ -10,6 +10,8 @@ on:
       - 'lesson-notes.js'
       - 'practice.js'
       - 'word-bank.js'
+      - 'spelling-quiz.js'
+      - 'dictation-texts.js'
       - 'android/**'
       - '.github/workflows/build-android-apk.yml'
   pull_request:
@@ -21,6 +23,8 @@ on:
       - 'lesson-notes.js'
       - 'practice.js'
       - 'word-bank.js'
+      - 'spelling-quiz.js'
+      - 'dictation-texts.js'
       - 'android/**'
       - '.github/workflows/build-android-apk.yml'
   workflow_dispatch:
@@ -55,7 +59,7 @@ jobs:
         shell: bash
         run: |
           mkdir -p android/app/src/main/assets/www
-          cp index.html lesson-data.js lesson-notes.js practice.js word-bank.js android/app/src/main/assets/www/
+          cp index.html lesson-data.js lesson-notes.js practice.js word-bank.js spelling-quiz.js dictation-texts.js android/app/src/main/assets/www/
 
       - name: ساخت APK آزمایشی
         working-directory: android
