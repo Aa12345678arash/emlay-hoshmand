@@ -12,7 +12,7 @@ const data = sandbox.window;
 const practiceSource = fs.readFileSync("practice.js", "utf8");
 const suiteSource = fs.readFileSync("lesson1-suite.js", "utf8");
 const indexSource = fs.readFileSync("index.html", "utf8");
-const inlineScripts = [...indexSource.matchAll(/<script(?:\\s[^>]*)?>([\\s\\S]*?)<\\/script>/gi)]
+const inlineScripts = [...indexSource.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/gi)]
   .map(match => match[1]).filter(source => source.trim());
 for (let i = 0; i < inlineScripts.length; i++) {
   try { new vm.Script(inlineScripts[i], { filename: "index-inline-" + (i + 1) + ".js" }); }
