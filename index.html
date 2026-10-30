@@ -586,6 +586,16 @@
         <div id="selectedChapter" class="panel-description"></div>
         <section id="lessonNote" class="lesson-note" aria-label="درسنامه آموزشی"></section>
         <div id="lessonContent" class="notice" aria-live="polite"></div>
+        <section id="teacherEditor" class="lesson-note" hidden aria-label="ورود محتوای درس آزاد">
+          <h3>✏️ املای معلم؛ تنظیم محتوای بومی کلاس</h3>
+          <p>متن نهایی درس آزاد را وارد کن. هر واژه را در یک خط و به شکل «واژه | معنی ساده» بنویس. واژه‌ها باید در متن واردشده وجود داشته باشند.</p>
+          <label for="teacherPassage">متن درس یا بند منتخب کلاس</label>
+          <textarea id="teacherPassage" rows="5" style="width:100%;box-sizing:border-box;padding:12px;border:1px solid #cbd8ea;border-radius:12px;font:inherit;line-height:2" placeholder="متن بومی تأییدشده کلاس را اینجا وارد کن..."></textarea>
+          <label for="teacherWords">واژه‌های مهم املایی؛ هر خط یک واژه و معنی</label>
+          <textarea id="teacherWords" rows="7" style="width:100%;box-sizing:border-box;padding:12px;border:1px solid #cbd8ea;border-radius:12px;font:inherit;line-height:2" placeholder="گویش | شیوه سخن گفتن مردم یک منطقه&#10;میراث | یادگار ارزشمند گذشتگان"></textarea>
+          <button id="teacherSave" class="practice-action" type="button">ذخیره و فعال‌سازی تمرین‌های این درس</button>
+          <p id="teacherStatus" class="practice-muted" aria-live="polite"></p>
+        </section>
         <p class="panel-description">
           یکی از روش‌های تمرین را انتخاب کن.
         </p>
@@ -755,6 +765,70 @@
       });
     }
 
+
+    const teacherStorageKey = "emlay-teacher-content-v1";
+    function readTeacherContent() {
+      try { return JSON.parse(localStorage.getItem(teacherStorageKey) || "{}"); }
+      catch (error) { return {}; }
+    }
+    function normalizeTeacherText(value) {
+      return String(value || "").normalize("NFC").replace(/[يى]/g,"ی").replace(/ك/g,"ک")
+        .replace(/[\u200c\u200f\u202a-\u202e\sـًٌٍَُِّْٰ]/g,"");
+    }
+    function applyTeacherContent(id, saved) {
+      const ready = Boolean(saved && saved.text && Array.isArray(saved.words) && saved.words.length >= 5 &&
+        saved.words.every(item => item.word && item.meaning && normalizeTeacherText(saved.text).includes(normalizeTeacherText(item.word))));
+      if (!ready) return false;
+      window.EMLAY_WORD_BANK[id] = saved.words.map(item => item.word);
+      window.EMLAY_SPELLING_QUIZ[id] = saved.words.map(item => ({
+        word:item.word, meaning:item.meaning, options:[item.word], errors:[],
+        explanation:"این واژه از متن بومی ثبت‌شده توسط آموزگار انتخاب شده است."
+      }));
+      const segments = saved.text.trim().split(/(?<=[.!؟?])\s+/).filter(Boolean);
+      window.EMLAY_DICTATION_TEXTS[id] = [{
+        id:"teacher-"+id, title:"متن بومی کلاس", segments:segments.length ? segments : [saved.text.trim()],
+        focusWords:saved.words.map(item => item.word)
+      }];
+      return true;
+    }
+    function renderTeacherEditor(id, lessonData) {
+      const panel = document.getElementById("teacherEditor");
+      panel.hidden = !lessonData.teacherInput;
+      if (!lessonData.teacherInput) return false;
+      const savedAll = readTeacherContent();
+      const saved = savedAll[id] || {};
+      const passage = document.getElementById("teacherPassage");
+      const words = document.getElementById("teacherWords");
+      const status = document.getElementById("teacherStatus");
+      passage.value = saved.text || "";
+      words.value = (saved.words || []).map(item => item.word + " | " + item.meaning).join("\n");
+      const ready = applyTeacherContent(id, saved);
+      status.textContent = ready
+        ? "محتوای این درس ذخیره شده است؛ پنج شیوه تمرین و متن شنیداری با همین واژه‌ها فعال می‌شوند."
+        : "برای فعال‌شدن تمرین‌ها، متن بومی و دست‌کم پنج واژه همراه با معنی وارد و ذخیره کن.";
+      document.getElementById("teacherSave").onclick = () => {
+        const text = passage.value.trim();
+        const parsed = words.value.split(/\r?\n/).map(line => {
+          const parts = line.split("|");
+          return {word:(parts[0] || "").trim(), meaning:parts.slice(1).join("|").trim()};
+        }).filter(item => item.word && item.meaning);
+        const normalizedText = normalizeTeacherText(text);
+        const missing = parsed.filter(item => !normalizedText.includes(normalizeTeacherText(item.word)));
+        if (!text || parsed.length < 5 || missing.length) {
+          status.textContent = !text ? "ابتدا متن بومی را وارد کن."
+            : parsed.length < 5 ? "برای فعال‌شدن چالش پایانی، دست‌کم پنج واژه همراه با معنی لازم است."
+            : "این واژه‌ها در متن پیدا نشدند: " + missing.map(item => item.word).join("، ");
+          return;
+        }
+        const all = readTeacherContent();
+        all[id] = {text, words:parsed, updatedAt:new Date().toISOString()};
+        try { localStorage.setItem(teacherStorageKey, JSON.stringify(all)); }
+        catch (error) { status.textContent = "ذخیره‌سازی در این دستگاه ممکن نشد؛ فضای مرورگر را بررسی کن."; return; }
+        openLesson(id);
+      };
+      return ready;
+    }
+
     function openLesson(id) {
       selectedLesson = lessons.find(item => item.id === id);
       if (!selectedLesson) return;
@@ -798,13 +872,15 @@
       }
 
       const lessonData = window.EMLAY_LESSON_DATA.find(item => item.id === id);
+      const teacherReady = renderTeacherEditor(id, lessonData);
+
       const content = document.getElementById("lessonContent");
       content.className = "notice";
       content.textContent = "صفحات نگارش: " + lessonData.pages + " | فعالیت‌های شناسایی‌شده: " + lessonData.activity +
         (lessonData.teacherInput ? " این درس آزاد است؛ آموزگار باید واژه‌های متن بومی کلاس را وارد کند." : "");
       const wordPool = (window.EMLAY_WORD_BANK && window.EMLAY_WORD_BANK[id]) || [];
       const wordCount = wordPool.length;
-      const canPractice = wordCount > 0 && !lessonData.teacherInput;
+      const canPractice = wordCount > 0 && (!lessonData.teacherInput || teacherReady);
       document.querySelectorAll("[data-mode]").forEach(button => {
         const mode = button.dataset.mode;
         const quizCount = ((window.EMLAY_SPELLING_QUIZ || {})[id] || []).length;
