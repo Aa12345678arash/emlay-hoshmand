@@ -1,4 +1,25 @@
 "use strict";
+/* واژه‌خوان مشترک فارسی؛ اولویت با موتور بومی اندروید */
+(function(){
+ let callback=null;
+ window.EMLAY_NATIVE_SPEECH_EVENT=function(type,message){if(callback)callback(type,message||"");};
+ window.EMLAY_SPEAKER={
+  available:function(){try{return !!(window.AndroidTTS&&AndroidTTS.isReady());}catch(e){return false;}},
+  status:function(){try{return window.AndroidTTS?AndroidTTS.status():"";}catch(e){return "";}},
+  speak:function(text,rate,onEvent){
+   callback=typeof onEvent==="function"?onEvent:null;
+   try{if(window.AndroidTTS&&AndroidTTS.isReady())return AndroidTTS.speak(String(text),Number(rate)||.82);}catch(e){}
+   if(!("speechSynthesis"in window)||typeof SpeechSynthesisUtterance!=="function")return false;
+   try{const synth=window.speechSynthesis;synth.cancel();const u=new SpeechSynthesisUtterance(String(text));u.lang="fa-IR";u.rate=Number(rate)||.82;u.pitch=1;
+    const voices=synth.getVoices();const fa=voices.find(v=>/^fa(-|_)/i.test(v.lang))||voices.find(v=>/persian|فارسی/i.test(v.name));if(fa)u.voice=fa;
+    u.onstart=()=>{if(callback)callback("start","");};u.onend=()=>{if(callback)callback("done","");};u.onerror=()=>{if(callback)callback("error","پخش گفتار انجام نشد؛ صدای فارسی گوشی را بررسی کن.");};synth.speak(u);return true;
+   }catch(e){return false;}
+  },
+  stop:function(){try{if(window.AndroidTTS)AndroidTTS.stop();}catch(e){}try{if(window.speechSynthesis)window.speechSynthesis.cancel();}catch(e){}},
+  pause:function(){try{if(window.speechSynthesis)window.speechSynthesis.pause();else this.stop();}catch(e){this.stop();}}
+ };
+})();
+
 (function () {
   const wordBank = window.EMLAY_WORD_BANK || {};
   const modeNames = {words:"شکار واژه‌ها",letters:"کامل کردن واژه",listening:"گوش کن و بنویس",sentence:"املا در جمله",challenge:"چالش پایانی"};
@@ -176,38 +197,15 @@
     body.append(play,input,b);speakTarget();input.focus();
   }
   function speakTarget(){
-    const synth=window.speechSynthesis;
-    if(!synth || typeof window.SpeechSynthesisUtterance!=="function"){
-      showFeedback("قابلیت پخش گفتار در این مرورگر فعال نیست. لطفاً صفحه را با Chrome باز کنید.",false);
-      return;
-    }
-    showFeedback("در حال آماده‌سازی پخش واژه…",false);
-    try{
-      synth.cancel();
-      synth.resume();
-      const u=new SpeechSynthesisUtterance(target);
-      u.lang="fa-IR";
-      u.rate=.58;
-      u.pitch=1;
-      const voices=synth.getVoices();
-      const faVoice=voices.find(v=>/^fa(-|_)/i.test(v.lang)) ||
-        voices.find(v=>/persian|فارسی/i.test(v.name));
-      if(faVoice)u.voice=faVoice;
-      u.onstart=()=>showFeedback("در حال پخش واژه؛ با دقت گوش کن.",true);
-      u.onend=()=>showFeedback("پخش واژه تمام شد. برای شنیدن دوباره دکمه پخش را بزن.",true);
-      u.onerror=(event)=>{
-        const reason=event && event.error ? event.error : "نامشخص";
-        showFeedback("پخش صدا انجام نشد ("+reason+"). بررسی کنید موتور تبدیل متن به گفتار و صدای فارسی در گوشی فعال باشد.",false);
-      };
-      synth.speak(u);
-      if(!voices.length){
-        setTimeout(()=>{
-          if(synth.speaking || synth.pending)return;
-          showFeedback("مرورگر صدایی برای پخش پیدا نکرد. تنظیمات تبدیل متن به گفتار و نصب صدای فارسی گوشی را بررسی کنید.",false);
-        },1800);
-      }
-    }catch(error){
-      showFeedback("هنگام پخش صدا خطایی رخ داد. یک بار صفحه را تازه‌سازی کنید.",false);
+    showFeedback("در حال آماده‌سازی واژه‌خوان…",false);
+    const ok=window.EMLAY_SPEAKER && window.EMLAY_SPEAKER.speak(target,.72,(event,message)=>{
+      if(event==="start")showFeedback("🔊 در حال خواندن واژه؛ با دقت گوش کن.",true);
+      if(event==="done")showFeedback("خواندن واژه تمام شد. برای تکرار، دکمه پخش را بزن.",true);
+      if(event==="error")showFeedback(message||"پخش صدا انجام نشد؛ صدای فارسی گوشی را بررسی کن.",false);
+    });
+    if(!ok){
+      const status=window.EMLAY_SPEAKER?window.EMLAY_SPEAKER.status():"";
+      showFeedback(status||"واژه‌خوان در دسترس نیست. موتور گفتار و صدای فارسی گوشی را فعال کن.",false);
     }
   }
   function renderSentence(){
