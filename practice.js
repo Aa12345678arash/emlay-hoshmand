@@ -281,9 +281,9 @@
           next.disabled=part===item.segments.length-1;
           let pos=0;
           const timer=window.setInterval(()=>{
-            reader.textContent=text.slice(0,pos);pos+=2;
+            reader.textContent=text.slice(0,pos);pos+=1;
             if(pos>=text.length){window.clearInterval(timer);reader.textContent=text;status.textContent="این بخش آماده است؛ می‌توانی آن را گوش کنی یا بخوانی."}
-          },24);
+          },85);
         }
         function speak(){
           if(!("speechSynthesis"in window)||typeof SpeechSynthesisUtterance!=="function"){status.textContent="گفتار فارسی در این دستگاه در دسترس نیست.";return}
