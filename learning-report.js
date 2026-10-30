@@ -38,7 +38,7 @@
    el.querySelector("#reportPrint").onclick=()=>{
      const clone=el.querySelector(".report-sheet").cloneNode(true);
      clone.querySelectorAll(".report-actions,.report-close").forEach(x=>x.remove());
-     const printHtml='<!doctype html><html lang="fa" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>گزارش پیشرفت املای هوشمند</title><style>
+     const printHtml=`<!doctype html><html lang="fa" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>گزارش پیشرفت املای هوشمند</title><style>
        *{box-sizing:border-box;-webkit-print-color-adjust:exact;print-color-adjust:exact}
        body{font-family:Tahoma,Arial,sans-serif;background:#fff;color:#20324f;line-height:2;padding:8mm;margin:0}
        .report-sheet{max-width:100%;margin:0;padding:0;background:#fff}
@@ -51,7 +51,7 @@
        .report-chip{display:inline-block;margin:4px;padding:7px 10px;border-radius:18px;background:#fff0e8;color:#a34a2e;font-size:12px}
        .report-foot{border-top:1px solid #e5ebf3;margin-top:18px;text-align:center;color:#60718b;font-size:11px}
        @page{size:A4;margin:8mm}
-     </style></head><body>'+clone.outerHTML+'</body></html>';
+     </style></head><body>${clone.outerHTML}</body></html>`;
      if(window.AndroidPrint&&typeof window.AndroidPrint.printHtml==="function")window.AndroidPrint.printHtml(printHtml);
      else window.print();
    };
