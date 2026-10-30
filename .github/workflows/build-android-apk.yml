@@ -63,6 +63,16 @@ jobs:
           mkdir -p android/app/src/main/assets/www
           cp index.html lesson-data.js lesson-notes.js practice.js word-bank.js spelling-quiz.js dictation-texts.js lesson1-suite.js android/app/src/main/assets/www/
 
+      - name: بررسی نحو فایل‌های جاوااسکریپت
+        run: |
+          node --check lesson-data.js
+          node --check word-bank.js
+          node --check spelling-quiz.js
+          node --check dictation-texts.js
+          node --check lesson-notes.js
+          node --check practice.js
+          node --check lesson1-suite.js
+
       - name: ساخت APK آزمایشی
         working-directory: android
         run: gradle --no-daemon assembleDebug
