@@ -23,7 +23,7 @@
  const norm=s=>String(s||"").replace(/[يى]/g,"ی").replace(/ك/g,"ک").replace(/[ًٌٍَُِّْٰـ]/g,"").replace(/[\u200c\s]/g,"");
  function duck(on){if(typeof window.EMLAY_DUCK_MUSIC==="function")window.EMLAY_DUCK_MUSIC(on);}
  function getVoice(){const vs=speechSynthesis.getVoices();return vs.find(v=>/^fa(-|_)/i.test(v.lang))||vs.find(v=>/persian|فارسی/i.test(v.name))||null;}
- function stop(){playing=false;if(tokenTimer)clearInterval(tokenTimer);tokenTimer=null;if("speechSynthesis"in window)speechSynthesis.cancel();activeUtterance=null;duck(false);}
+ function stop(){playing=false;if(tokenTimer)clearInterval(tokenTimer);tokenTimer=null;if(window.EMLAY_SPEAKER)window.EMLAY_SPEAKER.stop();else if("speechSynthesis"in window)speechSynthesis.cancel();activeUtterance=null;duck(false);}
  function buildStage(text,focusWords){
    const stage=overlay.querySelector(".guided-stage");stage.innerHTML="";wordSpans=[];
    const tokens=text.match(/\s+|[^\s]+/g)||[];
@@ -40,16 +40,16 @@
    highlight(0);tokenTimer=setInterval(()=>{wordIndex++;if(wordIndex>=wordSpans.length){clearInterval(tokenTimer);tokenTimer=null;return;}highlight(wordIndex);},step);
  }
  function speak(text){
-   if(!("speechSynthesis"in window)||typeof SpeechSynthesisUtterance!=="function"){overlay.querySelector(".guided-status").textContent="گفتار فارسی در این گوشی در دسترس نیست؛ صدای فارسی سیستم را نصب یا فعال کن.";return;}
    stop();playing=true;duck(true);const status=overlay.querySelector(".guided-status");
-   const u=new SpeechSynthesisUtterance(text);activeUtterance=u;u.lang="fa-IR";u.rate=rate;u.pitch=1;u.volume=1;
-   const voice=getVoice();if(voice)u.voice=voice;
-   const estimated=Math.max(2200,(text.split(/\s+/).length*430)/rate);
+   const estimated=Math.max(2200,(text.split(/\\s+/).length*430)/rate);
    fallbackHighlight(estimated);
-   u.onboundary=e=>{if(e.name==="word"&&typeof e.charIndex==="number"){let count=0;for(let i=0;i<wordSpans.length;i++){const pos=wordSpans[i].textContent;const ix=text.indexOf(pos,count);if(ix>=0){count=ix+pos.length;if(ix<=e.charIndex){highlight(i);}}}}};
-   u.onend=()=>{stop();status.textContent="خواندن این بخش تمام شد؛ می‌توانی دوباره گوش بدهی یا به بخش بعد بروی.";};
-   u.onerror=()=>{stop();status.textContent="پخش صدا متوقف شد. صدای فارسی گوشی را بررسی کن.";};
-   status.textContent="هم‌زمان با خواندن، واژه‌های مهم را دنبال کن.";speechSynthesis.speak(u);
+   const ok=window.EMLAY_SPEAKER&&window.EMLAY_SPEAKER.speak(text,rate,(event,message)=>{
+     if(event==="start"){status.textContent="🔊 با صدای فارسی، متن را دنبال کن.";}
+     if(event==="done"){stop();status.textContent="خواندن این بخش تمام شد؛ می‌توانی دوباره گوش بدهی یا به بخش بعد بروی.";}
+     if(event==="error"){stop();status.textContent=message||"پخش صدا انجام نشد؛ صدای فارسی گوشی را بررسی کن.";}
+   });
+   if(!ok){stop();status.textContent=(window.EMLAY_SPEAKER&&window.EMLAY_SPEAKER.status())||"گفتار فارسی در این گوشی در دسترس نیست؛ صدای فارسی سیستم را نصب یا فعال کن.";}
+   else status.textContent="متن با صدای فارسی خوانده می‌شود؛ واژه‌های برجسته را دنبال کن.";
  }
  function open(){
    if(!window.EMLAY_DICTATION_TEXTS||!window.EMLAY_SELECTED_LESSON){alert("ابتدا یک درس را انتخاب کن.");return;}
@@ -65,7 +65,7 @@
      overlay.dataset.segment=String(seg);overlay.dataset.item=String(idx);
    }
    overlay.querySelector("#guidedPlay").onclick=()=>{const item=items[idx];buildStage(item.segments[seg],item.focusWords||[]);speak(item.segments[seg]);};
-   overlay.querySelector("#guidedPause").onclick=()=>{if(speechSynthesis.speaking){speechSynthesis.pause();playing=false;if(tokenTimer)clearInterval(tokenTimer);status.textContent="مکث شد؛ برای ادامه دوباره خواندن را بزن.";duck(false);}};
+   overlay.querySelector("#guidedPause").onclick=()=>{if(window.EMLAY_SPEAKER){window.EMLAY_SPEAKER.pause();playing=false;if(tokenTimer)clearInterval(tokenTimer);status.textContent="مکث شد؛ برای ادامه دوباره خواندن را بزن.";duck(false);}};
    overlay.querySelector("#guidedPrev").onclick=()=>{if(seg>0)seg--;else if(idx>0){idx--;seg=items[idx].segments.length-1;}show();};
    overlay.querySelector("#guidedNext").onclick=()=>{if(seg<items[idx].segments.length-1)seg++;else if(idx<items.length-1){idx++;seg=0;}else{status.textContent="آفرین! همه بخش‌های این متن را مرور کردی.";return;}show();};
    overlay.querySelector("#guidedExit").onclick=()=>{stop();overlay.remove();overlay=null;};
