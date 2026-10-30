@@ -106,7 +106,9 @@
     const list=document.createElement("div");list.className="practice-options";
     body.append(meaning,hint,source,list);
     const distractors=(item.errors||[]).map(x=>x.form);
-    const options=shuffle([item.word,...(distractors.length?distractors:item.options.filter(x=>!matchesSpelling(x,item.word)))]).slice(0,4);
+    const fallback=(item.options||[]).filter(x=>!matchesSpelling(x,item.word));
+    const uniqueDistractors=[...new Set([...distractors,...fallback])].filter(x=>!matchesSpelling(x,item.word));
+    const options=shuffle([item.word,...uniqueDistractors]).slice(0,4);
     options.forEach(option=>{
       const b=document.createElement("button");b.className="practice-option";b.type="button";b.textContent=option;
       b.onclick=()=>{
