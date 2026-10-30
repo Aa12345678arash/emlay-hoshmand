@@ -1,0 +1,15 @@
+(function(){
+"use strict";
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+window.openWritingTest=function(){
+ const lesson=window.EMLAY_SELECTED_LESSON;
+ if(!lesson){alert("ابتدا یک درس را انتخاب کنید.");return;}
+ const bank=window.EMLAY_WORD_BANK||{};
+ const quiz=window.EMLAY_SPELLING_QUIZ||{};
+ const words=[...new Set([...(bank[lesson.id]||[]),...(quiz[lesson.id]||[]).map(x=>x.word)].filter(Boolean))].slice(0,6);
+ const title=lesson.title||("درس "+lesson.id);
+ const list=words.map(w=>"<li>"+esc(w)+"</li>").join("");
+ const html='<!doctype html><html lang="fa" dir="rtl"><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>آزمون نگارش</title><style>body{font:16px Tahoma;line-height:2;color:#172b49}.sheet{max-width:800px;margin:20px auto;padding:25px;border:1px solid #ccd5e2}h1{text-align:center;font-size:23px}.meta{display:flex;gap:20px;flex-wrap:wrap;border-bottom:2px solid #234d83;padding:12px 0}.line{display:inline-block;border-bottom:1px dotted #555;min-width:130px}.answer{height:42px;border-bottom:1px dotted #888}.paragraph{height:170px;border:1px solid #aaa;margin:8px 0}.actions{text-align:center;margin:20px}.actions button{padding:10px 18px;margin:5px;background:#245da6;color:white;border:0;border-radius:8px;font:inherit}@media print{.actions{display:none}.sheet{border:0;margin:0}@page{size:A4;margin:14mm}}</style><main class="sheet"><h1>آزمون نگارش پایه پنجم</h1><div style="text-align:center">درس '+esc(lesson.id)+' ـ '+esc(title)+'</div><div class="meta">نام و نام خانوادگی: <i class="line"></i> کلاس: <i class="line" style="min-width:60px"></i> تاریخ: <i class="line" style="min-width:90px"></i></div><p>زمان پیشنهادی: ۲۰ دقیقه</p><h3>۱. واژه‌آموزی</h3><p>واژه‌های زیر را بخوان و معنی دو مورد را بنویس.</p><ol>'+list+'</ol><p>معنی واژه‌ها: <i class="line"></i> و <i class="line"></i></p><h3>۲. جمله‌سازی</h3><p>با دو واژه از فهرست بالا جمله بساز.</p><div class="answer"></div><div class="answer"></div><h3>۳. گسترش جمله</h3><p>یکی از جمله‌های خود را با افزودن زمان، مکان یا ویژگی گسترش بده.</p><div class="answer"></div><h3>۴. بندنویسی</h3><p>درباره موضوع درس «'+esc(title)+'» یک بند پنج‌جمله‌ای بنویس. آغاز، میانه و پایان نوشته را رعایت کن.</p><div class="paragraph"></div><p style="text-align:center;font-size:12px">سازنده و طراح: آرش سلیمی ـ املای هوشمند پنجم</p></main><div class="actions"><button onclick="print()">چاپ / ذخیره PDF</button><button onclick="shareText()">ارسال متن آزمون</button></div><script>function shareText(){const t=document.querySelector(".sheet").innerText;if(navigator.share)navigator.share({title:"آزمون نگارش",text:t}).catch(()=>{});else if(navigator.clipboard)navigator.clipboard.writeText(t).then(()=>alert("متن آزمون کپی شد."));}</script></html>';
+ const win=window.open("","_blank");if(!win){alert("اجازه بازشدن پنجره جدید را فعال کنید.");return;}win.document.open();win.document.write(html);win.document.close();
+};
+})();
