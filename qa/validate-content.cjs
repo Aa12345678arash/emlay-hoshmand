@@ -31,7 +31,7 @@ assert(Object.keys(data.EMLAY_LESSON_NOTES || {}).length === 17, "درسنامه
 assert(Object.keys(data.EMLAY_DICTATION_TEXTS || {}).length === 17, "متن املا برای همه ۱۷ درس موجود نیست.");
 assert(Object.keys(data.EMLAY_SPELLING_QUIZ || {}).length === 17, "بانک شکار واژه‌ها برای همه ۱۷ درس موجود نیست.");
 assert(practiceSource.includes("let selectedLesson=null;") &&
-  (practiceSource.match(/selectedLesson=window\\.EMLAY_SELECTED_LESSON\\|\\|null;/g) || []).length >= 2,
+  (practiceSource.split("selectedLesson=window.EMLAY_SELECTED_LESSON||null;").length - 1) >= 2,
   "اتصال تمرین‌ها به درس انتخاب‌شده کامل نیست.");
 assert(suiteSource.includes("activeLessonId=Number(id)") &&
   suiteSource.includes("lessonId:activeLessonId"),
