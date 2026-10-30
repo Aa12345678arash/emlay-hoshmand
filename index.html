@@ -786,7 +786,7 @@
         const swaps = {"ا":"آ","آ":"ا","ت":"ط","ط":"ت","ث":"س","س":"ث","ص":"س","ذ":"ز","ز":"ذ","ض":"ظ","ظ":"ض","ح":"ه","ه":"ح","ق":"غ","غ":"ق"};
         chars.forEach((letter,index) => {
           if (swaps[letter]) candidates.push(chars.map((ch,i)=>i===index?swaps[letter]:ch).join(""));
-          if (letter !== "‌" && !/\\s/.test(letter)) {
+          if (letter !== "‌" && !/\s/.test(letter)) {
             candidates.push(chars.map((ch,i)=>i===index?"":ch).join(""));
             candidates.push(chars.map((ch,i)=>i===index?ch+ch:ch).join(""));
           }
@@ -800,7 +800,7 @@
             candidates.push([...chars.slice(0,i),letter,...chars.slice(i)].join(""));
           }
         });
-        const norm = value => String(value||"").normalize("NFC").replace(/[يى]/g,"ی").replace(/ك/g,"ک").replace(/[\\u200c\\sـًٌٍَُِّْٰ]/g,"");
+        const norm = value => String(value||"").normalize("NFC").replace(/[يى]/g,"ی").replace(/ك/g,"ک").replace(/[\u200c\sـًٌٍَُِّْٰ]/g,"");
         const distractors = [...new Set(candidates)].filter(value => value && norm(value)!==norm(item.word));
         const chosen = distractors.slice(0,3);
         const errors = chosen.map(form=>({form,type:"صورت نادرست آموزشی",why:"به ترتیب و شکل حروف واژه توجه کن."}));
