@@ -107,7 +107,12 @@
     body.append(meaning,hint,source,list);
     const distractors=(item.errors||[]).map(x=>x.form);
     const fallback=(item.options||[]).filter(x=>!matchesSpelling(x,item.word));
-    const uniqueDistractors=[...new Set([...distractors,...fallback])].filter(x=>!matchesSpelling(x,item.word));
+    const generated=[];
+    const confusables={"ا":"آ","آ":"ا","ت":"ط","ط":"ت","ث":"س","س":"ث","ص":"س","س":"ص","ذ":"ز","ز":"ذ","ض":"ظ","ظ":"ض","ح":"ه","ه":"ح","ق":"غ","غ":"ق"};
+    Array.from(item.word).forEach((letter,index)=>{
+      if(confusables[letter]) generated.push(Array.from(item.word).map((ch,i)=>i===index?confusables[letter]:ch).join(""));
+    });
+    const uniqueDistractors=[...new Set([...distractors,...fallback,...generated])].filter(x=>!matchesSpelling(x,item.word));
     const options=shuffle([item.word,...uniqueDistractors]).slice(0,4);
     options.forEach(option=>{
       const b=document.createElement("button");b.className="practice-option";b.type="button";b.textContent=option;
