@@ -877,7 +877,7 @@
       const content = document.getElementById("lessonContent");
       content.className = "notice";
       content.textContent = "صفحات نگارش: " + lessonData.pages + " | فعالیت‌های شناسایی‌شده: " + lessonData.activity +
-        (lessonData.teacherInput ? " این درس آزاد است؛ آموزگار باید واژه‌های متن بومی کلاس را وارد کند." : "");
+        (lessonData.teacherInput ? (teacherReady ? " محتوای بومی آموزگار ذخیره شده است." : " این درس آزاد است؛ آموزگار می‌تواند متن بومی کلاس را وارد کند.") : "");
       const wordPool = (window.EMLAY_WORD_BANK && window.EMLAY_WORD_BANK[id]) || [];
       const wordCount = wordPool.length;
       const canPractice = wordCount > 0 && (!lessonData.teacherInput || teacherReady);
