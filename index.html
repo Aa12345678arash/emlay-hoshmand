@@ -516,6 +516,7 @@
   <script src="dictation-texts.js"></script>
   <script src="lesson-notes.js"></script>
   <script src="practice.js"></script>
+  <script src="lesson1-suite.js"></script>
   <script>
     "use strict";
 
@@ -681,6 +682,7 @@
       }
 
       document.getElementById("lessonPanel").classList.add("show");
+      if (window.EMLAY_LESSON1_SUITE) window.EMLAY_LESSON1_SUITE.mount(id);
 
       document.getElementById("lessonPanel").scrollIntoView({
         behavior: "smooth",
