@@ -774,13 +774,10 @@
         noteBox.innerHTML = "";
         const heading = document.createElement("h3");
         heading.textContent = "📘 درسنامه آموزشی: " + note.title;
-        if (note.summary) {
-          const summary = document.createElement("p");
+        const summary = note.summary ? document.createElement("p") : null;
+        if (summary) {
           summary.className = "note-summary";
           summary.textContent = "خلاصه درس: " + note.summary;
-          noteBox.append(heading, summary);
-        } else {
-          noteBox.appendChild(heading);
         }
         const goal = document.createElement("p");
         goal.textContent = "هدف یادگیری: " + note.goal;
@@ -795,7 +792,7 @@
         const task = document.createElement("p");
         task.className = "note-task";
         task.textContent = "🎯 تمرین پیشنهادی: " + note.task;
-        noteBox.append(heading, goal, teaching, tipsTitle, tips, example, task);
+        noteBox.append(heading, ...(summary ? [summary] : []), goal, teaching, tipsTitle, tips, example, task);
       } else {
         noteBox.textContent = "درسنامه این درس در حال آماده‌سازی است.";
       }
