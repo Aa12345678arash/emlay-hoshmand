@@ -50,6 +50,11 @@ assert(indexSource.includes('id="teacherEditor"') &&
   indexSource.includes("saved.words.length >= 5") &&
   indexSource.includes("(!lessonData.teacherInput || teacherReady)"),
   "ورود، ذخیره و فعال‌سازی محتوای درس‌های آزاد کامل نیست.");
+assert(indexSource.includes("function makeTeacherQuestion") &&
+  indexSource.includes("options:[item.word,...chosen]") &&
+  indexSource.includes("const chosen = distractors.slice(0,3)") &&
+  indexSource.includes("const errors = chosen.map"),
+  "ساخت سه گزینه انحرافی و بازخورد برای آزمون درس‌های آزاد کامل نیست.");
 
 for (let id = 1; id <= 17; id++) {
   const passages = data.EMLAY_DICTATION_TEXTS[id] || [];
