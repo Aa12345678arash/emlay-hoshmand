@@ -11,12 +11,29 @@
   overlay.innerHTML='<div class="practice-card"><div class="practice-top"><button type="button" class="back-button" id="practiceExit">← خروج از تمرین</button><span class="practice-muted" id="practiceCounter"></span></div><h2 id="practiceTitle">تمرین</h2><div class="practice-question" id="practiceQuestion"></div><div id="practiceBody"></div><div id="practiceFeedback" class="practice-feedback" hidden aria-live="polite"></div><button type="button" class="practice-action" id="practiceContinue" hidden>ادامه</button></div>';
   document.body.appendChild(overlay);
   const $=id=>document.getElementById(id), body=$("practiceBody");
+  // مقایسه املایی باید تفاوت فاصله معمولی و نیم‌فاصله را از خودِ املای واژه جدا کند.
+  // بنابراین برای سنجش واژه، فاصله و نیم‌فاصله حذف می‌شوند؛ اما در متن اصلی دست‌نخورده می‌مانند.
   function normalizeText(value){
     return String(value||"").normalize("NFC")
       .replace(/[يى]/g,"ی").replace(/ك/g,"ک")
-      // نیم‌فاصله (U+200C) عمداً حفظ می‌شود تا خطای املایی نادیده گرفته نشود.
-      .replace(/[\u200f\u202a-\u202e\sـ]/g,"")
+      .replace(/[\u200c\u200f\u202a-\u202e\sـ]/g,"")
+      .replace(/[ًٌٍَُِّْٰـ]/g,"")
       .replace(/[.,،؛:!?؟"'«»()\[\]{}]/g,"");
+  }
+  function containsTargetPhrase(text, expected){
+    const tokens=String(text||"").normalize("NFC")
+      .replace(/[يى]/g,"ی").replace(/ك/g,"ک")
+      .split(/[\s]+/).filter(Boolean);
+    const wanted=normalizeText(expected);
+    if(!wanted)return false;
+    for(let start=0;start<tokens.length;start++){
+      let joined="";
+      for(let end=start;end<Math.min(tokens.length,start+4);end++){
+        joined+=tokens[end];
+        if(normalizeText(joined)===wanted)return true;
+      }
+    }
+    return false;
   }
   function shuffle(items){
     const a=[...items];
@@ -182,8 +199,7 @@
     const b=document.createElement("button");b.className="practice-action";b.textContent="بررسی ساختار جمله";b.onclick=()=>{
       const raw=input.value.trim();
       const words=raw.split(/[\s،؛,.!?؟]+/).map(normalizeText).filter(Boolean);
-      const t=normalizeText(target);
-      const hasTarget=words.includes(t);
+      const hasTarget=containsTargetPhrase(raw,target);
       const enoughWords=words.length>=3;
       const hasEnding=/[.!؟?]$/.test(raw);
       const valid=hasTarget && enoughWords && hasEnding;
