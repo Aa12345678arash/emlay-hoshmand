@@ -124,6 +124,7 @@ public class MainActivity extends Activity {
 
     @Override
     protected void onDestroy() {
+        if (textToSpeech != null) { textToSpeech.stop(); textToSpeech.shutdown(); textToSpeech = null; }
         if (webView != null) {
             webView.stopLoading();
             webView.destroy();
