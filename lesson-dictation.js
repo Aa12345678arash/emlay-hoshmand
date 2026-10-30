@@ -41,15 +41,16 @@
  }
  function speak(text){
    stop();playing=true;duck(true);const status=overlay.querySelector(".guided-status");
-   const estimated=Math.max(2200,(text.split(/\\s+/).length*430)/rate);
+   // حرکت متن مستقل از موتور گفتار آغاز می‌شود؛ نبود صدای فارسی نباید نمایش را متوقف کند.
+   const estimated=Math.max(4500,(text.trim().split(/\s+/).length*900)/rate);
    fallbackHighlight(estimated);
+   status.textContent="متن به‌صورت مرحله‌ای نمایش داده می‌شود؛ در صورت آماده‌بودن صدای فارسی، هم‌زمان خوانده خواهد شد.";
    const ok=window.EMLAY_SPEAKER&&window.EMLAY_SPEAKER.speak(text,rate,(event,message)=>{
-     if(event==="start"){status.textContent="🔊 با صدای فارسی، متن را دنبال کن.";}
-     if(event==="done"){stop();status.textContent="خواندن این بخش تمام شد؛ می‌توانی دوباره گوش بدهی یا به بخش بعد بروی.";}
-     if(event==="error"){stop();status.textContent=message||"پخش صدا انجام نشد؛ صدای فارسی گوشی را بررسی کن.";}
+     if(event==="start"){status.textContent="🔊 صدای فارسی فعال است؛ واژه‌ها را دنبال کن.";}
+     if(event==="done"){if(tokenTimer){clearInterval(tokenTimer);tokenTimer=null;}wordSpans.forEach(s=>s.style.opacity="1");clearActive();playing=false;duck(false);status.textContent="خواندن این بخش تمام شد؛ می‌توانی دوباره گوش بدهی یا به بخش بعد بروی.";}
+     if(event==="error"){status.textContent=(message||"صدای فارسی در دسترس نیست.")+" نمایش متن مستقل ادامه دارد.";}
    });
-   if(!ok){stop();status.textContent=(window.EMLAY_SPEAKER&&window.EMLAY_SPEAKER.status())||"گفتار فارسی در این گوشی در دسترس نیست؛ صدای فارسی سیستم را نصب یا فعال کن.";}
-   else status.textContent="متن با صدای فارسی خوانده می‌شود؛ واژه‌های برجسته را دنبال کن.";
+   if(!ok){status.textContent=((window.EMLAY_SPEAKER&&window.EMLAY_SPEAKER.status())||"گفتار فارسی در این گوشی در دسترس نیست.")+" نمایش مرحله‌ای متن ادامه دارد.";}
  }
  function open(){
    if(!window.EMLAY_DICTATION_TEXTS||!window.EMLAY_SELECTED_LESSON){alert("ابتدا یک درس را انتخاب کن.");return;}
