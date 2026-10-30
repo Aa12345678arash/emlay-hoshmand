@@ -19,6 +19,7 @@ import java.util.Locale;
 
 public class MainActivity extends Activity {
     private WebView webView;
+    private WebView printWebView;
     private TextToSpeech textToSpeech;
     private boolean ttsReady = false;
     private String ttsLanguageMessage = "در حال آماده‌سازی صدای فارسی…";
@@ -95,18 +96,51 @@ public class MainActivity extends Activity {
     public class PrintBridge {
         @JavascriptInterface
         public void print() {
+            // سازگاری با فراخوانی‌های قدیمی؛ برای گزارش‌ها از printHtml استفاده می‌شود.
+            runOnUiThread(() -> printCurrentPage());
+        }
+
+        @JavascriptInterface
+        public void printHtml(String html) {
+            if (html == null || html.trim().isEmpty()) return;
             runOnUiThread(() -> {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT && webView != null) {
-                    PrintManager printManager = (PrintManager) getSystemService(Context.PRINT_SERVICE);
-                    PrintDocumentAdapter adapter = webView.createPrintDocumentAdapter("گزارش پیشرفت املای هوشمند");
-                    PrintAttributes attributes = new PrintAttributes.Builder()
-                        .setMediaSize(PrintAttributes.MediaSize.ISO_A4)
-                        .setResolution(new PrintAttributes.Resolution("report", "گزارش", 300, 300))
-                        .setMinMargins(PrintAttributes.Margins.NO_MARGINS)
-                        .build();
-                    printManager.print("گزارش املای هوشمند", adapter, attributes);
+                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT || isFinishing()) return;
+                if (printWebView == null) {
+                    printWebView = new WebView(MainActivity.this);
+                    printWebView.setBackgroundColor(Color.WHITE);
+                    printWebView.getSettings().setJavaScriptEnabled(false);
                 }
+                printWebView.setWebViewClient(new WebViewClient() {
+                    @Override
+                    public void onPageFinished(WebView view, String url) {
+                        super.onPageFinished(view, url);
+                        PrintManager manager = (PrintManager) getSystemService(Context.PRINT_SERVICE);
+                        if (manager == null || printWebView == null) return;
+                        PrintDocumentAdapter adapter = printWebView.createPrintDocumentAdapter("گزارش تصویری املای هوشمند");
+                        PrintAttributes attrs = new PrintAttributes.Builder()
+                            .setMediaSize(PrintAttributes.MediaSize.ISO_A4)
+                            .setResolution(new PrintAttributes.Resolution("report", "گزارش", 300, 300))
+                            .setMinMargins(PrintAttributes.Margins.NO_MARGINS)
+                            .build();
+                        manager.print("گزارش تصویری املای هوشمند", adapter, attrs);
+                    }
+                });
+                printWebView.loadDataWithBaseURL("file:///android_asset/www/", html, "text/html", "UTF-8", null);
             });
+        }
+
+        private void printCurrentPage() {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT && webView != null) {
+                PrintManager manager = (PrintManager) getSystemService(Context.PRINT_SERVICE);
+                if (manager == null) return;
+                PrintDocumentAdapter adapter = webView.createPrintDocumentAdapter("گزارش پیشرفت املای هوشمند");
+                PrintAttributes attrs = new PrintAttributes.Builder()
+                    .setMediaSize(PrintAttributes.MediaSize.ISO_A4)
+                    .setResolution(new PrintAttributes.Resolution("report", "گزارش", 300, 300))
+                    .setMinMargins(PrintAttributes.Margins.NO_MARGINS)
+                    .build();
+                manager.print("گزارش املای هوشمند", adapter, attrs);
+            }
         }
     }
 
@@ -125,6 +159,7 @@ public class MainActivity extends Activity {
     @Override
     protected void onDestroy() {
         if (textToSpeech != null) { textToSpeech.stop(); textToSpeech.shutdown(); textToSpeech = null; }
+        if (printWebView != null) { printWebView.stopLoading(); printWebView.destroy(); printWebView = null; }
         if (webView != null) {
             webView.stopLoading();
             webView.destroy();
