@@ -7,6 +7,9 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.graphics.Color;
+import android.webkit.JavascriptInterface;
+import android.print.PrintManager;
+import android.print.PrintAttributes;
 
 public class MainActivity extends Activity {
     private WebView webView;
@@ -26,6 +29,22 @@ public class MainActivity extends Activity {
         settings.setBuiltInZoomControls(false);
         webView.setWebViewClient(new WebViewClient());
         webView.setWebChromeClient(new WebChromeClient());
+        webView.addJavascriptInterface(new Object() {
+            @JavascriptInterface
+            public void print() {
+                runOnUiThread(() -> {
+                    PrintManager manager = (PrintManager) getSystemService(PRINT_SERVICE);
+                    if (manager != null) {
+                        PrintAttributes attributes = new PrintAttributes.Builder()
+                                .setMediaSize(PrintAttributes.MediaSize.ISO_A4)
+                                .setColorMode(PrintAttributes.COLOR_MODE_COLOR)
+                                .build();
+                        manager.print("گزارش املای هوشمند پنجم",
+                                webView.createPrintDocumentAdapter("گزارش املای هوشمند پنجم"), attributes);
+                    }
+                });
+            }
+        }, "AndroidPrint");
         setContentView(webView);
         if (savedInstanceState == null) {
             webView.loadUrl("file:///android_asset/www/index.html");
