@@ -17,6 +17,7 @@ on:
       - 'audio-helper.js'
       - 'learning-report.js'
       - 'android/**'
+      - 'qa/**'
       - '.github/workflows/build-android-apk.yml'
   pull_request:
     branches:
@@ -97,6 +98,7 @@ jobs:
           node --check lesson1-suite.js
           node --check lesson-dictation.js
           node --check learning-report.js
+          node qa/validate-content.cjs
 
       - name: ساخت APK آزمایشی
         working-directory: android
