@@ -1,4 +1,5 @@
 "use strict";
+/* گزارش سراسری: داده‌های تمام درس‌ها و خروجی رنگی قابل چاپ/دریافت. */
 (function(){
  const css=`
  .report-overlay{position:fixed;inset:0;z-index:1300;overflow:auto;padding:14px;background:linear-gradient(145deg,#17356b,#2878df 58%,#28a9b9)}
