@@ -92,27 +92,32 @@
   function renderWordHunt(){
     const item=((window.EMLAY_SPELLING_QUIZ || {})[selectedLesson.id] || []).find(entry=>normalizeText(entry.word)===normalizeText(target));
     if(!item){
-      $("practiceQuestion").textContent="برای این واژه پرسش معنی‌محورِ بازبینی‌شده وجود ندارد.";
+      $("practiceQuestion").textContent="برای این واژه هنوز تمرین شکار خطای املایی آماده نشده است.";
       return;
     }
-    $("practiceQuestion").textContent="معنی را بخوان و املای درست واژه را انتخاب کن:";
+    $("practiceQuestion").textContent="معنی را بخوان؛ سپس شکل درست واژه را از میان گزینه‌ها پیدا کن:";
     const meaning=document.createElement("p");
-    meaning.className="practice-muted";
-    meaning.style.fontSize="17px";
-    meaning.style.lineHeight="2";
-    meaning.textContent=item.meaning;
-    const focus=document.createElement("p");
-    focus.className="practice-muted";
-    focus.textContent="به شکل نوشتاری واژه دقت کن.";
+    meaning.className="practice-muted";meaning.style.fontSize="17px";meaning.style.lineHeight="2";
+    meaning.textContent="💡 معنی واژه: "+item.meaning;
+    const hint=document.createElement("p");hint.className="practice-muted";
+    hint.textContent="به ترتیب حروف، حروف هم‌آوا و جاافتادگی‌ها دقت کن.";
+    const source=document.createElement("p");source.className="practice-muted";
+    source.textContent="یادآوری: گزینه‌های نادرست این تمرین برای آموزش طراحی شده‌اند و لزوماً غلط‌های ثبت‌شدهٔ دانش‌آموزان نیستند.";
     const list=document.createElement("div");list.className="practice-options";
-    body.append(meaning,focus,list);
-    shuffle(item.options).forEach(option=>{
+    body.append(meaning,hint,source,list);
+    const distractors=(item.errors||[]).map(x=>x.form);
+    const options=shuffle([item.word,...(distractors.length?distractors:item.options.filter(x=>!matchesSpelling(x,item.word)))]).slice(0,4);
+    options.forEach(option=>{
       const b=document.createElement("button");b.className="practice-option";b.type="button";b.textContent=option;
       b.onclick=()=>{
         [...list.children].forEach(x=>x.disabled=true);
         const ok=matchesSpelling(option,item.word);
         finishQuestion(ok,option);
-        showFeedback((ok?"آفرین! ":"این بار درست نبود. ")+"املای درست: «"+item.word+"». "+item.explanation,true===ok);
+        const error=(item.errors||[]).find(x=>normalizeText(x.form)===normalizeText(option));
+        let detail=ok?"آفرین! شکل درست را پیدا کردی. ":"این بار شکل درست را انتخاب نکردی. ";
+        if(error)detail+="نوع خطا: "+error.type+"؛ "+error.why;
+        else if(ok)detail+=item.explanation||"به شکل نوشتاری واژه دقت کن.";
+        showFeedback(detail+" املای درست: «"+item.word+"».",ok);
       };
       list.appendChild(b);
     });
