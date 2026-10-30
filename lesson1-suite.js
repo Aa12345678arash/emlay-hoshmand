@@ -19,7 +19,56 @@ function exam(){const pick=words.slice().sort(()=>Math.random()-.5).slice(0,5),t
 function clock(){const c=$("l1Clock");if(c)c.textContent=String(Math.floor(left/60)).padStart(2,"0")+":"+String(left%60).padStart(2,"0")}
 function saveExam(){const score=Math.max(0,Math.min(8,Number($("l1Score").value)||0)),mistakes=$("l1Errors").value.split(/[،,؛\n]+/).map(x=>x.trim()).filter(Boolean),p=progress();p.parentExams=Array.isArray(p.parentExams)?p.parentExams:[];p.parentExams.unshift({lessonId:1,score,maxScore:8,percent:Math.round(score/8*100),mistakes,at:new Date().toISOString(),durationSeconds:720-left});p.parentExams=p.parentExams.slice(0,100);p.errorLog=Array.isArray(p.errorLog)?p.errorLog:[];mistakes.forEach(w=>p.errorLog.unshift({lessonId:1,target:w,correct:false,mode:"parent-exam",at:new Date().toISOString()}));p.errorLog=p.errorLog.slice(0,200);save(p);report()}
 function report(){const p=progress(),ex=(p.parentExams||[]).filter(x=>x.lessonId===1),ans=(p.answerHistory||[]).filter(x=>x.lessonId===1),err=(p.errorLog||[]).filter(x=>x.lessonId===1),last=ex[0];open("پروندهٔ پیشرفت | درس اول",'<div class="l1-stat"><div><strong>'+ex.length+'</strong><span>آزمون والدین</span></div><div><strong>'+(last?last.score+"/8":"—")+'</strong><span>آخرین نتیجه</span></div><div><strong>'+ans.length+'</strong><span>پاسخ‌های تمرینی</span></div><div><strong>'+err.length+'</strong><span>موارد نیازمند تمرین</span></div></div><h3>واژه‌های نیازمند تمرین</h3><ul id="l1ErrList"></ul><h3>تاریخچه آزمون‌ها</h3><ul id="l1ExamList"></ul><p class="l1-muted">اطلاعات فعلاً روی همین دستگاه ذخیره می‌شود. تصحیح خودکار عکس دست‌خط فارسی هنوز متصل نیست و ثبت نمره با والد است.</p><button class="l1-btn l1-alt" id="l1Export">خروجی گزارش متنی</button>');const ul=$("l1ErrList");if(!err.length)ul.textContent="هنوز خطایی ثبت نشده است.";else err.slice(0,20).forEach(e=>{const li=document.createElement("li");li.textContent=e.target||"واژه ثبت‌نشده";ul.appendChild(li)});const el=$("l1ExamList");if(!ex.length)el.textContent="هنوز آزمونی ثبت نشده است.";else ex.slice(0,10).forEach(e=>{const li=document.createElement("li");li.textContent=new Date(e.at).toLocaleDateString("fa-IR")+" — "+e.score+" از ۸ ("+e.percent+"٪)";el.appendChild(li)});$("l1Export").onclick=()=>{const content=["گزارش پیشرفت درس اول","تعداد آزمون‌ها: "+ex.length,"آخرین نتیجه: "+(last?last.score+"/7":"ثبت نشده"),"واژه‌های نیازمند تمرین: "+err.map(e=>e.target).join("، ")].join("\n"),url=URL.createObjectURL(new Blob(["\ufeff"+content],{type:"text/plain;charset=utf-8"})),a=document.createElement("a");a.href=url;a.download="gozaresh-emla-dars1.txt";a.click();URL.revokeObjectURL(url)}}
+function challenge(){
+const qz=(window.EMLAY_SPELLING_QUIZ||{})["1"]||[];
+if(qz.length<2){alert("پرسش‌های کافی برای چالش درس اول آماده نیست.");return}
+const chosen=qz.slice(0,2),t=texts[0],phrase=t.segments[1].split(/[،؛.!؟?\s]+/).filter(Boolean).slice(0,5).join(" ");
+const qs=[
+{kind:"choice",item:chosen[0]},
+{kind:"choice",item:chosen[1]},
+{kind:"word",word:words[Math.floor(Math.random()*words.length)]},
+{kind:"phrase",phrase},
+{kind:"sentence",word:"طبیعت"}
+];
+let i=0,score=0,answers=[];
+function draw(){
+const q=qs[i];open("چالش پایانی درس اول",'<p class="l1-muted">پنج مرحلهٔ ترکیبی؛ پاسخ‌ها ذخیره می‌شوند و در پایان نتیجه را می‌بینی.</p><div class="l1-stat"><div><strong>'+(i+1)+' از ۵</strong><span>مرحله</span></div><div><strong>'+score+'</strong><span>پاسخ درست</span></div></div><div class="l1-paper"><div id="l1ChallengeQuestion"></div><div id="l1ChallengeBody"></div><button class="l1-btn" id="l1Check">بررسی پاسخ</button></div>');
+const prompt=$("l1ChallengeQuestion"),body=$("l1ChallengeBody");
+if(q.kind==="choice"){
+prompt.textContent="معنی را بخوان و واژهٔ درست را انتخاب کن: "+q.item.meaning;
+const opts=q.item.options.slice().sort(()=>Math.random()-.5);
+opts.forEach(o=>{const label=document.createElement("label");label.className="l1-option";const radio=document.createElement("input");radio.type="radio";radio.name="l1choice";radio.value=o;label.append(radio,document.createTextNode(" "+o));body.appendChild(label)});
+}else if(q.kind==="word"){
+prompt.textContent="به واژه گوش کن و آن را درست بنویس.";
+const b=document.createElement("button");b.className="l1-btn l1-alt";b.textContent="🔊 پخش واژه";b.onclick=()=>say(q.word);body.appendChild(b);
+const input=document.createElement("input");input.id="l1Answer";input.className="l1-input";input.placeholder="واژه را بنویس";body.appendChild(input);say(q.word);
+}else if(q.kind==="phrase"){
+prompt.textContent="عبارت شنیداری را با دقت بنویس؛ برای شنیدن دوباره پخش را بزن.";
+const b=document.createElement("button");b.className="l1-btn l1-alt";b.textContent="🔊 پخش عبارت";b.onclick=()=>say(q.phrase);body.appendChild(b);
+const input=document.createElement("input");input.id="l1Answer";input.className="l1-input";input.placeholder="عبارت را بنویس";body.appendChild(input);say(q.phrase);
+}else{
+prompt.textContent="با واژهٔ «"+q.word+"» یک جملهٔ کامل بنویس.";
+const input=document.createElement("textarea");input.id="l1Answer";input.className="l1-input";input.rows=3;input.placeholder="جمله را بنویس";body.appendChild(input);
+}
+$("l1Check").onclick=()=>{
+let answer="",ok=false;
+if(q.kind==="choice"){const selected=body.querySelector('input[name="l1choice"]:checked');answer=selected?selected.value:"";ok=answer===q.item.word}
+else{answer=$("l1Answer").value.trim();if(q.kind==="word")ok=norm(answer)===norm(q.word);else if(q.kind==="phrase")ok=norm(answer)===norm(q.phrase);else ok=norm(answer).includes(norm(q.word))&&answer.split(/\s+/).filter(Boolean).length>=3}
+if(!answer){alert("ابتدا پاسخ را وارد یا انتخاب کن.");return}
+answers.push({target:q.kind==="choice"?q.item.word:q.kind==="phrase"?q.phrase:q.word,answer,correct:ok,kind:q.kind});
+if(ok)score++;
+const p=progress();p.answerHistory=Array.isArray(p.answerHistory)?p.answerHistory:[];p.errorLog=Array.isArray(p.errorLog)?p.errorLog:[];
+const target=answers[answers.length-1].target,entry={lessonId:1,mode:"challenge",target,answer,correct:ok,at:new Date().toISOString()};
+p.answerHistory.unshift(entry);if(!ok)p.errorLog.unshift(entry);p.answerHistory=p.answerHistory.slice(0,300);p.errorLog=p.errorLog.slice(0,200);save(p);
+if(i<4){i++;draw()}else finish()}
+}
+function norm(v){return String(v||"").normalize("NFC").replace(/[يى]/g,"ی").replace(/ك/g,"ک").replace(/[\u200c\sـًٌٍَُِّْٰـ.,،؛:!?؟]/g,"")}
+function say(text){if(!("speechSynthesis"in window)||typeof SpeechSynthesisUtterance!=="function"){alert("گفتار در این مرورگر پشتیبانی نمی‌شود.");return}stop();const u=new SpeechSynthesisUtterance(text);u.lang="fa-IR";u.rate=.82;const vs=speechSynthesis.getVoices(),v=vs.find(x=>/^fa(-|_)/i.test(x.lang));if(v)u.voice=v;speechSynthesis.speak(u)}
+function finish(){const p=progress();p.lessonStats=p.lessonStats||{};const st=p.lessonStats["1"]||{sessions:0,attempts:0,correct:0,best:0};st.sessions++;st.attempts+=5;st.correct+=score;st.best=Math.max(st.best,Math.round(score/5*100));st.lastPlayed=new Date().toISOString();p.lessonStats["1"]=st;save(p);open("نتیجهٔ چالش پایانی",'<div class="l1-stat"><div><strong>'+score+' از ۵</strong><span>پاسخ درست</span></div><div><strong>'+Math.round(score/5*100)+'٪</strong><span>درصد موفقیت</span></div></div><h3>بازخورد پاسخ‌ها</h3><ul id="l1ChallengeResults"></ul><p>موارد نادرست در پروندهٔ پیشرفت ثبت شدند تا برای تمرین دوباره استفاده شوند.</p><button class="l1-btn" id="l1GoReport">مشاهده پرونده پیشرفت</button>');answers.forEach(a=>{const li=document.createElement("li");li.textContent=(a.correct?"درست: ":"نیازمند تمرین: ")+a.target; $("l1ChallengeResults").appendChild(li)});$("l1GoReport").onclick=report}
+draw();
+}
+
 window.EMLAY_LESSON1_SUITE={mount,reading,exam,report,close};
-const original=window.startPractice;window.startPractice=function(mode){if(mode==="challenge"){exam();return}if(typeof original==="function")return original(mode)};
+const original=window.startPractice;window.startPractice=function(mode){if(mode==="challenge"){challenge();return}if(typeof original==="function")return original(mode)};
 document.addEventListener("visibilitychange",()=>{if(document.hidden)stop()});
 })();
