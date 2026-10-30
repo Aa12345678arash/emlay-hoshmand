@@ -846,37 +846,54 @@
     updateStats();
 
 
-    // موسیقی کوتاه و تألیفی با Web Audio؛ بدون فایل یا اینترنت و فقط با درخواست کاربر.
+    // موسیقی پس‌زمینه تألیفی: امبینت مدرن، آکوردهای گرم و ملودی آرام؛ بدون ضرب تند.
     (() => {
       const button = document.getElementById("musicToggle");
       if (!button) return;
-      const notes = [523.25, 659.25, 783.99, 659.25, 587.33, 698.46, 783.99, 659.25,
-                     493.88, 587.33, 659.25, 587.33, 440.00, 523.25, 659.25, 587.33];
-      let context = null, timer = null, index = 0, enabled = false;
+      let context = null, timer = null, step = 0, enabled = false;
+      const chords = [
+        [261.63, 329.63, 392.00, 493.88],
+        [220.00, 261.63, 329.63, 392.00],
+        [174.61, 220.00, 261.63, 329.63],
+        [196.00, 246.94, 293.66, 392.00]
+      ];
+      const melody = [
+        [523.25, 659.25, 587.33, 493.88],
+        [440.00, 523.25, 659.25, 587.33],
+        [392.00, 493.88, 523.25, 659.25],
+        [493.88, 587.33, 659.25, 587.33]
+      ];
       const saved = localStorage.getItem("emlay-background-music");
-      function playNote() {
-        if (!enabled || !context || document.hidden) return;
-        const now = context.currentTime;
+      function voice(freq, when, duration, volume, type, cutoff) {
         const osc = context.createOscillator();
+        const filter = context.createBiquadFilter();
         const gain = context.createGain();
-        const tone = context.createOscillator();
-        const toneGain = context.createGain();
-        osc.type = "sine";
-        osc.frequency.value = notes[index % notes.length];
-        tone.type = "sine";
-        tone.frequency.value = notes[index % notes.length] / 2;
-        gain.gain.setValueAtTime(0.0001, now);
-        gain.gain.exponentialRampToValueAtTime(0.026, now + 0.16);
-        gain.gain.exponentialRampToValueAtTime(0.0001, now + 1.05);
-        toneGain.gain.setValueAtTime(0.0001, now);
-        toneGain.gain.exponentialRampToValueAtTime(0.009, now + 0.2);
-        toneGain.gain.exponentialRampToValueAtTime(0.0001, now + 1.1);
-        osc.connect(gain).connect(context.destination);
-        tone.connect(toneGain).connect(context.destination);
-        osc.start(now); tone.start(now);
-        osc.stop(now + 1.12); tone.stop(now + 1.12);
-        index++;
-        timer = window.setTimeout(playNote, 650);
+        osc.type = type || "sine";
+        osc.frequency.setValueAtTime(freq, when);
+        filter.type = "lowpass";
+        filter.frequency.setValueAtTime(cutoff || 1800, when);
+        gain.gain.setValueAtTime(0.0001, when);
+        gain.gain.exponentialRampToValueAtTime(volume, when + Math.min(0.75, duration * 0.35));
+        gain.gain.setValueAtTime(volume, when + duration * 0.65);
+        gain.gain.exponentialRampToValueAtTime(0.0001, when + duration);
+        osc.connect(filter).connect(gain).connect(context.destination);
+        osc.start(when);
+        osc.stop(when + duration + 0.04);
+      }
+      function playPhrase() {
+        if (!enabled || !context || document.hidden) return;
+        const now = context.currentTime + 0.06;
+        const chord = chords[step % chords.length];
+        chord.forEach((f, i) => {
+          voice(f / 2, now, 3.25, i === 0 ? 0.012 : 0.007, "sine", 950);
+          voice(f, now + 0.04, 3.05, 0.0045, "triangle", 1250);
+        });
+        const tune = melody[step % melody.length];
+        tune.forEach((f, i) => {
+          voice(f, now + 0.35 + i * 0.72, 1.05, 0.012, "sine", 2200);
+        });
+        step++;
+        timer = window.setTimeout(playPhrase, 3200);
       }
       async function start() {
         const AudioCtor = window.AudioContext || window.webkitAudioContext;
@@ -887,12 +904,13 @@
         }
         try {
           context = context || new AudioCtor();
-          if (context.state === "suspended") await context.resume();
+          if (context.state !== "running") await context.resume();
           enabled = true;
           localStorage.setItem("emlay-background-music", "on");
           button.textContent = "■ خاموش کردن موسیقی";
           button.setAttribute("aria-pressed", "true");
-          playNote();
+          if (timer) window.clearTimeout(timer);
+          playPhrase();
         } catch (error) {
           enabled = false;
           button.textContent = "برای پخش دوباره لمس کن";
