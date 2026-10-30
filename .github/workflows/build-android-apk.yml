@@ -70,7 +70,7 @@ jobs:
             -A "Mozilla/5.0" \
             "https://raw.githubusercontent.com/uncle-sheepsky/duru-ai-cc0-bgm/main/mp3/duru-roomscene-lofi.mp3" \
             -o android/app/src/main/assets/www/music/study-room-lofi.mp3
-          test "$(stat -c%s android/app/src/main/assets/www/music/first-snow.mp3)" -gt 10000
+          test "$(stat -c%s android/app/src/main/assets/www/music/study-room-lofi.mp3)" -gt 10000
           cat > android/app/src/main/assets/www/MUSIC-CREDITS.txt <<'EOF'
           Music: "DURU Room Scene Lo-Fi" by DURU-AI.
           Released under Creative Commons Zero 1.0 Universal (CC0 1.0).
