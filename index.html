@@ -869,109 +869,17 @@
     updateStats();
 
 
-    // موسیقی فعلی فقط گزینه‌ای و خاموش در شروع است؛ هنگام آموزش گفتاری به‌صورت خودکار کاهش می‌یابد.
+    // موسیقی مصنوعی قبلی عمداً حذف شده؛ تا زمان افزودن فایل دارای مجوز، صدای بی‌کیفیت پخش نمی‌شود.
     (() => {
       const button = document.getElementById("musicToggle");
+      const note = document.querySelector(".sound-note");
       if (!button) return;
-      let context = null, timer = null, step = 0, enabled = false, masterGain = null;
-      const chords = [
-        [261.63, 329.63, 392.00, 493.88],
-        [220.00, 261.63, 329.63, 392.00],
-        [174.61, 220.00, 261.63, 329.63],
-        [196.00, 246.94, 293.66, 392.00]
-      ];
-      const melody = [
-        [523.25, 659.25, 587.33, 493.88],
-        [440.00, 523.25, 659.25, 587.33],
-        [392.00, 493.88, 523.25, 659.25],
-        [493.88, 587.33, 659.25, 587.33]
-      ];
-      const saved = localStorage.getItem("emlay-background-music");
-      function voice(freq, when, duration, volume, type, cutoff) {
-        const osc = context.createOscillator();
-        const filter = context.createBiquadFilter();
-        const gain = context.createGain();
-        osc.type = type || "sine";
-        osc.frequency.setValueAtTime(freq, when);
-        filter.type = "lowpass";
-        filter.frequency.setValueAtTime(cutoff || 1800, when);
-        gain.gain.setValueAtTime(0.0001, when);
-        gain.gain.exponentialRampToValueAtTime(volume, when + Math.min(0.75, duration * 0.35));
-        gain.gain.setValueAtTime(volume, when + duration * 0.65);
-        gain.gain.exponentialRampToValueAtTime(0.0001, when + duration);
-        osc.connect(filter).connect(gain).connect(masterGain || context.destination);
-        osc.start(when);
-        osc.stop(when + duration + 0.04);
-      }
-      function playPhrase() {
-        if (!enabled || !context || document.hidden) return;
-        const now = context.currentTime + 0.06;
-        const chord = chords[step % chords.length];
-        chord.forEach((f, i) => {
-          voice(f / 2, now, 3.25, i === 0 ? 0.012 : 0.007, "sine", 950);
-          voice(f, now + 0.04, 3.05, 0.0045, "triangle", 1250);
-        });
-        const tune = melody[step % melody.length];
-        tune.forEach((f, i) => {
-          voice(f, now + 0.35 + i * 0.72, 1.05, 0.012, "sine", 2200);
-        });
-        step++;
-        timer = window.setTimeout(playPhrase, 3200);
-      }
-      async function start() {
-        const AudioCtor = window.AudioContext || window.webkitAudioContext;
-        if (!AudioCtor) {
-          button.textContent = "صدا پشتیبانی نمی‌شود";
-          button.disabled = true;
-          return;
-        }
-        try {
-          context = context || new AudioCtor();
-          if (!masterGain) { masterGain = context.createGain(); masterGain.gain.value = 0.22; masterGain.connect(context.destination); }
-          if (context.state !== "running") await context.resume();
-          enabled = true;
-          localStorage.setItem("emlay-background-music", "on");
-          button.textContent = "■ خاموش کردن موسیقی";
-          button.setAttribute("aria-pressed", "true");
-          if (timer) window.clearTimeout(timer);
-          playPhrase();
-        } catch (error) {
-          enabled = false;
-          button.textContent = "برای پخش دوباره لمس کن";
-        }
-      }
-      window.EMLAY_DUCK_MUSIC = function(ducked) {
-        if (!context || !masterGain) return;
-        const now = context.currentTime;
-        masterGain.gain.cancelScheduledValues(now);
-        masterGain.gain.setTargetAtTime(ducked ? 0.025 : 0.22, now, 0.22);
-      };
-      function stop() {
-        enabled = false;
-        if (timer) window.clearTimeout(timer);
-        timer = null;
-        if (context && context.state === "running") context.suspend();
-        localStorage.setItem("emlay-background-music", "off");
-        button.textContent = "▶ پخش موسیقی";
-        button.setAttribute("aria-pressed", "false");
-      }
-      button.addEventListener("click", () => enabled ? stop() : start());
-      document.addEventListener("visibilitychange", () => {
-        if (document.hidden) {
-          if (timer) window.clearTimeout(timer);
-          timer = null;
-          if (context && context.state === "running") context.suspend();
-        } else if (enabled) {
-          start();
-        }
-      });
-      if (saved === "on") {
-        button.textContent = "▶ برای شروع موسیقی لمس کن";
-        button.setAttribute("aria-pressed", "false");
-      }
+      button.disabled = true;
+      button.textContent = "موسیقی سینمایی در حال آماده‌سازی";
+      button.setAttribute("aria-disabled", "true");
+      if (note) note.textContent = "در نسخه بعدی، موسیقی ارکسترال کودکانه با مجوز استفاده در اپ اضافه می‌شود؛ هنگام خواندن املا موسیقی قطع خواهد شد.";
+      window.EMLAY_DUCK_MUSIC = function(ducked) {};
     })();
-
-
 
     // نمایش کوتاه صفحه آغازین؛ سپس ورود به محیط اصلی برنامه.
     window.addEventListener("load", () => {
