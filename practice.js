@@ -283,8 +283,7 @@
     if(selectedLesson.teacherInput){
       const n=document.getElementById("modeNotice");
       n.className="notice";
-      n.textContent="این درس آزاد است؛ ابتدا باید واژه‌های متن بومی کلاس در بخش «املای معلم» ثبت شوند.";
-      return;
+      n.textContent="این درس آزاد است؛ فعلاً از محتوای نمونه برای تمرین استفاده می‌کنی. آموزگار می‌تواند واژه‌ها و متن را با محتوای بومی کلاس جایگزین کند.";
     }
     if(!(wordBank[selectedLesson.id]||[]).length){
       const n=document.getElementById("modeNotice");
