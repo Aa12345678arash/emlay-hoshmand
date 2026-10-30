@@ -283,7 +283,7 @@
     if(selectedLesson.teacherInput){
       const n=document.getElementById("modeNotice");
       n.className="notice";
-      n.textContent="این درس آزاد است؛ فعلاً از محتوای نمونه برای تمرین استفاده می‌کنی. آموزگار می‌تواند واژه‌ها و متن را با محتوای بومی کلاس جایگزین کند.";
+      n.textContent="این درس آزاد است؛ فعلاً از محتوای نمونه استفاده می‌کنی. پیش از استفاده کلاسی، آموزگار باید متن و واژه‌ها را با محتوای بومی منتخب هماهنگ کند.";
     }
     if(!(wordBank[selectedLesson.id]||[]).length){
       const n=document.getElementById("modeNotice");
