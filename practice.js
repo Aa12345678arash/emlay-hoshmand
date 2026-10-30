@@ -11,8 +11,6 @@
   overlay.innerHTML='<div class="practice-card"><div class="practice-top"><button type="button" class="back-button" id="practiceExit">← خروج از تمرین</button><span class="practice-muted" id="practiceCounter"></span></div><h2 id="practiceTitle">تمرین</h2><div class="practice-question" id="practiceQuestion"></div><div id="practiceBody"></div><div id="practiceFeedback" class="practice-feedback" hidden aria-live="polite"></div><button type="button" class="practice-action" id="practiceContinue" hidden>ادامه</button></div>';
   document.body.appendChild(overlay);
   const $=id=>document.getElementById(id), body=$("practiceBody");
-  // مقایسه املایی باید تفاوت فاصله معمولی و نیم‌فاصله را از خودِ املای واژه جدا کند.
-  // بنابراین برای سنجش واژه، فاصله و نیم‌فاصله حذف می‌شوند؛ اما در متن اصلی دست‌نخورده می‌مانند.
   function normalizeText(value){
     return String(value||"").normalize("NFC")
       .replace(/[يى]/g,"ی").replace(/ك/g,"ک")
@@ -20,17 +18,26 @@
       .replace(/[ًٌٍَُِّْٰـ]/g,"")
       .replace(/[.,،؛:!?؟"'«»()\[\]{}]/g,"");
   }
+  // فاصله معمولی و نیم‌فاصله را برای واژه‌های مرکب معادل می‌گیرد،
+  // اما واژه چسبیده (بدون هیچ جداکننده‌ای) را درست اعلام نمی‌کند.
+  function matchesSpelling(answer, expected){
+    const rawExpected=String(expected||"").normalize("NFC");
+    const rawAnswer=String(answer||"").normalize("NFC");
+    const expectedSeparators=(rawExpected.match(/[\u200c\s]/g)||[]).length;
+    const answerSeparators=(rawAnswer.match(/[\u200c\s]/g)||[]).length;
+    return normalizeText(rawAnswer)===normalizeText(rawExpected) &&
+      (expectedSeparators===0 || answerSeparators>=expectedSeparators);
+  }
   function containsTargetPhrase(text, expected){
     const tokens=String(text||"").normalize("NFC")
       .replace(/[يى]/g,"ی").replace(/ك/g,"ک")
       .split(/[\s]+/).filter(Boolean);
-    const wanted=normalizeText(expected);
-    if(!wanted)return false;
+    if(!normalizeText(expected))return false;
     for(let start=0;start<tokens.length;start++){
       let joined="";
       for(let end=start;end<Math.min(tokens.length,start+4);end++){
-        joined+=tokens[end];
-        if(normalizeText(joined)===wanted)return true;
+        joined+=(end===start?"":" ")+tokens[end];
+        if(matchesSpelling(joined,expected))return true;
       }
     }
     return false;
@@ -103,7 +110,7 @@
       const b=document.createElement("button");b.className="practice-option";b.type="button";b.textContent=option;
       b.onclick=()=>{
         [...list.children].forEach(x=>x.disabled=true);
-        const ok=normalizeText(option)===normalizeText(item.word);
+        const ok=matchesSpelling(option,item.word);
         finishQuestion(ok,option);
         showFeedback((ok?"آفرین! ":"این بار درست نبود. ")+"املای درست: «"+item.word+"». "+item.explanation,true===ok);
       };
@@ -153,7 +160,7 @@
     $("practiceQuestion").textContent="به واژه گوش کن و آن را بنویس.";
     const play=document.createElement("button");play.className="practice-option";play.textContent="🔊 پخش دوباره واژه";play.onclick=speakTarget;
     const input=document.createElement("input");input.className="practice-input";input.placeholder="واژه را بنویس";
-    const b=document.createElement("button");b.className="practice-action";b.textContent="بررسی پاسخ";b.onclick=()=>{input.disabled=true;b.disabled=true;finishQuestion(normalizeText(input.value)===normalizeText(target), input.value);};
+    const b=document.createElement("button");b.className="practice-action";b.textContent="بررسی پاسخ";b.onclick=()=>{input.disabled=true;b.disabled=true;finishQuestion(matchesSpelling(input.value,target), input.value);};
     body.append(play,input,b);speakTarget();input.focus();
   }
   function speakTarget(){
