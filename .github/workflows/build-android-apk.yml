@@ -29,6 +29,8 @@ on:
       - 'spelling-quiz.js'
       - 'dictation-texts.js'
       - 'lesson1-suite.js'
+      - 'lesson-dictation.js'
+      - 'learning-report.js'
       - 'android/**'
       - '.github/workflows/build-android-apk.yml'
   workflow_dispatch:
