@@ -65,7 +65,7 @@ jobs:
         shell: bash
         run: |
           mkdir -p android/app/src/main/assets/www
-          cp index.html lesson-data.js lesson-notes.js practice.js word-bank.js spelling-quiz.js dictation-texts.js lesson1-suite.js lesson-dictation.js learning-report.js android/app/src/main/assets/www/
+          cp index.html lesson-data.js lesson-notes.js practice.js word-bank.js spelling-quiz.js dictation-texts.js lesson1-suite.js lesson-dictation.js learning-report.js practice-world.svg android/app/src/main/assets/www/
 
       - name: بررسی نحو فایل‌های جاوااسکریپت
         run: |
