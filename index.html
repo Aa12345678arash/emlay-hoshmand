@@ -383,15 +383,111 @@
       .lesson-grid { gap: 8px; }
       .lesson-card { padding: 11px; }
     }
+  
+    /* هویت بصری تازه: سرزمین واژه‌ها و جغد راهنما */
+    :root {
+      --navy:#17356b; --blue:#2878df; --gold:#ffd45a; --cream:#f4f8ff;
+      --text:#20324f; --green:#1eaa72; --shadow:0 12px 30px rgba(28,65,120,.12);
+    }
+    body { background:radial-gradient(circle at 8% 4%,#fff4d7 0,transparent 25%),linear-gradient(180deg,#f2f8ff,#fff 58%,#f4f8ff); }
+    .app { max-width:720px; padding-top:18px; }
+    .hero { background:linear-gradient(135deg,#12316b 0%,#1678d5 58%,#24a8c4 100%); border:1px solid rgba(255,255,255,.35); border-radius:28px; }
+    .hero::before { content:""; position:absolute; width:190px;height:190px;left:-55px;bottom:-105px;border-radius:50%;background:rgba(255,255,255,.10); }
+    .mascot { width:82px;height:82px;border-radius:24px;background:linear-gradient(145deg,#fff4cf,#ffcf58);box-shadow:0 7px 18px rgba(0,0,0,.18);padding:5px; }
+    .mascot svg { width:100%;height:100%;display:block; }
+    .hero h1 {font-size:25px;text-shadow:0 2px 4px rgba(0,0,0,.16);}
+    .hero-bottom {gap:8px;}
+    .stat {backdrop-filter:blur(5px);border-radius:16px;}
+    .welcome {display:flex;align-items:center;gap:14px;margin-top:15px;padding:13px 16px;border:1px solid #e4edff;border-radius:22px;background:linear-gradient(110deg,#fff 0%,#f2f8ff 100%);box-shadow:var(--shadow);}
+    .welcome-art {width:76px;height:76px;flex:0 0 76px;border-radius:22px;background:linear-gradient(145deg,#dff4ff,#fff0bd);padding:4px;}
+    .welcome-art svg {width:100%;height:100%;}
+    .welcome-copy {min-width:0;}
+    .welcome strong {color:#1764bd;font-size:15px;}
+    .welcome p {font-size:12px;line-height:1.9;}
+    .section-title {margin-top:24px;}
+    .section-title h2 {color:#17356b;}
+    .search {border:1px solid #dce8fa;border-radius:16px;box-shadow:0 4px 14px rgba(28,65,120,.05);}
+    .chapters button {border-color:#dce8fa;background:#fff;}
+    .chapters button.active {background:linear-gradient(135deg,#2878df,#24a8c4);border-color:transparent;box-shadow:0 5px 12px rgba(40,120,223,.22);}
+    .lesson-grid {gap:12px;}
+    .lesson-card {min-height:138px;border:1px solid #e4edfa;border-radius:21px;background:linear-gradient(145deg,#fff,#f7fbff);box-shadow:0 7px 18px rgba(29,65,120,.07);padding:14px;overflow:hidden;}
+    .lesson-card:nth-child(4n+1){background:linear-gradient(145deg,#fff,#effaf5);}
+    .lesson-card:nth-child(4n+2){background:linear-gradient(145deg,#fff,#fff8e8);}
+    .lesson-card:nth-child(4n+3){background:linear-gradient(145deg,#fff,#f1f5ff);}
+    .lesson-card:nth-child(4n){background:linear-gradient(145deg,#fff,#fff1f5);}
+    .lesson-card:active {transform:translateY(2px) scale(.985);}
+    .lesson-number {border-radius:12px;background:#e3efff;color:#1764bd;}
+    .lesson-icon {font-size:28px;filter:drop-shadow(0 2px 2px rgba(0,0,0,.12));}
+    .lesson-card h3 {font-size:14px;color:#1b345b;}
+    .lesson-card small {font-size:11px;}
+    .progress-track {height:6px;background:#e8eef7;}
+    .progress-fill {background:linear-gradient(90deg,#28bd83,#8bdc78);}
+    .panel {border-radius:23px;border-color:#e1eafa;box-shadow:var(--shadow);}
+    .back-button {border-radius:12px;background:#eaf3ff;}
+    .mode-list {gap:11px;}
+    .mode-button {border-radius:18px;background:linear-gradient(110deg,#fff,#f7faff);border-color:#e4edfa;box-shadow:0 4px 12px rgba(29,65,120,.045);transition:transform .15s,box-shadow .15s;}
+    .mode-button:active {transform:scale(.99);}
+    .mode-button .mode-icon {width:48px;height:48px;border-radius:16px;background:linear-gradient(145deg,#e5f1ff,#fff0c8);font-size:25px;}
+    .mode-button:nth-child(2) .mode-icon{background:linear-gradient(145deg,#fff0c8,#ffe2a0);}
+    .mode-button:nth-child(3) .mode-icon{background:linear-gradient(145deg,#e9e4ff,#d8e9ff);}
+    .mode-button:nth-child(4) .mode-icon{background:linear-gradient(145deg,#ffe7ef,#fff0c8);}
+    .mode-button:nth-child(5) .mode-icon{background:linear-gradient(145deg,#fff0bd,#ffe0a1);}
+    .mode-button strong {color:#193967;font-size:14px;}
+    .mode-button small {font-size:12px;}
+    .footer {border-radius:20px;background:linear-gradient(135deg,#17356b,#246fc2);}
+    .footer strong {color:#ffdc72;}
+    .splash-screen {position:fixed;inset:0;z-index:9999;display:grid;place-items:center;padding:24px;background:linear-gradient(155deg,#12316b,#1684d8 62%,#32b8bd);color:#fff;text-align:center;transition:opacity .45s ease,visibility .45s ease;}
+    .splash-screen.is-hidden {opacity:0;visibility:hidden;pointer-events:none;}
+    .splash-card {width:min(100%,340px);padding:26px 20px 22px;border:1px solid rgba(255,255,255,.35);border-radius:30px;background:rgba(255,255,255,.13);box-shadow:0 18px 50px rgba(0,0,0,.18);backdrop-filter:blur(8px);}
+    .splash-owl {width:150px;height:150px;margin:0 auto 10px;padding:7px;border-radius:38px;background:linear-gradient(145deg,#fff1bd,#ffc94f);box-shadow:0 10px 25px rgba(0,0,0,.2);}
+    .splash-owl svg {width:100%;height:100%;}
+    .splash-card h1 {margin:6px 0;color:#fff;font-size:25px;}
+    .splash-card p {margin:0;color:#e7f4ff;font-size:13px;}
+    .splash-loader {width:125px;height:6px;margin:20px auto 0;border-radius:20px;background:rgba(255,255,255,.25);overflow:hidden;}
+    .splash-loader::after {content:"";display:block;width:45%;height:100%;border-radius:20px;background:#ffdb69;animation:splashLoad 1.2s ease-in-out infinite alternate;}
+    @keyframes splashLoad {from{transform:translateX(0)}to{transform:translateX(125px)}}
+    @media (prefers-reduced-motion:reduce) {.splash-loader::after{animation:none;width:100%}.splash-screen{transition:none}}
+    @media (max-width:360px) {.mascot{width:70px;height:70px}.hero h1{font-size:20px}.welcome-art{width:64px;height:64px;flex-basis:64px}}
+
   </style>
 </head>
 
 <body>
+  <div id="appSplash" class="splash-screen" role="status" aria-label="در حال آماده‌سازی برنامه">
+  <div class="splash-card">
+    <div class="splash-owl"><svg viewBox="0 0 120 120" role="img" aria-label="جغد دانا با کتاب و مداد" xmlns="http://www.w3.org/2000/svg">
+<defs><linearGradient id="owlBody" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#b86a2d"/><stop offset="1" stop-color="#713b25"/></linearGradient><linearGradient id="owlBook" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#246bd2"/><stop offset="1" stop-color="#123b86"/></linearGradient></defs>
+<path d="M22 43 13 15l31 14M98 43l9-28-31 14" fill="#9b542b" stroke="#63351f" stroke-width="4" stroke-linejoin="round"/>
+<ellipse cx="60" cy="58" rx="43" ry="45" fill="url(#owlBody)"/>
+<ellipse cx="43" cy="51" rx="22" ry="24" fill="#fff4d9"/><ellipse cx="77" cy="51" rx="22" ry="24" fill="#fff4d9"/>
+<circle cx="46" cy="51" r="10" fill="#fff"/><circle cx="74" cy="51" r="10" fill="#fff"/><circle cx="48" cy="52" r="5.5" fill="#172b49"/><circle cx="72" cy="52" r="5.5" fill="#172b49"/>
+<path d="m60 61-9 10h18z" fill="#ffb52e"/>
+<path d="M34 82q26-17 52 0v24H34z" fill="#f3d9a5"/>
+<path d="M25 87q35-15 70 0v25H25z" fill="url(#owlBook)" stroke="#102e68" stroke-width="3"/>
+<path d="M60 88v24" stroke="#fff" stroke-width="2"/><path d="M18 111 11 74l8-5 9 38z" fill="#ffd34f" stroke="#b77a18" stroke-width="2"/><path d="m11 74-2-10 10 5" fill="#e98d57"/>
+<path d="M35 16q25-18 50 0l-5 8H40z" fill="#17356b"/><path d="M31 23h58" stroke="#ffd45a" stroke-width="5" stroke-linecap="round"/>
+</svg></div>
+    <h1>املای هوشمند پنجم</h1>
+    <p>با املای درست، آینده روشن‌تر است</p>
+    <div class="splash-loader" aria-hidden="true"></div>
+  </div>
+</div>
   <div class="app">
 
     <header class="hero">
       <div class="brand">
-        <div class="mascot" aria-hidden="true">🦉</div>
+        <div class="mascot" aria-hidden="true"><svg viewBox="0 0 120 120" role="img" aria-label="جغد دانا با کتاب و مداد" xmlns="http://www.w3.org/2000/svg">
+<defs><linearGradient id="owlBody" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#b86a2d"/><stop offset="1" stop-color="#713b25"/></linearGradient><linearGradient id="owlBook" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#246bd2"/><stop offset="1" stop-color="#123b86"/></linearGradient></defs>
+<path d="M22 43 13 15l31 14M98 43l9-28-31 14" fill="#9b542b" stroke="#63351f" stroke-width="4" stroke-linejoin="round"/>
+<ellipse cx="60" cy="58" rx="43" ry="45" fill="url(#owlBody)"/>
+<ellipse cx="43" cy="51" rx="22" ry="24" fill="#fff4d9"/><ellipse cx="77" cy="51" rx="22" ry="24" fill="#fff4d9"/>
+<circle cx="46" cy="51" r="10" fill="#fff"/><circle cx="74" cy="51" r="10" fill="#fff"/><circle cx="48" cy="52" r="5.5" fill="#172b49"/><circle cx="72" cy="52" r="5.5" fill="#172b49"/>
+<path d="m60 61-9 10h18z" fill="#ffb52e"/>
+<path d="M34 82q26-17 52 0v24H34z" fill="#f3d9a5"/>
+<path d="M25 87q35-15 70 0v25H25z" fill="url(#owlBook)" stroke="#102e68" stroke-width="3"/>
+<path d="M60 88v24" stroke="#fff" stroke-width="2"/><path d="M18 111 11 74l8-5 9 38z" fill="#ffd34f" stroke="#b77a18" stroke-width="2"/><path d="m11 74-2-10 10 5" fill="#e98d57"/>
+<path d="M35 16q25-18 50 0l-5 8H40z" fill="#17356b"/><path d="M31 23h58" stroke="#ffd45a" stroke-width="5" stroke-linecap="round"/>
+</svg></div>
         <div>
           <h1>املای هوشمند پنجم</h1>
           <p>ماجراجویی در سرزمین واژه‌ها</p>
@@ -415,8 +511,22 @@
     </header>
 
     <section class="welcome">
-      <strong>سلام قهرمان واژه‌ها! 🌟</strong>
-      <p>هر روز کمی تمرین کن، اشتباهاتت را بشناس و در املا قوی‌تر شو.</p>
+      <div class="welcome-art" aria-hidden="true"><svg viewBox="0 0 120 120" role="img" aria-label="جغد دانا با کتاب و مداد" xmlns="http://www.w3.org/2000/svg">
+<defs><linearGradient id="owlBody" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#b86a2d"/><stop offset="1" stop-color="#713b25"/></linearGradient><linearGradient id="owlBook" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#246bd2"/><stop offset="1" stop-color="#123b86"/></linearGradient></defs>
+<path d="M22 43 13 15l31 14M98 43l9-28-31 14" fill="#9b542b" stroke="#63351f" stroke-width="4" stroke-linejoin="round"/>
+<ellipse cx="60" cy="58" rx="43" ry="45" fill="url(#owlBody)"/>
+<ellipse cx="43" cy="51" rx="22" ry="24" fill="#fff4d9"/><ellipse cx="77" cy="51" rx="22" ry="24" fill="#fff4d9"/>
+<circle cx="46" cy="51" r="10" fill="#fff"/><circle cx="74" cy="51" r="10" fill="#fff"/><circle cx="48" cy="52" r="5.5" fill="#172b49"/><circle cx="72" cy="52" r="5.5" fill="#172b49"/>
+<path d="m60 61-9 10h18z" fill="#ffb52e"/>
+<path d="M34 82q26-17 52 0v24H34z" fill="#f3d9a5"/>
+<path d="M25 87q35-15 70 0v25H25z" fill="url(#owlBook)" stroke="#102e68" stroke-width="3"/>
+<path d="M60 88v24" stroke="#fff" stroke-width="2"/><path d="M18 111 11 74l8-5 9 38z" fill="#ffd34f" stroke="#b77a18" stroke-width="2"/><path d="m11 74-2-10 10 5" fill="#e98d57"/>
+<path d="M35 16q25-18 50 0l-5 8H40z" fill="#17356b"/><path d="M31 23h58" stroke="#ffd45a" stroke-width="5" stroke-linecap="round"/>
+</svg></div>
+      <div class="welcome-copy">
+        <strong>سلام قهرمان واژه‌ها! 🌟</strong>
+        <p>جغد دانا همراه توست؛ هر روز کمی تمرین کن و در املا قوی‌تر شو.</p>
+      </div>
     </section>
 
     <main>
@@ -725,6 +835,12 @@
 
     renderLessons();
     updateStats();
+
+    // نمایش کوتاه صفحه آغازین؛ سپس ورود به محیط اصلی برنامه.
+    window.addEventListener("load", () => {
+      const splashScreen = document.getElementById("appSplash");
+      window.setTimeout(() => splashScreen && splashScreen.classList.add("is-hidden"), 1500);
+    });
   </script>
 </body>
 </html>
