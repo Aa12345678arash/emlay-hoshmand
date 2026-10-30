@@ -11,6 +11,7 @@ for (const file of ["lesson-data.js", "word-bank.js", "spelling-quiz.js", "dicta
 const data = sandbox.window;
 const practiceSource = fs.readFileSync("practice.js", "utf8");
 const suiteSource = fs.readFileSync("lesson1-suite.js", "utf8");
+const indexSource = fs.readFileSync("index.html", "utf8");
 const fail = [];
 const assert = (condition, message) => { if (!condition) fail.push(message); };
 
@@ -36,6 +37,12 @@ assert(practiceSource.includes("let selectedLesson=null;") &&
 assert(suiteSource.includes("activeLessonId=Number(id)") &&
   suiteSource.includes("lessonId:activeLessonId"),
   "آزمون والدین به شناسه درس انتخاب‌شده متصل نیست.");
+assert(indexSource.includes('id="teacherEditor"') &&
+  indexSource.includes('const teacherStorageKey = "emlay-teacher-content-v1"') &&
+  indexSource.includes("function applyTeacherContent") &&
+  indexSource.includes("saved.words.length >= 5") &&
+  indexSource.includes("(!lessonData.teacherInput || teacherReady)"),
+  "ورود، ذخیره و فعال‌سازی محتوای درس‌های آزاد کامل نیست.");
 
 for (let id = 1; id <= 17; id++) {
   const passages = data.EMLAY_DICTATION_TEXTS[id] || [];
