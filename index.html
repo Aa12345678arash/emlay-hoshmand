@@ -516,7 +516,8 @@
       </div>
 
       <div class="sound-control"><span>🎵 موسیقی ملایم پس‌زمینه</span><button id="musicToggle" class="sound-toggle" type="button" aria-pressed="false">▶ پخش موسیقی</button></div>
-      <p class="sound-note">موسیقی اختیاری است؛ هر زمان بخواهی می‌توانی آن را خاموش کنی.</p>
+      <p class="sound-note">قطعهٔ آرام «First Snow»؛ هنگام تمرین گفتاری به‌طور خودکار کم‌صدا می‌شود.</p>
+      <audio id="backgroundMusic" preload="auto" loop src="music/first-snow.mp3"></audio>
       <div class="hero-bottom">
         <div class="stat">
           <strong id="points">۰</strong>
@@ -870,61 +871,42 @@
     updateStats();
 
 
-    // موسیقی بی‌کلامِ تألیفی با Web Audio؛ بدون فایل یا وابستگی بیرونی.
+    // موسیقی واقعیِ آفلاین؛ فایل MP3 در زمان ساخت APK داخل assets قرار می‌گیرد.
     (() => {
-      const button = document.getElementById("musicToggle");
-      const note = document.querySelector(".sound-note");
-      if (!button) return;
-      let ctx = null, master = null, timer = null, step = 0, enabled = false, ducked = false;
-      const beat = 0.72;
-      const melody = [60,64,67,72,69,67,64,62,60,64,67,74,72,69,67,64,62,65,69,72,69,65,62,60,64,67,72,76,74,72,67,64];
-      const chords = [[48,55,60],[45,52,57],[41,48,53],[43,50,55]];
-      function hz(midi){ return 440*Math.pow(2,(midi-69)/12); }
-      function tone(freq, start, duration, peak, type){
-        const osc=ctx.createOscillator(), gain=ctx.createGain();
-        osc.type=type||"sine"; osc.frequency.setValueAtTime(freq,start);
-        gain.gain.setValueAtTime(0.0001,start);
-        gain.gain.exponentialRampToValueAtTime(Math.max(0.0002,peak),start+0.035);
-        gain.gain.exponentialRampToValueAtTime(0.0001,start+duration);
-        osc.connect(gain);gain.connect(master);
-        osc.start(start);osc.stop(start+duration+0.03);
-      }
-      function playStep(){
-        if(!enabled||!ctx)return;
-        const now=ctx.currentTime+0.04, n=step%melody.length;
-        tone(hz(melody[n]),now,0.48,0.10,"sine");
-        tone(hz(melody[n]+12),now,0.25,0.022,"triangle");
-        if(n%8===0){
-          const chord=chords[Math.floor(n/8)%chords.length];
-          chord.forEach((m,i)=>tone(hz(m),now,beat*3.7,0.012/(i+1),"sine"));
-        }
-        step++;
-      }
-      function setLevel(){
-        if(!master||!ctx)return;
-        master.gain.cancelScheduledValues(ctx.currentTime);
-        master.gain.setTargetAtTime(enabled&&!ducked?0.72:0.0001,ctx.currentTime,0.22);
-      }
+      const button=document.getElementById("musicToggle");
+      const note=document.querySelector(".sound-note");
+      const audio=document.getElementById("backgroundMusic");
+      if(!button||!audio)return;
+      let enabled=false,ducked=false;
+      const normalVolume=0.22,duckVolume=0.035;
+      function setLevel(){audio.volume=ducked?duckVolume:normalVolume;}
       async function start(){
-        const AC=window.AudioContext||window.webkitAudioContext;
-        if(!AC){if(note)note.textContent="پخش موسیقی در این دستگاه پشتیبانی نمی‌شود.";return;}
         try{
-          if(!ctx){ctx=new AC();master=ctx.createGain();master.gain.value=0.0001;master.connect(ctx.destination);}
-          await ctx.resume();enabled=true;setLevel();playStep();
-          if(timer)clearInterval(timer);
-          timer=setInterval(playStep,beat*1000);
-          button.textContent="Ⅱ توقف موسیقی";button.setAttribute("aria-pressed","true");
-          if(note)note.textContent="موسیقی بی‌کلام و ملایم پخش می‌شود؛ هنگام دیکته خودکار کم‌صدا می‌شود.";
-        }catch(e){enabled=false;if(note)note.textContent="پخش موسیقی آغاز نشد؛ دوباره دکمه را بزن.";}
+          setLevel();
+          await audio.play();
+          enabled=true;
+          button.textContent="Ⅱ توقف موسیقی";
+          button.setAttribute("aria-pressed","true");
+          if(note)note.textContent="موسیقی آرام «First Snow» پخش می‌شود؛ هنگام دیکته و خواندن متن خودکار کم‌صدا می‌شود.";
+        }catch(e){
+          enabled=false;
+          if(note)note.textContent="فایل موسیقی در این نسخه در دسترس نیست یا پخش آن آغاز نشد.";
+        }
       }
       function stop(){
-        enabled=false;if(timer)clearInterval(timer);timer=null;setLevel();
-        button.textContent="▶ پخش موسیقی";button.setAttribute("aria-pressed","false");
+        enabled=false;audio.pause();audio.currentTime=0;
+        button.textContent="▶ پخش موسیقی";
+        button.setAttribute("aria-pressed","false");
         if(note)note.textContent="موسیقی خاموش است؛ هر زمان بخواهی می‌توانی دوباره پخشش کنی.";
       }
       button.addEventListener("click",()=>enabled?stop():start());
+      audio.addEventListener("ended",()=>{if(enabled){audio.currentTime=0;audio.play().catch(()=>stop());}});
+      audio.addEventListener("error",()=>{if(note)note.textContent="فایل موسیقی در این نسخه بارگذاری نشد؛ اتصال یا بستهٔ برنامه را بررسی کنید.";});
       window.EMLAY_DUCK_MUSIC=function(value){ducked=!!value;setLevel();};
-      document.addEventListener("visibilitychange",()=>{if(document.hidden&&ctx&&ctx.state==="running")ctx.suspend();else if(!document.hidden&&enabled&&ctx&&ctx.state==="suspended")ctx.resume();});
+      document.addEventListener("visibilitychange",()=>{
+        if(document.hidden&&enabled)audio.pause();
+        else if(!document.hidden&&enabled)audio.play().catch(()=>{});
+      });
     })();
 
     // نمایش کوتاه صفحه آغازین؛ سپس ورود به محیط اصلی برنامه.
