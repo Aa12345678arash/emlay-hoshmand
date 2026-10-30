@@ -256,10 +256,10 @@
       return;
     }
     if(!Object.prototype.hasOwnProperty.call(modeNames,mode)){return;}
-    if(mode==="challenge"){
+    if(mode==="challenge" && ((window.EMLAY_SPELLING_QUIZ || {})[selectedLesson.id] || []).length < 5){
       const n=document.getElementById("modeNotice");
       n.className="notice";
-      n.textContent="چالش پایانی پس از آماده‌شدن پنج پرسش معنی‌محورِ بازبینی‌شده فعال می‌شود.";
+      n.textContent="برای چالش پایانی این درس هنوز پنج پرسش معنی‌محور آماده نشده است.";
       return;
     }
     if(mode==="words" && !((window.EMLAY_SPELLING_QUIZ || {})[selectedLesson.id] || []).length){
@@ -269,7 +269,7 @@
       return;
     }
     currentMode=mode;questionNumber=0;correctCount=0;sessionPoints=0;
-    sessionWords=currentMode==="words"
+    sessionWords=(currentMode==="words" || currentMode==="challenge")
       ? shuffle(((window.EMLAY_SPELLING_QUIZ || {})[selectedLesson.id] || []).map(item=>item.word)).slice(0,5)
       : shuffle(wordBank[selectedLesson.id]||[]).slice(0,5);
     $("practiceTitle").textContent=modeNames[mode]||"تمرین";$("practiceContinue").textContent="ادامه";overlay.hidden=false;renderQuestion();
