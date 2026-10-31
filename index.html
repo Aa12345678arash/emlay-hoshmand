@@ -488,6 +488,21 @@
     .pdf-preview{margin-top:12px;border:1px solid #dce8fa;border-radius:14px;padding:10px;background:#fff}
     .pdf-preview summary{cursor:pointer;color:#1d4f91;font-weight:700;font-size:13px}
     @media(max-width:430px){.pdf-actions{grid-template-columns:1fr}.lesson-art{width:58px;height:50px}}
+  
+    /* پوستر اختصاصی هر درس و کتاب‌خوان ورق‌زن */
+    .lesson-poster{position:relative;isolation:isolate;display:flex;align-items:center;gap:14px;min-height:118px;margin:14px 0 18px;padding:16px;border-radius:22px;overflow:hidden;color:#17345d;background:linear-gradient(125deg,#fff4d7,#e4f4ff 58%,#e6f8ed);border:1px solid #d7e6f6;box-shadow:0 9px 22px rgba(28,65,120,.12)}
+    .lesson-poster:before,.lesson-poster:after{content:"";position:absolute;z-index:-1;border-radius:50%;background:rgba(255,255,255,.55)}
+    .lesson-poster:before{width:150px;height:150px;left:-35px;top:-70px}.lesson-poster:after{width:90px;height:90px;right:42%;bottom:-58px}
+    .poster-illustration{display:grid;place-items:center;flex:0 0 88px;width:88px;height:88px;border-radius:25px;background:linear-gradient(145deg,#fff,#dcecff);font-size:52px;box-shadow:inset 0 2px 5px #fff,0 7px 14px #183c681c}
+    .poster-copy{min-width:0}.poster-kicker{font-size:10px;font-weight:800;color:#2471b8;letter-spacing:.2px}.poster-copy h3{margin:3px 0;font-size:18px;color:#17356b}.poster-copy p{margin:0;font-size:11px;color:#526985;line-height:1.8}
+    .lesson-card{min-height:174px}.lesson-card .lesson-art{width:100%;height:76px;margin:8px auto 5px;border-radius:16px;background:linear-gradient(135deg,#fff1d2,#e5f3ff);font-size:43px;display:grid;place-items:center;box-shadow:inset 0 1px 3px #fff,0 4px 10px #23466c18}.lesson-card:nth-child(4n+2) .lesson-art{background:linear-gradient(135deg,#fff0d4,#fce4e8)}.lesson-card:nth-child(4n+3) .lesson-art{background:linear-gradient(135deg,#e6f6e9,#e4efff)}.lesson-card:nth-child(4n) .lesson-art{background:linear-gradient(135deg,#eee8ff,#e0f7fa)}
+    .book-reader{margin:15px 0;padding:15px;border:1px solid #d7e5f6;border-radius:22px;background:linear-gradient(145deg,#fff,#f2f7ff);box-shadow:0 8px 20px rgba(28,65,120,.08)}
+    .book-reader-head{display:flex;justify-content:space-between;align-items:center;gap:8px}.book-reader-head h3{margin:0;color:#17356b;font-size:16px}.book-page-count{font-size:11px;color:#56708f;background:#e9f2ff;padding:5px 9px;border-radius:20px}
+    .book-page{min-height:210px;margin:12px 0;padding:20px 18px;border-radius:14px;background:repeating-linear-gradient(#fff 0,#fff 35px,#e9f0f8 36px);border:1px solid #e0e8f2;box-shadow:inset 0 0 0 5px #fffdf8;line-height:2.25;color:#263d5a;font-size:15px}
+    .book-page h4{margin:0 0 10px;color:#1e68ad;font-size:16px}.book-page p{margin:0 0 9px}.book-page .book-highlight{padding:2px 5px;border-radius:6px;background:#fff0bd}
+    .book-controls{display:flex;align-items:center;justify-content:space-between;gap:8px}.book-controls button{border:0;border-radius:12px;padding:9px 14px;background:#246fc2;color:white;font-size:12px}.book-controls button:disabled{opacity:.35}.book-dots{font-size:11px;color:#60758f}
+    @media(max-width:380px){.lesson-poster{gap:10px;padding:12px}.poster-illustration{flex-basis:70px;width:70px;height:70px;font-size:42px}.poster-copy h3{font-size:16px}.book-page{padding:16px;font-size:14px}}
+
   </style>
 </head>
 
@@ -604,6 +619,13 @@
         <button class="back-button" id="backButton">← بازگشت به درس‌ها</button>
         <h2 id="selectedTitle"></h2>
         <div id="selectedChapter" class="panel-description"></div>
+        <section id="lessonPoster" class="lesson-poster" aria-label="پوستر تصویری درس"></section>
+        <section id="bookReader" class="book-reader" aria-label="کتاب‌خوان ورق‌زن">
+          <div class="book-reader-head"><h3>📖 کتاب‌خوان درس</h3><span id="bookPageCount" class="book-page-count">صفحه ۱ از ۳</span></div>
+          <article id="bookPage" class="book-page" aria-live="polite"></article>
+          <div class="book-controls"><button id="bookPrev" type="button">صفحه قبل</button><span id="bookDots" class="book-dots">● ○ ○</span><button id="bookNext" type="button">صفحه بعد</button></div>
+          <p style="font-size:10px;color:#718096;margin:8px 2px 0">این بخش، درسنامه آموزشیِ ورق‌زدنی برنامه است؛ متن رسمی کامل کتاب پس از افزودن فایل مجاز همان چاپ نمایش داده می‌شود.</p>
+        </section>
         <section id="lessonNote" class="lesson-note" aria-label="درسنامه آموزشی"></section>
         <section id="lessonWriting" class="lesson-note lesson-writing" aria-label="آموزش نگارش، هم‌معنی، متضاد و هم‌خانواده"></section>
         <section id="bookPdfSection" class="pdf-library" aria-label="متن کامل درس در کتاب‌های PDF">
@@ -794,7 +816,7 @@
 
         card.innerHTML = `
           <span class="lesson-number">${toPersianNumber(lesson.id)}</span>
-          <span class="lesson-art" aria-hidden="true"><svg viewBox="0 0 120 100"><use href="images/lesson-art.svg#lesson-${lesson.id}"></use></svg></span>
+          <span class="lesson-art" aria-hidden="true">${lesson.icon || "📚"}</span>
           <h3>${lesson.title}</h3>
           <small>${lesson.chapter}</small>
           <div class="progress-track">
@@ -928,11 +950,48 @@
       return ready;
     }
 
+
+    let currentBookPages = [];
+    let currentBookPage = 0;
+    function renderBookPage() {
+      const page = currentBookPages[currentBookPage] || {title:"درسنامه",text:"محتوای آموزشی این صفحه آماده نیست."};
+      const root=document.getElementById("bookPage");
+      root.replaceChildren();
+      const h=document.createElement("h4");h.textContent=page.title;root.appendChild(h);
+      const p=document.createElement("p");p.textContent=page.text;root.appendChild(p);
+      if(page.extra){const e=document.createElement("p");e.className="book-highlight";e.textContent=page.extra;root.appendChild(e);}
+      document.getElementById("bookPageCount").textContent="صفحه "+toPersianNumber(currentBookPage+1)+" از "+toPersianNumber(currentBookPages.length);
+      document.getElementById("bookDots").textContent=currentBookPages.map((_,i)=>i===currentBookPage?"●":"○").join(" ");
+      document.getElementById("bookPrev").disabled=currentBookPage===0;
+      document.getElementById("bookNext").disabled=currentBookPage===currentBookPages.length-1;
+    }
+    document.getElementById("bookPrev").addEventListener("click",()=>{if(currentBookPage>0){currentBookPage--;renderBookPage();}});
+    document.getElementById("bookNext").addEventListener("click",()=>{if(currentBookPage<currentBookPages.length-1){currentBookPage++;renderBookPage();}});
+    function renderLessonPoster(lesson, note) {
+      const root=document.getElementById("lessonPoster");
+      root.innerHTML='<div class="poster-illustration" aria-hidden="true">'+(lesson.icon||"📚")+'</div><div class="poster-copy"><div class="poster-kicker">پوستر آموزشی • فارسی پنجم</div><h3></h3><p></p></div>';
+      root.querySelector("h3").textContent=lesson.title;
+      root.querySelector("p").textContent=(note&&note.summary)||lesson.activity||"با جغد دانا، واژه‌ها را کشف کن و درست بنویس.";
+    }
+    function renderBookReader(note, lesson) {
+      const n=note||{};
+      currentBookPages=[
+        {title:"آشنایی با درس",text:n.summary||("در این بخش با موضوع درس «"+lesson.title+"» آشنا می‌شوی."),extra:"بخوان، فکر کن و واژه‌های مهم را پیدا کن."},
+        {title:"نکته‌های یادگیری",text:n.teach||n.goal||lesson.activity||"با دقت بخوان و واژه‌ها را در جمله به کار ببر.",extra:(n.tips||[]).slice(0,3).join(" • ")},
+        {title:"تمرین پایانی",text:n.task||"سه واژه مهم درس را انتخاب کن و با هرکدام یک جمله بنویس.",extra:"پس از نوشتن، املای واژه‌ها را دوباره بررسی کن."}
+      ];
+      currentBookPage=0;renderBookPage();
+    }
+
     function openLesson(id) {
       selectedLesson = lessons.find(item => item.id === id);
       if (!selectedLesson) return;
       window.EMLAY_SELECTED_LESSON = selectedLesson;
 
+      const currentLesson = lessons.find(item => item.id === id) || {id,title:"درس",icon:"📚"};
+      const currentNote = (window.EMLAY_LESSON_NOTES || {})[id];
+      renderLessonPoster(currentLesson,currentNote);
+      renderBookReader(currentNote,currentLesson);
       document.getElementById("selectedTitle").textContent =
         selectedLesson.icon + " درس " +
         toPersianNumber(selectedLesson.id) + ": " +
