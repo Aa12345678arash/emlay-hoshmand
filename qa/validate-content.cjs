@@ -16,6 +16,16 @@ assert(practiceRuntimeSource.includes("function renderWordHunt") && practiceRunt
 assert(practiceRuntimeSource.includes('["words","letters","listening","sentence","words"][questionNumber]'), "چالش پایانی ترکیب پنج‌مرحله‌ای مورد انتظار را ندارد.");
 assert(practiceRuntimeSource.includes("function recordAnswer") && practiceRuntimeSource.includes("function finishSession") && practiceRuntimeSource.includes("progress.lessonStats"), "ثبت پاسخ‌ها و خلاصه عملکرد تمرین ناقص است.");
 assert(practiceRuntimeSource.includes('window.EMLAY_SPEAKER.stop()'), "خروج از تمرین صدای بومی اندروید را متوقف نمی‌کند.");
+const audioSource=fs.readFileSync("audio-helper.js","utf8");
+const audioManifestSource=fs.readFileSync("audio-manifest.js","utf8");
+assert(audioSource.includes("function findAsset")&&audioSource.includes("new window.Audio(asset)"),"پخش فایل صوتی آفلاین از manifest پیاده‌سازی نشده است.");
+assert(audioSource.includes("speakDevice(value,speed)")&&audioSource.includes("activeAudio.onerror"),"جایگزینی فایل صوتی با TTS دستگاه ناقص است.");
+assert(audioSource.includes("function pause()")&&audioSource.includes("function resume()"),"کنترل مکث و ادامه صوت کامل نیست.");
+assert(audioManifestSource.includes("pending-voice-approval")&&audioManifestSource.includes("assets:{}"),"وضعیت تأیید صدا یا manifest اولیه مشخص نیست.");
+assert(indexSource.includes('src="audio-manifest.js"')&&indexSource.indexOf('src="audio-manifest.js"')<indexSource.indexOf('src="audio-helper.js"'),"manifest باید پیش از موتور صوتی بارگذاری شود.");
+assert(practiceSource.includes('"word:" + selectedLesson.id + ":" + target'),"تمرین شنیداری به شناسه فایل صوتی واژه متصل نیست.");
+const dictationAudioSource=fs.readFileSync("lesson-dictation.js","utf8");
+assert(dictationAudioSource.includes('"dictation:" + item.id + ":" + seg'),"جمله‌های املا به شناسه فایل صوتی متصل نیست.");
 
 const suiteSource = fs.readFileSync("lesson1-suite.js", "utf8");
 const indexSource = fs.readFileSync("index.html", "utf8");
