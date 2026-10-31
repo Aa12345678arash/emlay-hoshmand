@@ -603,6 +603,7 @@
         <h2 id="selectedTitle"></h2>
         <div id="selectedChapter" class="panel-description"></div>
         <section id="lessonNote" class="lesson-note" aria-label="درسنامه آموزشی"></section>
+        <section id="lessonWriting" class="lesson-note lesson-writing" aria-label="آموزش نگارش، هم‌معنی، متضاد و هم‌خانواده"></section>
         <section id="bookPdfSection" class="pdf-library" aria-label="متن کامل درس در کتاب‌های PDF">
           <h3>📚 متن کامل درس در کتاب‌های PDF</h3>
           <p id="pdfLessonPages">برای مطالعه متن اصلی و دیدن صفحه‌های کتاب، از نسخه‌های کامل کتاب استفاده کن.</p>
@@ -698,6 +699,7 @@
   <script src="spelling-quiz.js"></script>
   <script src="dictation-texts.js"></script>
   <script src="lesson-notes.js"></script>
+  <script src="lesson-writing.js"></script>
   <script src="audio-helper.js"></script>
   <script src="practice.js"></script>
   <script src="lesson1-suite.js"></script>
@@ -934,6 +936,8 @@
 
       document.getElementById("selectedChapter").textContent =
         "فصل: " + selectedLesson.chapter;
+
+      if (window.renderLessonWriting) window.renderLessonWriting(id);
 
       const note = (window.EMLAY_LESSON_NOTES || {})[id];
       const noteBox = document.getElementById("lessonNote");
