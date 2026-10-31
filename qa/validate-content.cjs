@@ -50,6 +50,12 @@ assert(indexSource.includes('id="teacherEditor"') &&
   indexSource.includes("saved.words.length >= 5") &&
   indexSource.includes("(!lessonData.teacherInput || teacherReady)"),
   "ورود، ذخیره و فعال‌سازی محتوای درس‌های آزاد کامل نیست.");
+assert(indexSource.includes('onclick="openWritingTest()"'), "دکمه ورود به آزمون نگارش در صفحه درس وجود ندارد.");
+const writingSource = fs.readFileSync("writing-test.js", "utf8");
+assert(!writingSource.includes("window.open("), "آزمون نگارش هنوز به پنجره جدید وابسته است.");
+assert(writingSource.includes('id="writingTestOverlay"') && writingSource.includes('role="dialog"') && writingSource.includes('aria-modal="true"'), "نمایش درون‌صفحه‌ای و دسترس‌پذیر آزمون نگارش پیاده‌سازی نشده است.");
+assert(writingSource.includes('window.AndroidPrint.printHtml(html)') && writingSource.includes('window.print()'), "مسیر چاپ بومی اندروید و چاپ مرورگر هر دو پیش‌بینی نشده‌اند.");
+assert(writingSource.includes('data-action="return"') && writingSource.includes('data-action="exit"') && writingSource.includes('event.key==="Escape"'), "کنترل‌های بازگشت، خروج یا کلید Escape آزمون نگارش ناقص است.");
 assert(indexSource.includes("const makeTeacherQuestion = item =>") &&
   indexSource.includes("options:[item.word,...chosen]") &&
   indexSource.includes("const chosen = distractors.slice(0,3)") &&
