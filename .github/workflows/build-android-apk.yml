@@ -20,6 +20,7 @@ on:
       - 'learning-report.js'
       - 'android/**'
       - 'qa/**'
+      - 'pdf/**'
       - 'images/**'
       - '.github/workflows/build-android-apk.yml'
   pull_request:
@@ -90,6 +91,8 @@ jobs:
           mkdir -p android/app/src/main/assets/www/images
           cp images/*.svg android/app/src/main/assets/www/images/
           cp index.html audio-helper.js lesson-data.js lesson-notes.js practice.js word-bank.js spelling-quiz.js dictation-texts.js lesson1-suite.js lesson-dictation.js learning-report.js writing-test.js practice-world.svg classroom-owl.svg android/app/src/main/assets/www/
+          mkdir -p android/app/src/main/assets/www/pdf
+          cp -R pdf/. android/app/src/main/assets/www/pdf/
 
       - name: بررسی نحو فایل‌های جاوااسکریپت
         run: |
