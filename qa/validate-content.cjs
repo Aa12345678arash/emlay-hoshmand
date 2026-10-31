@@ -10,6 +10,13 @@ for (const file of ["lesson-data.js", "word-bank.js", "spelling-quiz.js", "dicta
 }
 const data = sandbox.window;
 const practiceSource = fs.readFileSync("practice.js", "utf8");
+const practiceRuntimeSource = fs.readFileSync("practice.js", "utf8");
+assert(["words", "letters", "listening", "sentence", "challenge"].every(mode => practiceRuntimeSource.includes(mode + ":")), "نام هر پنج شیوه تمرین در موتور ثبت نشده است.");
+assert(practiceRuntimeSource.includes("function renderWordHunt") && practiceRuntimeSource.includes("function renderMissingLetter") && practiceRuntimeSource.includes("function renderListening") && practiceRuntimeSource.includes("function renderSentence"), "موتور یکی از چهار نوع پرسش پایه را ندارد.");
+assert(practiceRuntimeSource.includes('["words","letters","listening","sentence","words"][questionNumber]'), "چالش پایانی ترکیب پنج‌مرحله‌ای مورد انتظار را ندارد.");
+assert(practiceRuntimeSource.includes("function recordAnswer") && practiceRuntimeSource.includes("function finishSession") && practiceRuntimeSource.includes("progress.lessonStats"), "ثبت پاسخ‌ها و خلاصه عملکرد تمرین ناقص است.");
+assert(practiceRuntimeSource.includes('window.EMLAY_SPEAKER.stop()'), "خروج از تمرین صدای بومی اندروید را متوقف نمی‌کند.");
+
 const suiteSource = fs.readFileSync("lesson1-suite.js", "utf8");
 const indexSource = fs.readFileSync("index.html", "utf8");
 const inlineScripts = [...indexSource.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/gi)]
