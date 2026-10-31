@@ -19,6 +19,7 @@ on:
       - 'writing-test.js'
       - 'lesson-writing.js'
       - 'audio-helper.js'
+      - 'audio-manifest.js'
       - 'learning-report.js'
       - 'android/**'
       - 'qa/**'
@@ -92,12 +93,13 @@ jobs:
           mkdir -p android/app/src/main/assets/www
           mkdir -p android/app/src/main/assets/www/images
           cp images/*.svg android/app/src/main/assets/www/images/
-          cp index.html audio-helper.js lesson-data.js lesson-notes.js lesson-writing.js practice.js word-bank.js spelling-quiz.js dictation-texts.js lesson1-suite.js lesson-dictation.js learning-report.js writing-test.js practice-world.svg classroom-owl.svg android/app/src/main/assets/www/
+          cp index.html audio-manifest.js audio-helper.js lesson-data.js lesson-notes.js lesson-writing.js practice.js word-bank.js spelling-quiz.js dictation-texts.js lesson1-suite.js lesson-dictation.js learning-report.js writing-test.js practice-world.svg classroom-owl.svg android/app/src/main/assets/www/
           mkdir -p android/app/src/main/assets/www/pdf
           cp -R pdf/. android/app/src/main/assets/www/pdf/
 
       - name: بررسی نحو فایل‌های جاوااسکریپت
         run: |
+          node --check audio-manifest.js
           node --check audio-helper.js
           node --check lesson-data.js
           node --check word-bank.js
