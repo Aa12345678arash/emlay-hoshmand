@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - prototype/first-working-practice
+      - fix/classroom-quality-and-writing
     paths:
       - 'index.html'
       - 'lesson-data.js'
@@ -14,6 +15,7 @@ on:
       - 'dictation-texts.js'
       - 'lesson1-suite.js'
       - 'lesson-dictation.js'
+      - 'writing-test.js'
       - 'audio-helper.js'
       - 'learning-report.js'
       - 'android/**'
@@ -84,7 +86,7 @@ jobs:
         shell: bash
         run: |
           mkdir -p android/app/src/main/assets/www
-          cp index.html audio-helper.js lesson-data.js lesson-notes.js practice.js word-bank.js spelling-quiz.js dictation-texts.js lesson1-suite.js lesson-dictation.js learning-report.js practice-world.svg android/app/src/main/assets/www/
+          cp index.html audio-helper.js lesson-data.js lesson-notes.js practice.js word-bank.js spelling-quiz.js dictation-texts.js lesson1-suite.js lesson-dictation.js learning-report.js writing-test.js practice-world.svg android/app/src/main/assets/www/
 
       - name: بررسی نحو فایل‌های جاوااسکریپت
         run: |
@@ -98,6 +100,7 @@ jobs:
           node --check lesson1-suite.js
           node --check lesson-dictation.js
           node --check learning-report.js
+          node --check writing-test.js
           node qa/validate-content.cjs
 
       - name: ساخت APK آزمایشی
