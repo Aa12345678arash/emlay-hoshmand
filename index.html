@@ -471,6 +471,21 @@
 .practice-launch{display:flex;align-items:center;gap:12px;width:100%;margin-top:16px;padding:15px;border:1px solid #d6e5fb;border-radius:20px;background:linear-gradient(120deg,#17356b,#2878df 62%,#24a8c4);color:#fff;text-align:right;box-shadow:0 6px 0 #c8d9f1,0 13px 24px rgba(24,76,145,.18)}
 .practice-launch strong{display:block}.practice-launch small{display:block;color:#e7f3ff;font-size:11px}
 
+    /* تصویرسازی اختصاصی و یکپارچه */
+    .splash-owl,.mascot,.welcome-art{background-image:url('images/owl-mascot.svg');background-position:center;background-repeat:no-repeat;background-size:contain}
+    .splash-owl{background-color:#fff0c2}.mascot{background-color:#fff1cf}.welcome-art{background-color:#e5f5ff}
+    .splash-owl svg,.mascot svg,.welcome-art svg{display:none!important}
+    .lesson-art{display:flex;width:62px;height:54px;align-items:center;justify-content:center;margin:2px auto 7px;border-radius:17px;background:linear-gradient(145deg,#fff,#eef5ff);box-shadow:inset 0 1px 2px #fff,0 4px 9px rgba(32,69,120,.10)}
+    .lesson-art svg{width:100%;height:100%;display:block}
+    .lesson-card .lesson-number{position:absolute;top:10px;right:10px}
+    .lesson-card .lesson-art{margin-top:9px}
+    .pdf-library{margin:16px 0;padding:16px;border:1px solid #d9e6f7;border-radius:20px;background:linear-gradient(145deg,#fff,#f3f8ff)}
+    .pdf-library h3{margin:0 0 7px;color:#17356b;font-size:17px}
+    .pdf-library p{font-size:12px;line-height:2;color:#5d6c82;margin:6px 0 12px}
+    .pdf-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .pdf-action{display:flex;align-items:center;justify-content:center;gap:8px;min-height:52px;padding:10px;border-radius:14px;background:#fff;border:1px solid #dce8fa;color:#1d4f91;text-decoration:none;text-align:center;font-weight:700;font-size:12px}
+    .pdf-action.primary{background:linear-gradient(130deg,#1d63b7,#28a4b8);color:white;border:0}
+    @media(max-width:430px){.pdf-actions{grid-template-columns:1fr}.lesson-art{width:58px;height:50px}}
   </style>
 </head>
 
@@ -585,6 +600,15 @@
         <h2 id="selectedTitle"></h2>
         <div id="selectedChapter" class="panel-description"></div>
         <section id="lessonNote" class="lesson-note" aria-label="درسنامه آموزشی"></section>
+        <section id="bookPdfSection" class="pdf-library" aria-label="متن کامل درس در کتاب‌های PDF">
+          <h3>📚 متن کامل درس در کتاب‌های PDF</h3>
+          <p id="pdfLessonPages">برای مطالعه متن اصلی و دیدن صفحه‌های کتاب، از نسخه‌های کامل کتاب استفاده کن.</p>
+          <div class="pdf-actions">
+            <a class="pdf-action primary" href="https://chap.sch.ir/" target="_blank" rel="noopener">📘 پایگاه رسمی کتاب‌های درسی</a>
+            <a class="pdf-action" href="https://fliphtml5.com/guwfe/bgij/" target="_blank" rel="noopener">📖 مشاهده کتاب کامل نگارش پنجم</a>
+          </div>
+          <p>در نسخه PDF کتاب، متن درس را همراه تصویرها و صفحه‌آرایی اصلی می‌بینی. برای درس‌های آزاد ۷ و ۱۲، متن بومی ذخیره‌شده آموزگار در بخش آموزش برنامه نمایش داده می‌شود.</p>
+        </section>
         <section id="lessonPdfPanel" class="lesson-note pdf-lesson-panel" aria-label="متن کامل درس در قالب PDF">
           <h3>📖 متن کامل درس در قالب PDF</h3>
           <p>نسخه کامل و صفحه‌آرایی‌شدهٔ متن درس از این بخش در دسترس خواهد بود. برای هر یک از ۱۷ درس جایگاه جداگانه در نظر گرفته شده است.</p>
@@ -759,7 +783,7 @@
 
         card.innerHTML = `
           <span class="lesson-number">${toPersianNumber(lesson.id)}</span>
-          <span class="lesson-icon">${lesson.icon}</span>
+          <span class="lesson-art" aria-hidden="true"><svg viewBox="0 0 120 100"><use href="images/lesson-art.svg#lesson-${lesson.id}"></use></svg></span>
           <h3>${lesson.title}</h3>
           <small>${lesson.chapter}</small>
           <div class="progress-track">
@@ -899,6 +923,8 @@
       window.EMLAY_SELECTED_LESSON = selectedLesson;
 
       document.getElementById("selectedTitle").textContent =
+      const pdfPages=document.getElementById("pdfLessonPages");
+      if(pdfPages)pdfPages.textContent="صفحه‌های مرتبط در کتاب نگارش: "+(lesson.pages||"در حال تطبیق")+"؛ برای متن کتاب فارسی و صفحه‌آرایی کامل، پایگاه رسمی کتاب‌های درسی را باز کن.";
         selectedLesson.icon + " درس " +
         toPersianNumber(selectedLesson.id) + ": " +
         selectedLesson.title;
