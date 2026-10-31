@@ -485,6 +485,8 @@
     .pdf-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px}
     .pdf-action{display:flex;align-items:center;justify-content:center;gap:8px;min-height:52px;padding:10px;border-radius:14px;background:#fff;border:1px solid #dce8fa;color:#1d4f91;text-decoration:none;text-align:center;font-weight:700;font-size:12px}
     .pdf-action.primary{background:linear-gradient(130deg,#1d63b7,#28a4b8);color:white;border:0}
+    .pdf-preview{margin-top:12px;border:1px solid #dce8fa;border-radius:14px;padding:10px;background:#fff}
+    .pdf-preview summary{cursor:pointer;color:#1d4f91;font-weight:700;font-size:13px}
     @media(max-width:430px){.pdf-actions{grid-template-columns:1fr}.lesson-art{width:58px;height:50px}}
   </style>
 </head>
@@ -611,7 +613,11 @@
             <a class="pdf-action primary" href="https://chap.sch.ir/" target="_self" rel="noopener">📘 پایگاه رسمی کتاب‌های درسی</a>
             <a class="pdf-action" href="https://fliphtml5.com/guwfe/bgij/" target="_self" rel="noopener">📖 مشاهده نسخه کامل نگارش پنجم</a>
           </div>
-          <p>در نسخه PDF کتاب، متن درس را همراه تصویرها و صفحه‌آرایی اصلی می‌بینی. برای درس‌های آزاد ۷ و ۱۲، متن بومی ذخیره‌شده آموزگار در بخش آموزش برنامه نمایش داده می‌شود.</p>
+          <details class="pdf-preview">
+            <summary>نمایش کتاب کامل نگارش در همین صفحه</summary>
+            <iframe class="pdf-reader" title="نسخه کامل برخط کتاب نگارش فارسی پنجم" loading="lazy" src="https://fliphtml5.com/guwfe/bgij/" referrerpolicy="no-referrer"></iframe>
+          </details>
+          <p>نمایش کتاب نگارش به اتصال اینترنت نیاز دارد. برای PDF فارسی، از پایگاه رسمی کتاب‌های درسی نسخه همان سال را دریافت کن. برای درس‌های آزاد ۷ و ۱۲، متن بومی ذخیره‌شده آموزگار در بخش آموزش برنامه نمایش داده می‌شود.</p>
         </section>
         <section id="lessonPdfPanel" class="lesson-note pdf-lesson-panel" aria-label="متن کامل درس در قالب PDF">
           <h3>📖 متن کامل درس در قالب PDF</h3>
