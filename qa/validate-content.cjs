@@ -61,15 +61,15 @@ const norm = value => String(value || "").normalize("NFC")
   .replace(/[\u200c\u200f\u202a-\u202e\sـًٌٍَُِّْٰ]/g, "");
 const isCorrect = (answer, expected) => {
   const a=String(answer||"").normalize("NFC"), e=String(expected||"").normalize("NFC");
-  const separators=(e.match(/[\\u200c\\s]/g)||[]).length;
-  return norm(a)===norm(e) && (separators===0 || (a.match(/[\\u200c\\s]/g)||[]).length>=separators);
+  const separators=(e.match(/[\u200c\s]/g)||[]).length;
+  return norm(a)===norm(e) && (separators===0 || (a.match(/[\u200c\s]/g)||[]).length>=separators);
 };
 const buildOptions = item => {
   const correct=String(item.word||"").trim(), used=new Set([norm(correct)]), wrong=[];
   const add=value=>{const s=String(value||"").trim(),k=norm(s);if(s&&k&&!used.has(k)&&!isCorrect(s,correct)){used.add(k);wrong.push(s);}};
   (item.errors||[]).forEach(x=>add(x.form));(item.options||[]).forEach(add);
   const chars=Array.from(correct), map={"ا":"آ","آ":"ا","ت":"ط","ط":"ت","ث":"س","س":"ث","ص":"س","ذ":"ز","ز":"ذ","ض":"ظ","ظ":"ض","ح":"ه","ه":"ح","ق":"غ","غ":"ق","ع":"ا","ک":"گ","گ":"ک"};
-  chars.forEach((ch,i)=>{if(map[ch])add(chars.map((v,j)=>j===i?map[ch]:v).join(""));if(ch!=="‌"&&!/\\s/.test(ch)){add(chars.map((v,j)=>j===i?"":v).join(""));add(chars.map((v,j)=>j===i?v+v:v).join(""));}if(i<chars.length-1&&ch!=="‌"&&chars[i+1]!=="‌"&&!/\\s/.test(ch+chars[i+1])){const a=chars.slice();[a[i],a[i+1]]=[a[i+1],a[i]];add(a.join(""));}});
+  chars.forEach((ch,i)=>{if(map[ch])add(chars.map((v,j)=>j===i?map[ch]:v).join(""));if(ch!=="‌"&&!/\s/.test(ch)){add(chars.map((v,j)=>j===i?"":v).join(""));add(chars.map((v,j)=>j===i?v+v:v).join(""));}if(i<chars.length-1&&ch!=="‌"&&chars[i+1]!=="‌"&&!/\s/.test(ch+chars[i+1])){const a=chars.slice();[a[i],a[i+1]]=[a[i+1],a[i]];add(a.join(""));}});
   const letters=["ا","ی","و","ه","ن","ر","م","ت","س","ب","د","ز"];
   for(let i=0;i<=chars.length;i++){if(chars[i-1]==="‌"||chars[i]==="‌")continue;letters.forEach(ch=>add([...chars.slice(0,i),ch,...chars.slice(i)].join("")));}
   return wrong.length>=3?[correct,...wrong.slice(0,3)]:null;
