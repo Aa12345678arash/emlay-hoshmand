@@ -500,6 +500,10 @@
     .book-reader-head{display:flex;justify-content:space-between;align-items:center;gap:8px}.book-reader-head h3{margin:0;color:#17356b;font-size:16px}.book-page-count{font-size:11px;color:#56708f;background:#e9f2ff;padding:5px 9px;border-radius:20px}
     .book-page{min-height:210px;margin:12px 0;padding:20px 18px;border-radius:14px;background:repeating-linear-gradient(#fff 0,#fff 35px,#e9f0f8 36px);border:1px solid #e0e8f2;box-shadow:inset 0 0 0 5px #fffdf8;line-height:2.25;color:#263d5a;font-size:15px}
     .book-page h4{margin:0 0 10px;color:#1e68ad;font-size:16px}.book-page p{margin:0 0 9px}.book-page .book-highlight{padding:2px 5px;border-radius:6px;background:#fff0bd}
+    .book-page{touch-action:pan-y;transform-origin:center;transition:transform .16s ease,opacity .16s ease}
+    .book-page.page-turn-next{transform:perspective(900px) rotateY(-7deg) translateX(-8px);opacity:.55}
+    .book-page.page-turn-prev{transform:perspective(900px) rotateY(7deg) translateX(8px);opacity:.55}
+    @media(prefers-reduced-motion:reduce){.book-page{transition:none}}
     .book-controls{display:flex;align-items:center;justify-content:space-between;gap:8px}.book-controls button{border:0;border-radius:12px;padding:9px 14px;background:#246fc2;color:white;font-size:12px}.book-controls button:disabled{opacity:.35}.book-dots{font-size:11px;color:#60758f}
     @media(max-width:380px){.lesson-poster{gap:10px;padding:12px}.poster-illustration{flex-basis:70px;width:70px;height:70px;font-size:42px}.poster-copy h3{font-size:16px}.book-page{padding:16px;font-size:14px}}
 
@@ -965,8 +969,22 @@
       document.getElementById("bookPrev").disabled=currentBookPage===0;
       document.getElementById("bookNext").disabled=currentBookPage===currentBookPages.length-1;
     }
-    document.getElementById("bookPrev").addEventListener("click",()=>{if(currentBookPage>0){currentBookPage--;renderBookPage();}});
-    document.getElementById("bookNext").addEventListener("click",()=>{if(currentBookPage<currentBookPages.length-1){currentBookPage++;renderBookPage();}});
+    function turnBookPage(direction){
+      const next=currentBookPage+direction;
+      if(next<0||next>=currentBookPages.length)return;
+      const page=document.getElementById("bookPage");
+      page.classList.remove("page-turn-next","page-turn-prev");
+      page.classList.add(direction>0?"page-turn-next":"page-turn-prev");
+      window.setTimeout(()=>{currentBookPage=next;renderBookPage();},110);
+    }
+    document.getElementById("bookPrev").addEventListener("click",()=>turnBookPage(-1));
+    document.getElementById("bookNext").addEventListener("click",()=>turnBookPage(1));
+    (function enableBookSwipe(){
+      const page=document.getElementById("bookPage");let startX=0,startY=0;
+      page.addEventListener("touchstart",event=>{const t=event.changedTouches[0];startX=t.clientX;startY=t.clientY;},{passive:true});
+      page.addEventListener("touchend",event=>{const t=event.changedTouches[0],dx=t.clientX-startX,dy=t.clientY-startY;if(Math.abs(dx)>55&&Math.abs(dx)>Math.abs(dy)*1.25)turnBookPage(dx<0?1:-1);},{passive:true});
+      page.setAttribute("aria-label","صفحه کتاب‌خوان؛ برای ورق‌زدن به چپ یا راست بکشید");
+    })();
     function renderLessonPoster(lesson, note) {
       const root=document.getElementById("lessonPoster");
       root.innerHTML='<div class="poster-illustration" aria-hidden="true"><svg viewBox="0 0 120 100"><use href="images/lesson-art.svg#lesson-'+lesson.id+'" xlink:href="images/lesson-art.svg#lesson-'+lesson.id+'"></use></svg></div><div class="poster-copy"><div class="poster-kicker">پوستر تصویری درس • فارسی پنجم</div><h3></h3><p></p><small>با جغد دانا، واژه‌ها را کشف کن!</small></div>';
