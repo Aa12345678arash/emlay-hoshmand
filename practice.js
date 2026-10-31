@@ -256,7 +256,7 @@
     }
     $("practiceCounter").textContent="پایان تمرین";nextButton(closePractice);$("practiceContinue").textContent="بازگشت به درس";
   }
-  function closePractice(){if("speechSynthesis" in window)speechSynthesis.cancel();overlay.hidden=true;$("practiceContinue").textContent="ادامه";}
+  function closePractice(){if(window.EMLAY_SPEAKER&&typeof window.EMLAY_SPEAKER.stop==="function")window.EMLAY_SPEAKER.stop();else if("speechSynthesis" in window)speechSynthesis.cancel();overlay.hidden=true;$("practiceContinue").textContent="ادامه";}
   window.openDictationTexts=function(){
     selectedLesson=window.EMLAY_SELECTED_LESSON||null;
     if(!selectedLesson)return;
