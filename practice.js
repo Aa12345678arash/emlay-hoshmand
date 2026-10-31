@@ -89,6 +89,39 @@
     if(mode==="listening")renderListening();
     if(mode==="sentence")renderSentence();
   }
+  function buildWordHuntOptions(item){
+    const correct=String(item.word||"").trim();
+    const used=new Set([normalizeText(correct)]);
+    const distractors=[];
+    const add=value=>{
+      const candidate=String(value||"").trim();
+      const key=normalizeText(candidate);
+      if(!candidate || !key || used.has(key) || matchesSpelling(candidate,correct))return;
+      used.add(key);distractors.push(candidate);
+    };
+    (item.errors||[]).forEach(error=>add(error.form));
+    (item.options||[]).forEach(option=>add(option));
+    const chars=Array.from(correct);
+    const confusables={"ا":"آ","آ":"ا","ت":"ط","ط":"ت","ث":"س","س":"ث","ص":"س","ذ":"ز","ز":"ذ","ض":"ظ","ظ":"ض","ح":"ه","ه":"ح","ق":"غ","غ":"ق","ع":"ا","غ":"ق","ک":"گ","گ":"ک"};
+    chars.forEach((letter,index)=>{
+      if(confusables[letter])add(chars.map((ch,i)=>i===index?confusables[letter]:ch).join(""));
+      if(letter!=="‌" && !/\\s/.test(letter)){
+        add(chars.map((ch,i)=>i===index?"":ch).join(""));
+        add(chars.map((ch,i)=>i===index?ch+ch:ch).join(""));
+      }
+      if(index<chars.length-1 && letter!=="‌" && chars[index+1]!=="‌" && !/\\s/.test(letter+chars[index+1])){
+        const swapped=chars.slice();[swapped[index],swapped[index+1]]=[swapped[index+1],swapped[index]];add(swapped.join(""));
+      }
+    });
+    const insertLetters=["ا","ی","و","ه","ن","ر","م","ت","س","ب","د","ز"];
+    for(let index=0;index<=chars.length;index++){
+      if(chars[index-1]==="‌" || chars[index]==="‌")continue;
+      insertLetters.forEach(letter=>add([...chars.slice(0,index),letter,...chars.slice(index)].join("")));
+    }
+    if(distractors.length<3)return null;
+    return shuffle([correct,...distractors.slice(0,3)]);
+  }
+
   function renderWordHunt(){
     const item=((window.EMLAY_SPELLING_QUIZ || {})[selectedLesson.id] || []).find(entry=>normalizeText(entry.word)===normalizeText(target));
     if(!item){
@@ -105,29 +138,14 @@
     source.textContent="یادآوری: گزینه‌های نادرست این تمرین برای آموزش طراحی شده‌اند و لزوماً غلط‌های ثبت‌شدهٔ دانش‌آموزان نیستند.";
     const list=document.createElement("div");list.className="practice-options";
     body.append(meaning,hint,source,list);
-    const distractors=(item.errors||[]).map(x=>x.form);
-    const fallback=(item.options||[]).filter(x=>!matchesSpelling(x,item.word));
-    const generated=[];
-    const confusables={"ا":"آ","آ":"ا","ت":"ط","ط":"ت","ث":"س","س":"ث","ص":"س","س":"ص","ذ":"ز","ز":"ذ","ض":"ظ","ظ":"ض","ح":"ه","ه":"ح","ق":"غ","غ":"ق"};
-    const chars=Array.from(item.word);
-    chars.forEach((letter,index)=>{
-      if(confusables[letter]) generated.push(chars.map((ch,i)=>i===index?confusables[letter]:ch).join(""));
-      if(letter!=="‌" && !/\s/.test(letter)){
-        generated.push(chars.map((ch,i)=>i===index?"":ch).join(""));
-        generated.push(chars.map((ch,i)=>i===index?ch+ch:ch).join(""));
-      }
-      if(index<chars.length-1 && letter!=="‌" && chars[index+1]!=="‌" && !/\s/.test(letter+chars[index+1])){
-        const swapped=chars.slice();[swapped[index],swapped[index+1]]=[swapped[index+1],swapped[index]];generated.push(swapped.join(""));
-      }
-    });
-    const insertLetters=["ا","ی","و","ه","ن","ر","م","ت","س"];
-    for(let index=0;index<=chars.length;index++){
-      if(chars[index-1]==="‌" || chars[index]==="‌")continue;
-      insertLetters.forEach(letter=>generated.push([...chars.slice(0,index),letter,...chars.slice(index)].join("")));
+    const options=buildWordHuntOptions(item);
+    if(!options){
+      $("practiceQuestion").textContent="برای این واژه سه گزینهٔ نادرستِ متمایز آماده نیست؛ این پرسش تا بازبینی بانک نمایش داده نمی‌شود.";
+      const skip=document.createElement("button");skip.type="button";skip.className="practice-action";skip.textContent="رفتن به پرسش بعدی";
+      skip.onclick=()=>{questionNumber++;if(questionNumber<sessionWords.length)renderQuestion();else finishSession();};
+      body.appendChild(skip);
+      return;
     }
-    const uniqueDistractors=[...new Set([...distractors,...fallback,...generated])]
-      .filter(x=>!matchesSpelling(x,item.word) && normalizeText(x)!==normalizeText(item.word));
-    const options=shuffle([item.word,...uniqueDistractors]).slice(0,4);
     options.forEach(option=>{
       const b=document.createElement("button");b.className="practice-option";b.type="button";b.textContent=option;
       b.onclick=()=>{
