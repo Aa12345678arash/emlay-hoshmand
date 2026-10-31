@@ -49,7 +49,7 @@
      if(event==="start"){status.textContent="🔊 صدای فارسی فعال است؛ واژه‌ها را دنبال کن.";}
      if(event==="done"){if(tokenTimer){clearInterval(tokenTimer);tokenTimer=null;}wordSpans.forEach(s=>s.style.opacity="1");clearActive();playing=false;duck(false);status.textContent="خواندن این بخش تمام شد؛ می‌توانی دوباره گوش بدهی یا به بخش بعد بروی.";}
      if(event==="error"){status.textContent=(message||"صدای فارسی در دسترس نیست.")+" نمایش متن مستقل ادامه دارد.";}
-   });
+   }, "dictation:" + item.id + ":" + seg);
    if(!ok){status.textContent=((window.EMLAY_SPEAKER&&window.EMLAY_SPEAKER.status())||"گفتار فارسی در این گوشی در دسترس نیست.")+" نمایش مرحله‌ای متن ادامه دارد.";}
  }
  function open(){
