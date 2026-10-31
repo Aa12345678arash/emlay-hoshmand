@@ -479,8 +479,9 @@
     .splash-owl,.mascot,.welcome-art{background-image:url('images/owl-mascot.svg');background-position:center;background-repeat:no-repeat;background-size:contain}
     .splash-owl{background-color:#fff0c2}.mascot{background-color:#fff1cf}.welcome-art{background-color:#e5f5ff}
     .splash-owl svg,.mascot svg,.welcome-art svg{display:none!important}
-    .lesson-art{display:flex;width:62px;height:54px;align-items:center;justify-content:center;margin:2px auto 7px;border-radius:17px;background:linear-gradient(145deg,#fff,#eef5ff);box-shadow:inset 0 1px 2px #fff,0 4px 9px rgba(32,69,120,.10)}
-    .lesson-art svg{width:100%;height:100%;display:block}
+    .lesson-art{display:flex;width:100%;min-height:76px;align-items:center;justify-content:center;flex-direction:column;gap:1px;margin:2px auto 7px;border-radius:17px;background:radial-gradient(circle at 50% 15%,#fff 0,#f4f8ff 58%,#e7f0ff 100%);border:1px solid #dce8fa;box-shadow:inset 0 1px 2px #fff,0 4px 9px rgba(32,69,120,.10)}
+    .lesson-art-symbol{display:block;font-size:34px;line-height:1.25;filter:drop-shadow(0 2px 2px rgba(20,43,82,.12))}
+    .lesson-art-label{font-size:9px;font-weight:700;color:#59749b;line-height:1.4}
     .lesson-card .lesson-number{position:absolute;top:10px;right:10px}
     .lesson-card .lesson-art{margin-top:9px}
     .pdf-library{margin:16px 0;padding:16px;border:1px solid #d9e6f7;border-radius:20px;background:linear-gradient(145deg,#fff,#f3f8ff)}
@@ -825,7 +826,7 @@
 
         card.innerHTML = `
           <span class="lesson-number">${toPersianNumber(lesson.id)}</span>
-          <span class="lesson-art" aria-hidden="true"><svg viewBox="0 0 120 100" role="img" aria-label="تصویر درس"><use href="images/lesson-art.svg#lesson-${lesson.id}" xlink:href="images/lesson-art.svg#lesson-${lesson.id}"></use></svg></span>
+          <span class="lesson-art" aria-hidden="true"><span class="lesson-art-symbol">${lesson.icon || "📚"}</span><span class="lesson-art-label">درس ${toPersianNumber(lesson.id)}</span></span>
           <h3>${lesson.title}</h3>
           <small>${lesson.chapter}</small>
           <div class="progress-track">
