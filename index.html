@@ -493,9 +493,9 @@
     .lesson-poster{position:relative;isolation:isolate;display:flex;align-items:center;gap:14px;min-height:118px;margin:14px 0 18px;padding:16px;border-radius:22px;overflow:hidden;color:#17345d;background:linear-gradient(125deg,#fff4d7,#e4f4ff 58%,#e6f8ed);border:1px solid #d7e6f6;box-shadow:0 9px 22px rgba(28,65,120,.12)}
     .lesson-poster:before,.lesson-poster:after{content:"";position:absolute;z-index:-1;border-radius:50%;background:rgba(255,255,255,.55)}
     .lesson-poster:before{width:150px;height:150px;left:-35px;top:-70px}.lesson-poster:after{width:90px;height:90px;right:42%;bottom:-58px}
-    .poster-illustration{display:grid;place-items:center;flex:0 0 88px;width:88px;height:88px;border-radius:25px;background:linear-gradient(145deg,#fff,#dcecff);font-size:52px;box-shadow:inset 0 2px 5px #fff,0 7px 14px #183c681c}
+    .poster-illustration{display:grid;place-items:center;flex:0 0 112px;width:112px;height:112px;border-radius:25px;background:linear-gradient(145deg,#fff,#dcecff);font-size:52px;box-shadow:inset 0 2px 5px #fff,0 7px 14px #183c681c}.poster-illustration svg{width:100%;height:100%;display:block}.poster-copy small{display:inline-block;margin-top:5px;padding:3px 9px;border-radius:20px;background:#fff4d2;color:#8a5b12;font-size:10px;font-weight:bold}
     .poster-copy{min-width:0}.poster-kicker{font-size:10px;font-weight:800;color:#2471b8;letter-spacing:.2px}.poster-copy h3{margin:3px 0;font-size:18px;color:#17356b}.poster-copy p{margin:0;font-size:11px;color:#526985;line-height:1.8}
-    .lesson-card{min-height:174px}.lesson-card .lesson-art{width:100%;height:76px;margin:8px auto 5px;border-radius:16px;background:linear-gradient(135deg,#fff1d2,#e5f3ff);font-size:43px;display:grid;place-items:center;box-shadow:inset 0 1px 3px #fff,0 4px 10px #23466c18}.lesson-card:nth-child(4n+2) .lesson-art{background:linear-gradient(135deg,#fff0d4,#fce4e8)}.lesson-card:nth-child(4n+3) .lesson-art{background:linear-gradient(135deg,#e6f6e9,#e4efff)}.lesson-card:nth-child(4n) .lesson-art{background:linear-gradient(135deg,#eee8ff,#e0f7fa)}
+    .lesson-card{min-height:174px}.lesson-card .lesson-art{width:100%;height:76px;margin:8px auto 5px;border-radius:16px;background:linear-gradient(135deg,#fff1d2,#e5f3ff);font-size:43px;display:grid;place-items:center;box-shadow:inset 0 1px 3px #fff,0 4px 10px #23466c18}.lesson-card .lesson-art svg{width:100%;height:100%;display:block}.lesson-card:nth-child(4n+2) .lesson-art{background:linear-gradient(135deg,#fff0d4,#fce4e8)}.lesson-card:nth-child(4n+3) .lesson-art{background:linear-gradient(135deg,#e6f6e9,#e4efff)}.lesson-card:nth-child(4n) .lesson-art{background:linear-gradient(135deg,#eee8ff,#e0f7fa)}
     .book-reader{margin:15px 0;padding:15px;border:1px solid #d7e5f6;border-radius:22px;background:linear-gradient(145deg,#fff,#f2f7ff);box-shadow:0 8px 20px rgba(28,65,120,.08)}
     .book-reader-head{display:flex;justify-content:space-between;align-items:center;gap:8px}.book-reader-head h3{margin:0;color:#17356b;font-size:16px}.book-page-count{font-size:11px;color:#56708f;background:#e9f2ff;padding:5px 9px;border-radius:20px}
     .book-page{min-height:210px;margin:12px 0;padding:20px 18px;border-radius:14px;background:repeating-linear-gradient(#fff 0,#fff 35px,#e9f0f8 36px);border:1px solid #e0e8f2;box-shadow:inset 0 0 0 5px #fffdf8;line-height:2.25;color:#263d5a;font-size:15px}
@@ -816,7 +816,7 @@
 
         card.innerHTML = `
           <span class="lesson-number">${toPersianNumber(lesson.id)}</span>
-          <span class="lesson-art" aria-hidden="true">${lesson.icon || "📚"}</span>
+          <span class="lesson-art" aria-hidden="true"><svg viewBox="0 0 120 100" role="img" aria-label="تصویر درس"><use href="images/lesson-art.svg#lesson-${lesson.id}" xlink:href="images/lesson-art.svg#lesson-${lesson.id}"></use></svg></span>
           <h3>${lesson.title}</h3>
           <small>${lesson.chapter}</small>
           <div class="progress-track">
@@ -969,16 +969,16 @@
     document.getElementById("bookNext").addEventListener("click",()=>{if(currentBookPage<currentBookPages.length-1){currentBookPage++;renderBookPage();}});
     function renderLessonPoster(lesson, note) {
       const root=document.getElementById("lessonPoster");
-      root.innerHTML='<div class="poster-illustration" aria-hidden="true">'+(lesson.icon||"📚")+'</div><div class="poster-copy"><div class="poster-kicker">پوستر آموزشی • فارسی پنجم</div><h3></h3><p></p></div>';
+      root.innerHTML='<div class="poster-illustration" aria-hidden="true"><svg viewBox="0 0 120 100"><use href="images/lesson-art.svg#lesson-'+lesson.id+'" xlink:href="images/lesson-art.svg#lesson-'+lesson.id+'"></use></svg></div><div class="poster-copy"><div class="poster-kicker">پوستر تصویری درس • فارسی پنجم</div><h3></h3><p></p><small>با جغد دانا، واژه‌ها را کشف کن!</small></div>';
       root.querySelector("h3").textContent=lesson.title;
       root.querySelector("p").textContent=(note&&note.summary)||lesson.activity||"با جغد دانا، واژه‌ها را کشف کن و درست بنویس.";
     }
     function renderBookReader(note, lesson) {
       const n=note||{};
       currentBookPages=[
-        {title:"آشنایی با درس",text:n.summary||("در این بخش با موضوع درس «"+lesson.title+"» آشنا می‌شوی."),extra:"بخوان، فکر کن و واژه‌های مهم را پیدا کن."},
-        {title:"نکته‌های یادگیری",text:n.teach||n.goal||lesson.activity||"با دقت بخوان و واژه‌ها را در جمله به کار ببر.",extra:(n.tips||[]).slice(0,3).join(" • ")},
-        {title:"تمرین پایانی",text:n.task||"سه واژه مهم درس را انتخاب کن و با هرکدام یک جمله بنویس.",extra:"پس از نوشتن، املای واژه‌ها را دوباره بررسی کن."}
+        {title:"صفحه ۱ • آشنایی با درس",text:n.summary||("موضوع این بخش درس «"+lesson.title+"» است. ابتدا عنوان را بخوان و درباره آنچه از موضوع درس می‌دانی فکر کن."),extra:"این کتاب‌خوان، درسنامه و محتوای آموزشی برنامه را ورق می‌زند؛ متن کامل کتاب درسی هنوز به فایل رسمی همان چاپ نیاز دارد."},
+        {title:"صفحه ۲ • نکته‌های یادگیری",text:n.teach||n.goal||lesson.activity||"با دقت بخوان و واژه‌های مهم را در جمله به کار ببر.",extra:(n.tips||[]).slice(0,3).join(" • ")},
+        {title:"صفحه ۳ • تمرین و یادآوری",text:n.task||"سه واژه مهم درس را انتخاب کن و با هرکدام یک جمله بنویس.",extra:"پس از نوشتن، املای واژه‌ها را دوباره بررسی کن."}
       ];
       currentBookPage=0;renderBookPage();
     }
