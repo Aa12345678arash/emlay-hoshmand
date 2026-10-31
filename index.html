@@ -926,11 +926,11 @@
       window.EMLAY_SELECTED_LESSON = selectedLesson;
 
       document.getElementById("selectedTitle").textContent =
-      const pdfPages=document.getElementById("pdfLessonPages");
-      if(pdfPages)pdfPages.textContent="صفحه‌های مرتبط در کتاب نگارش: "+(lesson.pages||"در حال تطبیق")+"؛ برای متن کتاب فارسی و صفحه‌آرایی کامل، پایگاه رسمی کتاب‌های درسی را باز کن.";
         selectedLesson.icon + " درس " +
         toPersianNumber(selectedLesson.id) + ": " +
         selectedLesson.title;
+      const pdfPages=document.getElementById("pdfLessonPages");
+      if(pdfPages)pdfPages.textContent="صفحه‌های مرتبط در کتاب نگارش: "+(selectedLesson.pages||"در حال تطبیق")+"؛ برای متن کتاب فارسی و صفحه‌آرایی کامل، پایگاه رسمی کتاب‌های درسی را باز کن.";
 
       document.getElementById("selectedChapter").textContent =
         "فصل: " + selectedLesson.chapter;
