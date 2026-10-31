@@ -4,6 +4,19 @@
 const fs = require("node:fs");
 const vm = require("node:vm");
 
+const fail = [];
+const assert = (condition, message) => { if (!condition) fail.push(message); };
+const suiteSource = fs.readFileSync("lesson1-suite.js", "utf8");
+const indexSource = fs.readFileSync("index.html", "utf8");
+const inlineScripts = [...indexSource.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/gi)]
+  .map(match => match[1]).filter(source => source.trim());
+for (let i = 0; i < inlineScripts.length; i++) {
+  try { new vm.Script(inlineScripts[i], { filename: "index-inline-" + (i + 1) + ".js" }); }
+  catch (error) { console.error("خطای نحو در اسکریپت درون‌صفحه‌ای:", error.message); process.exit(1); }
+}
+
+
+
 const sandbox = { window: {} };
 for (const file of ["lesson-data.js", "word-bank.js", "spelling-quiz.js", "dictation-texts.js", "lesson-notes.js"]) {
   vm.runInNewContext(fs.readFileSync(file, "utf8"), sandbox, { filename: file });
@@ -27,17 +40,7 @@ assert(practiceSource.includes('"word:" + selectedLesson.id + ":" + target'),"ت
 const dictationAudioSource=fs.readFileSync("lesson-dictation.js","utf8");
 assert(dictationAudioSource.includes('"dictation:" + item.id + ":" + seg'),"جمله‌های املا به شناسه فایل صوتی متصل نیست.");
 
-const suiteSource = fs.readFileSync("lesson1-suite.js", "utf8");
-const indexSource = fs.readFileSync("index.html", "utf8");
-const inlineScripts = [...indexSource.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/gi)]
-  .map(match => match[1]).filter(source => source.trim());
-for (let i = 0; i < inlineScripts.length; i++) {
-  try { new vm.Script(inlineScripts[i], { filename: "index-inline-" + (i + 1) + ".js" }); }
-  catch (error) { console.error("خطای نحو در اسکریپت درون‌صفحه‌ای:", error.message); process.exit(1); }
-}
 
-const fail = [];
-const assert = (condition, message) => { if (!condition) fail.push(message); };
 
 const normalize = value => String(value || "").normalize("NFC")
   .replace(/[يى]/g, "ی").replace(/ك/g, "ک")
