@@ -341,7 +341,7 @@
       font-size: 12px;
     }
 
-    .lesson-note { margin:14px 0; padding:15px; border:1px solid #dce7f8; border-radius:16px; background:#f7faff; }
+    .pdf-lesson-panel {background:linear-gradient(145deg,#fff,#f0f7ff);border:1px solid #cbdcf4;}\n    .pdf-lesson-panel h3 {color:#174f91;}\n    .lesson-note { margin:14px 0; padding:15px; border:1px solid #dce7f8; border-radius:16px; background:#f7faff; }
     .lesson-note h3 { margin:0 0 8px; color:var(--navy); font-size:16px; }
     .lesson-note .note-summary { padding:10px 12px; border-right:4px solid #e5a62b; border-radius:10px; background:#fff8e8; color:#34445e; line-height:2; }
     .lesson-note p { margin:7px 0; font-size:13px; }
@@ -585,6 +585,12 @@
         <h2 id="selectedTitle"></h2>
         <div id="selectedChapter" class="panel-description"></div>
         <section id="lessonNote" class="lesson-note" aria-label="درسنامه آموزشی"></section>
+        <section id="lessonPdfPanel" class="lesson-note pdf-lesson-panel" aria-label="متن کامل درس در قالب PDF">
+          <h3>📖 متن کامل درس در قالب PDF</h3>
+          <p>نسخه کامل و صفحه‌آرایی‌شدهٔ متن درس از این بخش در دسترس خواهد بود. برای هر یک از ۱۷ درس جایگاه جداگانه در نظر گرفته شده است.</p>
+          <div id="lessonPdfStatus" class="notice">فایل‌های PDF کتاب هنوز در بسته برنامه قرار ندارند؛ پس از افزودن فایل رسمی و مجاز هر درس، دکمه مشاهده در همین قسمت فعال می‌شود.</div>
+          <a id="lessonPdfLink" class="mode-button" href="#" hidden target="_blank" rel="noopener">باز کردن PDF این درس</a>
+        </section>
         <div id="lessonContent" class="notice" aria-live="polite"></div>
         <section id="teacherEditor" class="lesson-note" hidden aria-label="ورود محتوای درس آزاد">
           <h3>✏️ املای معلم؛ تنظیم محتوای بومی کلاس</h3>
