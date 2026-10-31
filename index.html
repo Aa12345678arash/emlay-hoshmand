@@ -825,16 +825,45 @@
       panel.hidden = !lessonData.teacherInput;
       if (!lessonData.teacherInput) return false;
       const savedAll = readTeacherContent();
-      const saved = savedAll[id] || {};
+      const suggested = {
+        7: {
+          text: "فرهنگ مردم کرد بخشی ارزشمند از فرهنگ ایران است. زبان و گویش کردی در کنار فارسی، داستان‌ها و ترانه‌های فراوانی دارد. آیین‌های محلی، موسیقی، پوشاک رنگارنگ و دست‌بافته‌های زیبا بخشی از میراث این مردم است. خوراک محلی و مهمان‌نوازی نیز در بسیاری از خانواده‌ها جایگاه ویژه‌ای دارد. شناخت این رسم‌ها به ما کمک می‌کند به فرهنگ‌های گوناگون سرزمینمان احترام بگذاریم.",
+          words: [
+            {word:"گویش",meaning:"شیوه سخن گفتن مردم یک منطقه"},
+            {word:"آیین",meaning:"رسم و روش انجام یک کار یا مراسم"},
+            {word:"میراث",meaning:"آنچه از گذشتگان به یادگار مانده است"},
+            {word:"دست‌بافته",meaning:"چیزی که با دست بافته شده است"},
+            {word:"موسیقی",meaning:"هنرِ آهنگ و نغمه"},
+            {word:"پوشاک",meaning:"لباس و چیزهایی که برای پوشیدن به کار می‌روند"},
+            {word:"خوراک",meaning:"غذا و آنچه برای خوردن آماده می‌شود"}
+          ]
+        },
+        12: {
+          text: "استان کرمانشاه در غرب ایران قرار دارد و از نظر تاریخ و طبیعت جایگاه ارزشمندی دارد. طاق‌بستان با نقش‌برجسته‌ها و آثار دوره ساسانی شناخته می‌شود. کتیبه بیستون نیز از یادگارهای تاریخی مهم این سرزمین است. این آثار بخشی از میراث فرهنگی ایران هستند و شناخت و نگهداری آن‌ها وظیفه همه ماست. طبیعت کوهستانی، چشمه‌ها و دشت‌های منطقه نیز زیبایی‌های فراوانی دارد.",
+          words: [
+            {word:"کرمانشاه",meaning:"نام استانی در غرب ایران"},
+            {word:"طاق‌بستان",meaning:"مجموعه‌ای تاریخی با طاق‌ها و نقش‌برجسته‌ها در کرمانشاه"},
+            {word:"نقش‌برجسته",meaning:"تصویری که به صورت برجسته روی سنگ یا سطحی دیگر کنده‌کاری شده است"},
+            {word:"ساسانی",meaning:"وابسته به دوره تاریخی ساسانیان"},
+            {word:"کتیبه",meaning:"نوشته‌ای که بر سنگ یا سطحی ماندگار حک شده است"},
+            {word:"بیستون",meaning:"محوطه تاریخی شناخته‌شده در استان کرمانشاه"},
+            {word:"میراث",meaning:"یادگارها و ارزش‌هایی که از گذشته به ما رسیده‌اند"}
+          ]
+        }
+      };
+      const hasSaved = Boolean(savedAll[id]);
+      const saved = savedAll[id] || suggested[id] || {};
       const passage = document.getElementById("teacherPassage");
       const words = document.getElementById("teacherWords");
       const status = document.getElementById("teacherStatus");
       passage.value = saved.text || "";
       words.value = (saved.words || []).map(item => item.word + " | " + item.meaning).join("\n");
-      const ready = applyTeacherContent(id, saved);
+      const ready = hasSaved && applyTeacherContent(id, saved);
       status.textContent = ready
         ? "محتوای این درس ذخیره شده است؛ پنج شیوه تمرین و متن شنیداری با همین واژه‌ها فعال می‌شوند."
-        : "برای فعال‌شدن تمرین‌ها، متن بومی و دست‌کم پنج واژه همراه با معنی وارد و ذخیره کن.";
+        : (suggested[id] && !hasSaved
+          ? "متن پیشنهادی آماده است؛ می‌توانی آن را ویرایش کنی. برای ثبت متن و فعال‌شدن تمرین‌ها، دکمه «ذخیره محتوای بومی» را بزن."
+          : "برای فعال‌شدن تمرین‌ها، متن بومی و دست‌کم پنج واژه همراه با معنی وارد و ذخیره کن.");
       document.getElementById("teacherSave").onclick = () => {
         const text = passage.value.trim();
         const parsed = words.value.split(/\r?\n/).map(line => {
