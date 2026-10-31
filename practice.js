@@ -213,7 +213,7 @@
       if(event==="start")showFeedback("🔊 در حال خواندن واژه؛ با دقت گوش کن.",true);
       if(event==="done")showFeedback("خواندن واژه تمام شد. برای تکرار، دکمه پخش را بزن.",true);
       if(event==="error")showFeedback(message||"پخش صدا انجام نشد؛ صدای فارسی گوشی را بررسی کن.",false);
-    });
+    }, "word:" + selectedLesson.id + ":" + target);
     if(!ok){
       const status=window.EMLAY_SPEAKER?window.EMLAY_SPEAKER.status():"";
       showFeedback(status||"واژه‌خوان در دسترس نیست. موتور گفتار و صدای فارسی گوشی را فعال کن.",false);
