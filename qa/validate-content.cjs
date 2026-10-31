@@ -58,7 +58,7 @@ assert(indexSource.includes("const makeTeacherQuestion = item =>") &&
 
 const norm = value => String(value || "").normalize("NFC")
   .replace(/[يى]/g, "ی").replace(/ك/g, "ک")
-  .replace(/[\\u200c\\u200f\\u202a-\\u202e\\sـًٌٍَُِّْٰ]/g, "");
+  .replace(/[\u200c\u200f\u202a-\u202e\sـًٌٍَُِّْٰ]/g, "");
 const isCorrect = (answer, expected) => {
   const a=String(answer||"").normalize("NFC"), e=String(expected||"").normalize("NFC");
   const separators=(e.match(/[\\u200c\\s]/g)||[]).length;
@@ -93,39 +93,18 @@ for (let id = 1; id <= 17; id++) {
     assert(String(item.meaning || "").trim().length > 0,
       "معنی واژه ثبت نشده: " + item.word);
     for (const error of item.errors || []) {
-      assert(!matchesSpelling(error.form, item.word),
+      assert(!isCorrect(error.form, item.word),
         "صورت پذیرفته‌شده به‌عنوان غلط ثبت شده: " + item.word + " / " + error.form);
     }
-
-    const chars = Array.from(item.word);
-    const generated = [];
-    const confusables = {"ا":"آ","آ":"ا","ت":"ط","ط":"ت","ث":"س","س":"ث","ص":"س","ذ":"ز","ز":"ذ","ض":"ظ","ظ":"ض","ح":"ه","ه":"ح","ق":"غ","غ":"ق"};
-    chars.forEach((letter, index) => {
-      if (confusables[letter]) generated.push(chars.map((ch, i) => i === index ? confusables[letter] : ch).join(""));
-      if (letter !== "\u200c" && !/\s/.test(letter)) {
-        generated.push(chars.map((ch, i) => i === index ? "" : ch).join(""));
-        generated.push(chars.map((ch, i) => i === index ? ch + ch : ch).join(""));
-      }
-      if (index < chars.length - 1 && letter !== "\u200c" && chars[index + 1] !== "\u200c" && !/\s/.test(letter + chars[index + 1])) {
-        const swapped = chars.slice();
-        [swapped[index], swapped[index + 1]] = [swapped[index + 1], swapped[index]];
-        generated.push(swapped.join(""));
-      }
-    });
-    const insertLetters = ["ا","ی","و","ه","ن","ر","م","ت","س"];
-    for (let index = 0; index <= chars.length; index++) {
-      if (chars[index - 1] === "\u200c" || chars[index] === "\u200c") continue;
-      insertLetters.forEach(letter => generated.push([...chars.slice(0, index), letter, ...chars.slice(index)].join("")));
+    const options = buildOptions(item);
+    assert(Array.isArray(options) && options.length === 4,
+      "چهار گزینه متمایز برای سؤال ساخته نشد: " + item.word);
+    if (options) {
+      assert(new Set(options.map(norm)).size === 4,
+        "گزینه‌های تکراری یا هم‌ارز در سؤال وجود دارد: " + item.word);
+      assert(options.filter(option => norm(option) === norm(item.word)).length === 1,
+        "سؤال دقیقاً یک پاسخ درست ندارد: " + item.word);
     }
-    const distractors = [...new Set([
-      ...(item.errors || []).map(error => error.form),
-      ...(item.options || []),
-      ...generated
-    ])].filter(option => !matchesSpelling(option, item.word) && normalize(option) !== normalize(item.word));
-    const options = [item.word, ...distractors].slice(0, 4);
-    assert(options.length === 4, "کمتر از چهار گزینه ساخته شد: " + item.word);
-    assert(options.filter(option => matchesSpelling(option, item.word)).length === 1,
-      "تعداد پاسخ‌های درست باید دقیقاً یک باشد: " + item.word);
   }
 }
 for (let id = 1; id <= 5; id++) {
