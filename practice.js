@@ -122,44 +122,44 @@
     return shuffle([correct,...distractors.slice(0,3)]);
   }
 
+  function optionKey(value){
+    return normalizeText(value).replace(/[ۀة]/g,"ه").replace(/[ؤ]/g,"و").replace(/[أإٱ]/g,"ا").replace(/[ئ]/g,"ی");
+  }
+  function buildWordOptions(item){
+    const targetKey=optionKey(item.word), candidates=[];
+    (item.errors||[]).forEach(x=>candidates.push(x.form));
+    (item.options||[]).forEach(x=>candidates.push(x));
+    const chars=Array.from(item.word);
+    const confusables={"ا":"آ","آ":"ا","ت":"ط","ط":"ت","ث":"س","س":"ث","ص":"س","ذ":"ز","ز":"ذ","ض":"ظ","ظ":"ض","ح":"ه","ه":"ح","ق":"غ","غ":"ق","ک":"ق","ق":"ک","ی":"ئ","ئ":"ی","ع":"ا"};
+    chars.forEach((letter,index)=>{
+      if(confusables[letter])candidates.push(chars.map((ch,i)=>i===index?confusables[letter]:ch).join(""));
+      if(letter!=="‌"&&!/\s/.test(letter)){candidates.push(chars.map((ch,i)=>i===index?"":ch).join(""));candidates.push(chars.map((ch,i)=>i===index?ch+ch:ch).join(""));}
+      if(index<chars.length-1&&letter!=="‌"&&chars[index+1]!=="‌"&&!/\s/.test(letter+chars[index+1])){const s=chars.slice();[s[index],s[index+1]]=[s[index+1],s[index]];candidates.push(s.join(""));}
+    });
+    const inserts=["ا","ی","و","ه","ن","ر","م","ت","س","ط","ذ","ز","ص","ث"];
+    for(let i=0;i<=chars.length;i++){if(chars[i-1]==="‌"||chars[i]==="‌")continue;inserts.forEach(ch=>candidates.push([...chars.slice(0,i),ch,...chars.slice(i)].join("")));}
+    const seen=new Set([targetKey]),wrong=[];
+    for(const raw of candidates){const value=String(raw||"").trim(),key=optionKey(value);if(!value||!key||seen.has(key))continue;seen.add(key);wrong.push(value);if(wrong.length===3)break;}
+    return wrong.length===3?shuffle([item.word,...wrong]):[];
+  }
   function renderWordHunt(){
-    const item=((window.EMLAY_SPELLING_QUIZ || {})[selectedLesson.id] || []).find(entry=>normalizeText(entry.word)===normalizeText(target));
-    if(!item){
-      $("practiceQuestion").textContent="برای این واژه هنوز تمرین شکار خطای املایی آماده نشده است.";
-      return;
+    const item=((window.EMLAY_SPELLING_QUIZ||{})[selectedLesson.id]||[]).find(x=>optionKey(x.word)===optionKey(target));
+    if(!item){$("practiceQuestion").textContent="برای این واژه پرسش بازبینی‌شده‌ای وجود ندارد.";showFeedback("این سؤال تا تکمیل پاسخ درست نمایش داده نمی‌شود.",false);return;}
+    const options=buildWordOptions(item);
+    if(options.length!==4||new Set(options.map(optionKey)).size!==4||options.filter(x=>optionKey(x)===optionKey(item.word)).length!==1){
+      $("practiceQuestion").textContent="این سؤال نیازمند بازبینی است.";showFeedback("برای جلوگیری از سؤال بی‌پاسخ یا چندپاسخی، این مورد نمایش داده نمی‌شود.",false);return;
     }
     $("practiceQuestion").textContent="معنی را بخوان؛ سپس شکل درست واژه را از میان گزینه‌ها پیدا کن:";
-    const meaning=document.createElement("p");
-    meaning.className="practice-muted";meaning.style.fontSize="17px";meaning.style.lineHeight="2";
-    meaning.textContent="💡 معنی واژه: "+item.meaning;
-    const hint=document.createElement("p");hint.className="practice-muted";
-    hint.textContent="به ترتیب حروف، حروف هم‌آوا و جاافتادگی‌ها دقت کن.";
-    const source=document.createElement("p");source.className="practice-muted";
-    source.textContent="یادآوری: گزینه‌های نادرست این تمرین برای آموزش طراحی شده‌اند و لزوماً غلط‌های ثبت‌شدهٔ دانش‌آموزان نیستند.";
-    const list=document.createElement("div");list.className="practice-options";
-    body.append(meaning,hint,source,list);
-    const options=buildWordHuntOptions(item);
-    if(!options){
-      $("practiceQuestion").textContent="برای این واژه سه گزینهٔ نادرستِ متمایز آماده نیست؛ این پرسش تا بازبینی بانک نمایش داده نمی‌شود.";
-      const skip=document.createElement("button");skip.type="button";skip.className="practice-action";skip.textContent="رفتن به پرسش بعدی";
-      skip.onclick=()=>{questionNumber++;if(questionNumber<sessionWords.length)renderQuestion();else finishSession();};
-      body.appendChild(skip);
-      return;
-    }
-    options.forEach(option=>{
-      const b=document.createElement("button");b.className="practice-option";b.type="button";b.textContent=option;
-      b.onclick=()=>{
-        [...list.children].forEach(x=>x.disabled=true);
-        const ok=matchesSpelling(option,item.word);
-        finishQuestion(ok,option);
-        const error=(item.errors||[]).find(x=>normalizeText(x.form)===normalizeText(option));
-        let detail=ok?"آفرین! شکل درست را پیدا کردی. ":"این بار شکل درست را انتخاب نکردی. ";
-        if(error)detail+="نوع خطا: "+error.type+"؛ "+error.why;
-        else if(ok)detail+=item.explanation||"به شکل نوشتاری واژه دقت کن.";
-        showFeedback(detail+" املای درست: «"+item.word+"».",ok);
-      };
-      list.appendChild(b);
-    });
+    const meaning=document.createElement("p");meaning.className="practice-muted";meaning.style.fontSize="17px";meaning.style.lineHeight="2";meaning.textContent="💡 معنی واژه: "+item.meaning;
+    const hint=document.createElement("p");hint.className="practice-muted";hint.textContent="به ترتیب حروف و شکل درست نوشتاری توجه کن.";
+    const list=document.createElement("div");list.className="practice-options";body.append(meaning,hint,list);
+    options.forEach(option=>{const b=document.createElement("button");b.className="practice-option";b.type="button";b.textContent=option;b.onclick=()=>{
+      [...list.children].forEach(x=>x.disabled=true);const ok=optionKey(option)===optionKey(item.word);finishQuestion(ok,option);
+      const error=(item.errors||[]).find(x=>optionKey(x.form)===optionKey(option));
+      let detail=ok?"آفرین! شکل درست را پیدا کردی. ":"این بار شکل درست را انتخاب نکردی. ";
+      if(error)detail+="نوع خطا: "+error.type+"؛ "+error.why;else if(ok)detail+=item.explanation||"به شکل نوشتاری واژه دقت کن.";
+      showFeedback(detail+" املای درست: «"+item.word+"».",ok);
+    };list.appendChild(b);});
   }
   function renderMissingLetter(){
     const chars=Array.from(target);
